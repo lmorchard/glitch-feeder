@@ -1,7 +1,7 @@
 const commonFields = t => {
   t.uuid("id").primary();
   t.timestamps();
-  t.text("json", "longtext");
+  t.json("json");
 };
 
 exports.up = knex => knex.schema
@@ -9,19 +9,28 @@ exports.up = knex => knex.schema
     commonFields(t);
     t.string("url").index().unique();
     t.string("etag");
+    t.boolean("disabled");
+    t.string("encoding");
+    t.string("statusCode");
+    t.string("lastError");
+    t.string("maxAge");
     t.text("body", "longtext");
   })
   .createTable("Feeds", t => {
     commonFields(t);
     t.string("resource").references("Resources.id");
     t.string("title");
-    t.string("htmlUrl");
+    t.string("subtitle");
+    t.string("link");
   })
   .createTable("FeedItems", t => {
     commonFields(t);
+    t.string("guid").index().unique();
     t.string("feed").references("Feeds.id");
     t.string("title");
-    t.string("title");
+    t.string("link");
+    t.string("summary");
+    t.string("updated");
   })
 ;
 
