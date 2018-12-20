@@ -38,9 +38,12 @@ const init = fn => (...args) => (async () => {
     ]
   });
   
-  await fn(...args, { models, log, });
-  
-  models.knex.destroy();
+  try {
+    await fn(...args, { models, log, });
+    models.knex.destroy();
+  } catch(error) {
+    log.error(error);
+  }
 })();
 
 module.exports = { main };

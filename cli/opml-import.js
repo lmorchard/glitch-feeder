@@ -20,16 +20,15 @@ async function command (filename, env, context) {
     for (let item of items) {
       if (item["#type"] !== "feed") { continue; }
       const { title, text, description, xmlurl, htmlurl, folder } = item;
-      log.verbose("ITEM [%s] %s %s", folder, text, xmlurl);
       
-      const feed = await Feed.forge({
+      log.verbose("ITEM [%s] %s %s", folder, text, xmlurl);
+
+      const feed = Feed.forge({
         title: text || title || "",
         subtitle: description || "",
         link: htmlurl || "",
-        data: item,
-      }).createOrUpdate();
-      
-      log.debug("FEED %s", feed);
+      });
+      await feed.createOrUpdate({ data: item });
     }
     log.verbose(JSON.stringify(meta));
   } catch (error) {
