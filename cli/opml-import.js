@@ -58,4 +58,3 @@ const parseOpmlFile = (filename, { log }) => new Promise((resolve, reject) => {
 
   fileIn.pipe(parser);
 });
-
