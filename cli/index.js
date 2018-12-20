@@ -7,11 +7,10 @@ function main (argv) {
     .version(packageJson.version)
     .option('-v, --verbose', 'Verbose output', false)
   ;
-  
-  program
-    .command("opml-import [filename]")
-    .description("import from OPML")
-    .action(init(require("./opml-import")));
+
+  [
+    "opml-import",
+  ].forEach(name => require(`./${name}`)(init, program));
   
   program.parse(argv);
 }
