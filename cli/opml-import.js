@@ -12,7 +12,7 @@ module.exports = (init, program) => {
 
 async function command (filename, env, context) {
   const { models, log } = context;
-  const { Feed } = models;
+  const { Resource, Feed } = models;
   
   try {
     const { meta, items } = await parseOpmlFile(filename, context);
@@ -26,15 +26,17 @@ async function command (filename, env, context) {
         description = "",
         xmlurl = "",
         htmlurl = "",
-        folder = ""
       } = item;
-      const feed = Feed.forge({
+      const resource = await Resource.forge({
+        url: xmlurl,
+      }).createOrUpdate({ data: item });
+      const feed = await Feed.forge({
+        //resource: resource,
         title: text || title,
         subtitle: description,
         link: htmlurl,
-      });
-      await feed.createOrUpdate({ data: item });
-      log.debug("ITEM [%s] %s %s %s", folder, feed.id, text, xmlurl);
+      }).createOrUpdate({ data: item });
+      log.debug("ITEM %s %s", feed.id, text);
       count++;
     }
     log.info("Imported %s feeds", count);

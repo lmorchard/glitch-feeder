@@ -49,13 +49,12 @@ const init = fn => (...args) => (async () => {
       pool.numPendingAcquires(),
       pool.numPendingCreates(),
     );
-    await new Promise(resolve => setTimeout(async () => {
-      models.knex.destroy(() => {
-        console.log("WANG");
-        resolve();
-      });
-    }, 1));
-    console.log("EXITING");
+    
+    // HACK / FIXME: destroying the DB connection always results in an error 
+    // involving PendingOperation unless we wait a little bit
+    await new Promise(resolve =>
+      setTimeout(() => models.knex.destroy(resolve()), 500)
+    );
   } catch(error) {
     log.error(error);
   }

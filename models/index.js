@@ -26,14 +26,14 @@ const BaseModel = bookshelf.Model.extend({
   },
   createOrUpdate: async function (props = {}) {
     const model = (await this.fetch()) || this;
-    return model.save(props);
+    return model.save(props, { patch: true });
   },
 }, {
   jsonColumns: ["data"]
 });
 
 const Resource = BaseModel.extend({
-  tableName: "Resource",
+  tableName: "Resources",
   uuid: true,
   initialize: function () {
     BaseModel.prototype.initialize.apply(this, arguments);
@@ -46,6 +46,9 @@ const Resource = BaseModel.extend({
 const Feed = BaseModel.extend({
   tableName: "Feeds",
   uuid: true,
+  resource: function () {
+    return this.hasOne(Resource);
+  },
   initialize: function () {
     BaseModel.prototype.initialize.apply(this, arguments);
   },
