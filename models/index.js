@@ -10,7 +10,6 @@ module.exports = async () => {
   return {
     knex,  
     bookshelf,
-    Resource,
     Feed,
     FeedItem,
   };
@@ -34,20 +33,15 @@ const BaseModel = bookshelf.Model.extend({
   jsonColumns: ["data"]
 });
 
-const Resource = BaseModel.extend({
-  tableName: "Resources",
-  uuid: true,
-});
-
 const Feed = BaseModel.extend({
   tableName: "Feeds",
   uuid: true,
-  resource () {
-    return this.belongsTo(Resource, "resource_id");
-  },
 });
 
 const FeedItem = BaseModel.extend({
   tableName: "FeedItems",
   uuid: true,
+  feed () {
+    return this.belongsTo(Feed, "feed_id");
+  },
 });

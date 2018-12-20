@@ -15,10 +15,11 @@ async function command (filename, env, context) {
   const { Resource, Feed } = models;
   
   try {
+  const fileIn = fs.createReadStream(filename, { encoding: "utf8" });
     const { meta, items } = await parseOpmlFile(filename, context);
     let count = 0;
-    // for (let item of items) {
-    for (let item of items.slice(0, 50)) {
+    for (let item of items) {
+    // for (let item of items.slice(0, 50)) {
       if (item["#type"] !== "feed") { continue; }
       
       const {
@@ -29,28 +30,23 @@ async function command (filename, env, context) {
         htmlurl = "",
       } = item;
       
-      const resource = await (Resource.forge({
-        url: xmlurl,
-      }).createOrUpdate());
-      
       const feed = await (Feed.forge({
-        resource_id: resource.id,
         title: text || title,
         subtitle: description,
         link: htmlurl,
+        resourceUrl: xmlurl,
       }).createOrUpdate({ data: item }));
       
       count++;
     }
     log.info("Imported %s feeds", count);
     
-    const feeds = await Feed.collection().fetch({ withRelated: "resource" });
+    const feeds = await Feed.collection().fetch();
     for (let feed of feeds) {
       log.debug(
-        "FEED %s %s %s",
+        "FEED %s %s",
         feed.get("title"),
-        feed.get("resource_id"),
-        feed.related("resource").get("url"),
+        feed.get("resourceUrl"),
       );
     }
     
@@ -61,7 +57,6 @@ async function command (filename, env, context) {
 
 const parseOpmlFile = (filename, { log }) => new Promise((resolve, reject) => {
   const parser = new OpmlParser();
-  const fileIn = fs.createReadStream(filename, { encoding: "utf8" });
   
   let meta = {};
   const items = [];
