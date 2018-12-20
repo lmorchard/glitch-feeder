@@ -6,43 +6,53 @@ bookshelf.plugin("pagination");
 bookshelf.plugin(require("bookshelf-json-columns"));
 bookshelf.plugin(require("bookshelf-uuid"), { type: "v1" });
 
-const Resource = bookshelf.Model.extend({
+const BaseModel = bookshelf.Model.extend({
+  hasTimestamps: true,
+  initialize: function () {
+    bookshelf.Model.prototype.initialize.apply(this, arguments);
+  },
+  save: function () {
+    bookshelf.Model.prototype.save.apply(this, arguments);
+  },
+});
+
+const Resource = BaseModel.extend({
   tableName: "Resource",
   uuid: true,
   initialize: function () {
-    bookshelf.Model.prototype.initialize.apply(this, arguments);
+    BaseModel.prototype.initialize.apply(this, arguments);
   },
   save: function () {
-    bookshelf.Model.prototype.save.apply(this, arguments);
+    BaseModel.prototype.save.apply(this, arguments);
   },
 }, {
-  jsonColumns: ["data"]
+  jsonColumns: ["json"]
 });
 
-const Feed = bookshelf.Model.extend({
+const Feed = BaseModel.extend({
   tableName: "Feeds",
   uuid: true,
   initialize: function () {
-    bookshelf.Model.prototype.initialize.apply(this, arguments);
+    BaseModel.prototype.initialize.apply(this, arguments);
   },
   save: function () {
-    bookshelf.Model.prototype.save.apply(this, arguments);
+    BaseModel.prototype.save.apply(this, arguments);
   },
 }, {
-  jsonColumns: ["data"]
+  jsonColumns: ["json"]
 });
 
-const FeedItem = bookshelf.Model.extend({
+const FeedItem = BaseModel.extend({
   tableName: "FeedItems",
   uuid: true,
   initialize: function () {
-    bookshelf.Model.prototype.initialize.apply(this, arguments);
+    BaseModel.prototype.initialize.apply(this, arguments);
   },
   save: function () {
-    bookshelf.Model.prototype.save.apply(this, arguments);
+    BaseModel.prototype.save.apply(this, arguments);
   },
 }, {
-  jsonColumns: ["data"]
+  jsonColumns: ["json"]
 });
 
 module.exports = {
