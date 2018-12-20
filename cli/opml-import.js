@@ -12,6 +12,8 @@ module.exports = (init, program) => {
 
 async function command (filename, env, context) {
   const { models, log } = context;
+  const { Feed } = models;
+  
   try {
     const { meta, items } = await parseOpmlFile(filename, context);
     
@@ -20,10 +22,10 @@ async function command (filename, env, context) {
       const { title, text, description, xmlurl, htmlurl, folder } = item;
       log.verbose("ITEM [%s] %s %s", folder, text, xmlurl);
       
-      const feed = await models.Feed.forge({
-        title: text || title,
-        subtitle: description,
-        link: htmlurl,
+      const feed = await Feed.forge({
+        title: text || title || "",
+        subtitle: description || "",
+        link: htmlurl || "",
         data: item,
       }).createOrUpdate();
       
