@@ -16,12 +16,10 @@ async function command (filename, env, context) {
   
   try {
     const { meta, items } = await parseOpmlFile(filename, context);
-    
+    let count = 0;
     for (let item of items) {
       if (item["#type"] !== "feed") { continue; }
       const { title, text, description, xmlurl, htmlurl, folder } = item;
-      
-      log.verbose("ITEM [%s] %s %s", folder, text, xmlurl);
 
       const feed = Feed.forge({
         title: text || title || "",
@@ -29,8 +27,11 @@ async function command (filename, env, context) {
         link: htmlurl || "",
       });
       await feed.createOrUpdate({ data: item });
+      
+      log.debug("ITEM [%s] %s %s", folder, text, xmlurl);
+      count++;
     }
-    log.verbose(JSON.stringify(meta));
+    log.info("Imported %s feeds", count);
   } catch (error) {
     log.error("OPML import failed: %s", error);
   }
