@@ -10,24 +10,38 @@ module.exports = (init, program) => {
     .action(init(command));
 };
 
-async function command (filename, env, { models, log }) {
+async function command (filename, env, context) {
+  const { models, log } = context;
+
+  const items = await parseOpmlFile(filename, context);
+  for (let item of items) {
+    if (item["#type"] === "feed") {
+      const { text, xmlurl, htmlurl } = item;
+      log.verbose("ITEM", item, text, xmlurl);
+    }
+  }
+};
+
+const parseOpmlFile = (filename, { log }) => new Promise((resolve, reject) => {
   const parser = new OpmlParser();
   const fileIn = fs.createReadStream(filename, { encoding: "utf8" });
-
-  parser.on("error", function (error) {
-    log.error("ERROR", error)
-  });
+  const result = [];
   
+  parser.on("error", reject);
+
   parser.on("readable", function () {
     const stream = this;
     const meta = this.meta;
-    
-    while (let outline = stream.read()) {
+
+    let outline;
+    while (outline = stream.read()) {
+      result.push(outline);
       log.debug("OUTLINE", outline);
     }
   });
   
+  parser.on("end", () => resolve(result));
+
   fileIn.pipe(parser);
-  
-  log.debug("DATA", opmlData);
-};
+});
+
