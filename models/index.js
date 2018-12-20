@@ -19,15 +19,14 @@ module.exports = async () => {
 const BaseModel = bookshelf.Model.extend({
   hasTimestamps: true,
   initialize: function () {
-    bookshelf.Model.prototype.initialize.apply(this, arguments);
+    return bookshelf.Model.prototype.initialize.apply(this, arguments);
   },
   save: function () {
-    bookshelf.Model.prototype.save.apply(this, arguments);
+    return bookshelf.Model.prototype.save.apply(this, arguments);
   },
   createOrUpdate: async function (props) {
     const model = (await this.fetch()) || this;
-    await model.save(props);
-    return model;
+    return await model.save(props);
   },
 }, {
   jsonColumns: ["data"]
@@ -36,12 +35,6 @@ const BaseModel = bookshelf.Model.extend({
 const Resource = BaseModel.extend({
   tableName: "Resources",
   uuid: true,
-  initialize: function () {
-    BaseModel.prototype.initialize.apply(this, arguments);
-  },
-  save: function () {
-    BaseModel.prototype.save.apply(this, arguments);
-  },
 });
 
 const Feed = BaseModel.extend({
@@ -50,22 +43,9 @@ const Feed = BaseModel.extend({
   resource: function () {
     return this.hasOne(Resource);
   },
-  initialize: function () {
-    BaseModel.prototype.initialize.apply(this, arguments);
-  },
-  save: function () {
-    BaseModel.prototype.save.apply(this, arguments);
-  },
 });
 
 const FeedItem = BaseModel.extend({
   tableName: "FeedItems",
   uuid: true,
-  initialize: function () {
-    BaseModel.prototype.initialize.apply(this, arguments);
-  },
-  save: function () {
-    BaseModel.prototype.save.apply(this, arguments);
-  },
 });
-
