@@ -40,11 +40,20 @@ async function command (filename, env, context) {
         link: htmlurl,
       }).createOrUpdate({ data: item }));
       
-      log.debug("RESOURCE %s", (await feed.resource().fetch()).id);
-      
       count++;
     }
     log.info("Imported %s feeds", count);
+    
+    const feeds = await Feed.collection({ withRelated: "resource" }).fetch();
+    for (let feed of feeds) {
+      log.debug(
+        "FEED %s %s %s",
+        feed.get("title"),
+        feed.get("resource_id"),
+        (await feed.related("resource").fetch()),
+      );
+    }
+    
   } catch (error) {
     log.error("OPML import failed: %s", error);
   }
