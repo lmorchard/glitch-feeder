@@ -2,10 +2,9 @@ module.exports = (init, program) => {
   program
     .command("opml-import [filename]")
     .description("import from OPML")
-    // .action(init(command));
-    .action(command);
+    .action(init(command));
 };
 
-function command() {
-  console.log("hello world", arguments);
+function command (filename, env, { log }) {
+  log.info("HELLO WORLD");
 };
