@@ -17,7 +17,8 @@ async function command (filename, env, context) {
   try {
     const { meta, items } = await parseOpmlFile(filename, context);
     let count = 0;
-    for (let item of items) {
+    // for (let item of items) {
+    for (let item of items.slice(0, 50)) {
       if (item["#type"] !== "feed") { continue; }
       const { title, text, description, xmlurl, htmlurl, folder } = item;
 

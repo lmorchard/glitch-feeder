@@ -40,8 +40,10 @@ const init = fn => (...args) => (async () => {
   
   try {
     await fn(...args, { models, log, });
-    // await models.knex.destroy();
-    log.info("Exiting");
+    await new Promise(resolve => setTimeout(async () => {
+      await models.knex.destroy();
+      resolve();
+    }, 1));
   } catch(error) {
     log.error(error);
   }
