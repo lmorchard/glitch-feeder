@@ -6,8 +6,21 @@ bookshelf.plugin("pagination");
 bookshelf.plugin(require("bookshelf-json-columns"));
 bookshelf.plugin(require("bookshelf-uuid"), { type: "v1" });
 
+const Resource = bookshelf.Model.extend({
+  tableName: "Resource",
+  uuid: true,
+  initialize: function () {
+    bookshelf.Model.prototype.initialize.apply(this, arguments);
+  },
+  save: function () {
+    bookshelf.Model.prototype.save.apply(this, arguments);
+  },
+}, {
+  jsonColumns: ["data"]
+});
+
 const Feed = bookshelf.Model.extend({
-  tableName: "feeds",
+  tableName: "Feeds",
   uuid: true,
   initialize: function () {
     bookshelf.Model.prototype.initialize.apply(this, arguments);
@@ -20,7 +33,7 @@ const Feed = bookshelf.Model.extend({
 });
 
 const FeedItem = bookshelf.Model.extend({
-  tableName: "feeditems",
+  tableName: "FeedItems",
   uuid: true,
   initialize: function () {
     bookshelf.Model.prototype.initialize.apply(this, arguments);
@@ -35,6 +48,7 @@ const FeedItem = bookshelf.Model.extend({
 module.exports = {
   knex,
   bookshelf,
+  Resource,
   Feed,
   FeedItem,
 };
