@@ -14,6 +14,8 @@ const BaseModel = bookshelf.Model.extend({
   save: function () {
     bookshelf.Model.prototype.save.apply(this, arguments);
   },
+}, {
+  jsonColumns: ["data"]
 });
 
 const Resource = BaseModel.extend({
@@ -25,8 +27,6 @@ const Resource = BaseModel.extend({
   save: function () {
     BaseModel.prototype.save.apply(this, arguments);
   },
-}, {
-  jsonColumns: ["json"]
 });
 
 const Feed = BaseModel.extend({
@@ -38,8 +38,6 @@ const Feed = BaseModel.extend({
   save: function () {
     BaseModel.prototype.save.apply(this, arguments);
   },
-}, {
-  jsonColumns: ["json"]
 });
 
 const FeedItem = BaseModel.extend({
@@ -51,8 +49,6 @@ const FeedItem = BaseModel.extend({
   save: function () {
     BaseModel.prototype.save.apply(this, arguments);
   },
-}, {
-  jsonColumns: ["json"]
 });
 
 module.exports = {
