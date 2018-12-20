@@ -6,5 +6,15 @@ module.exports = (init, program) => {
 };
 
 async function command (env, context) {
-  const (
+  const { models, log } = context;
+  const { Resource, Feed } = models;
+
+  const feeds = await Feed.collection().fetch();
+  for (let feed of feeds) {
+    log.debug(
+      "FEED %s %s",
+      feed.get("title"),
+      feed.get("resourceUrl"),
+    );
+  }
 }

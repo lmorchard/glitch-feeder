@@ -11,10 +11,10 @@ function main (argv) {
     .option('-v, --verbose', 'Verbose output', false)
   ;
 
-  [
-    "opml-import",
-  ].forEach(name => require(`./${name}`)(init, program));
-  
+  // TODO: list directory for modules?
+  const commandModules = ["opml-import", "poll-feeds"];
+  commandModules.forEach(name => require(`./${name}`)(init, program));
+
   program.parse(argv);
 }
 
