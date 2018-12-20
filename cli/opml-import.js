@@ -44,13 +44,13 @@ async function command (filename, env, context) {
     }
     log.info("Imported %s feeds", count);
     
-    const feeds = await Feed.collection({ withRelated: "resource" }).fetch();
+    const feeds = await Feed.collection().fetch({ withRelated: "resource" });
     for (let feed of feeds) {
       log.debug(
         "FEED %s %s %s",
         feed.get("title"),
         feed.get("resource_id"),
-        (await feed.related("resource").fetch()),
+        feed.related("resource").get("url"),
       );
     }
     

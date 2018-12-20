@@ -2,7 +2,7 @@ const knexfile = require("../knexfile");
 const knex = require("knex")(knexfile.development);
 const bookshelf = require("bookshelf")(knex);
 
-//bookshelf.plugin("pagination");
+bookshelf.plugin("pagination");
 bookshelf.plugin(require("bookshelf-json-columns"));
 bookshelf.plugin(require("bookshelf-uuid"), { type: "v1" });
 
@@ -43,7 +43,7 @@ const Feed = BaseModel.extend({
   tableName: "Feeds",
   uuid: true,
   resource () {
-    return this.belongsTo(Resource);
+    return this.belongsTo(Resource, "resource_id");
   },
 });
 
