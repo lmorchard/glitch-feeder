@@ -40,21 +40,10 @@ const init = fn => (...args) => (async () => {
   
   try {
     await fn(...args, { models, log, });
-    const client = models.knex.client;
-    const pool = client.pool;
-    console.log(
-      "DERP DERP",
-      pool.numUsed(),
-      pool.numFree(),
-      pool.numPendingAcquires(),
-      pool.numPendingCreates(),
-    );
-    
+
     // HACK / FIXME: destroying the DB connection always results in an error 
     // involving PendingOperation unless we wait a little bit
-    await new Promise(resolve =>
-      setTimeout(() => models.knex.destroy(resolve()), 500)
-    );
+    await new Promise(resolve => setTimeout(() => models.knex.destroy(resolve()), 500));
   } catch(error) {
     log.error(error);
   }
