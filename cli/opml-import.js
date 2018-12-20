@@ -12,35 +12,47 @@ module.exports = (init, program) => {
 
 async function command (filename, env, context) {
   const { models, log } = context;
-
-  const items = await parseOpmlFile(filename, context);
-  for (let item of items) {
-    if (item["#type"] === "feed") {
-      const { text, xmlurl, htmlurl } = item;
-      log.verbose("ITEM", item, text, xmlurl);
+  try {
+    const { meta, items } = await parseOpmlFile(filename, context);
+    
+    for (let item of items) {
+      if (item["#type"] !== "feed") { continue; }
+      const { title, text, description, xmlurl, htmlurl, folder } = item;
+      log.verbose("ITEM [%s] %s %s", folder, text, xmlurl);
+      
+      const feed = await models.Feed.forge({
+        title: text || title,
+        subtitle: description,
+        link: htmlurl,
+        data: item,
+      }).createOrUpdate();
+      
+      log.debug("FEED %s", feed);
     }
+    log.verbose(JSON.stringify(meta));
+  } catch (error) {
+    log.error("OPML import failed: %s", error);
   }
 };
 
 const parseOpmlFile = (filename, { log }) => new Promise((resolve, reject) => {
   const parser = new OpmlParser();
   const fileIn = fs.createReadStream(filename, { encoding: "utf8" });
-  const result = [];
+  
+  let meta = {};
+  const items = [];
   
   parser.on("error", reject);
-
   parser.on("readable", function () {
     const stream = this;
-    const meta = this.meta;
+    meta = this.meta;
 
     let outline;
     while (outline = stream.read()) {
-      result.push(outline);
-      log.debug("OUTLINE", outline);
+      items.push(outline);
     }
   });
-  
-  parser.on("end", () => resolve(result));
+  parser.on("end", () => resolve({ meta, items }));
 
   fileIn.pipe(parser);
 });

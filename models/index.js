@@ -24,6 +24,12 @@ const BaseModel = bookshelf.Model.extend({
   save: function () {
     bookshelf.Model.prototype.save.apply(this, arguments);
   },
+  createOrUpdate: function (props) {
+    return this.fetch().then(model => props
+      ? (model || this).save(props)
+      : (model || this)
+    );
+  },
 }, {
   jsonColumns: ["data"]
 });

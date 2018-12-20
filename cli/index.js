@@ -29,11 +29,12 @@ const init = fn => (...args) => (async () => {
   
   const log = winston.createLogger({
     level: logLevel,
-    format: winston.format.prettyPrint(),
+    format: winston.format.combine(
+      winston.format.splat(),
+      winston.format.simple(),
+    ),
     transports: [
-      new winston.transports.Console({
-        format: winston.format.simple()
-      })
+      new winston.transports.Console()
     ]
   });
   
