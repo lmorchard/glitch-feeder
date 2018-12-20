@@ -18,13 +18,13 @@ module.exports = async () => {
 
 const BaseModel = bookshelf.Model.extend({
   hasTimestamps: true,
-  initialize: function () {
+  initialize () {
     return bookshelf.Model.prototype.initialize.apply(this, arguments);
   },
-  save: function () {
+  save () {
     return bookshelf.Model.prototype.save.apply(this, arguments);
   },
-  createOrUpdate: async function (props) {
+  async createOrUpdate (props) {
     const model = (await this.fetch()) || this;
     return await model.save(props);
   },
@@ -40,7 +40,7 @@ const Resource = BaseModel.extend({
 const Feed = BaseModel.extend({
   tableName: "Feeds",
   uuid: true,
-  resource: function () {
+  resource () {
     return this.hasOne(Resource);
   },
 });

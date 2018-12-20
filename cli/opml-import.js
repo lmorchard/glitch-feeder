@@ -32,18 +32,15 @@ async function command (filename, env, context) {
       const resource = await (Resource.forge({
         url: xmlurl,
       }).createOrUpdate());
-      log.debug("RESOURCE %s", resource);
       
-      /*
       const feed = await (Feed.forge({
-        resource: resource.get("id"),
+        resource: resource.id,
         title: text || title,
         subtitle: description,
         link: htmlurl,
       }).createOrUpdate({ data: item }));
       
-      log.debug("ITEM %s", feed.resource());
-      */
+      log.debug("RESOURCE %s", (await feed.resource()).id);
       
       count++;
     }
