@@ -18,7 +18,7 @@ exports.up = knex => knex.schema
   })
   .createTable("Feeds", t => {
     commonFields(t);
-    t.string("resource").references("Resources.id");
+    t.string("resource_id").references("Resources.id");
     t.string("title");
     t.string("subtitle");
     t.string("link");

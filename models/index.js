@@ -41,7 +41,7 @@ const Feed = BaseModel.extend({
   tableName: "Feeds",
   uuid: true,
   resource () {
-    return this.hasOne(Resource);
+    return this.belongsTo(Resource);
   },
 });
 

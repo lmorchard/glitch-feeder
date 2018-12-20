@@ -34,13 +34,13 @@ async function command (filename, env, context) {
       }).createOrUpdate());
       
       const feed = await (Feed.forge({
-        resource: resource.id,
+        resource_id: resource.id,
         title: text || title,
         subtitle: description,
         link: htmlurl,
       }).createOrUpdate({ data: item }));
       
-      log.debug("RESOURCE %s", (await feed.resource()).id);
+      log.debug("RESOURCE %s", (await feed.resource().fetch()).id);
       
       count++;
     }
