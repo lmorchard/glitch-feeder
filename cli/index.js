@@ -40,7 +40,8 @@ const init = fn => (...args) => (async () => {
   
   try {
     await fn(...args, { models, log, });
-    // models.knex.destroy();
+    await models.knex.destroy();
+    log.info("Exiting");
   } catch(error) {
     log.error(error);
   }
