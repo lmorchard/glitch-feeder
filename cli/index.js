@@ -2,6 +2,7 @@
 const program = require("commander");
 const packageJson = require("../package.json");
 const winston = require("winston");
+const models = require("../models");
 
 function main (argv) {
   program
@@ -17,13 +18,17 @@ function main (argv) {
   program.parse(argv);
 }
 
-const init = fn => (...args) => {
+const init = fn => (...args) => (async () => {
   const command = args[args.length - 1];
-  console.log("INIT", command);
   
-  let logLevel = "
+  const models = await require("../models")();
+  
+  let logLevel = "info";
+  if (command.parent.verbose) { logLevel = "verbose"; }
+  if (command.parent.debug) { logLevel = "debug"; }
+  
   const log = winston.createLogger({
-    level: "debug",
+    level: logLevel,
     format: winston.format.prettyPrint(),
     transports: [
       new winston.transports.Console({
@@ -32,7 +37,7 @@ const init = fn => (...args) => {
     ]
   });
   
-  fn(...args, { log });
-};
+  return fn(...args, { models, log, });
+})();
 
 module.exports = { main };

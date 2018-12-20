@@ -5,6 +5,8 @@ module.exports = (init, program) => {
     .action(init(command));
 };
 
-function command (filename, env, { log }) {
+async function command (filename, env, { log }) {
   log.info("HELLO WORLD");
+  log.debug("DEBUG");
+  log.verbose("BEBOSE");
 };

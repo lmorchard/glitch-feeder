@@ -6,6 +6,16 @@ bookshelf.plugin("pagination");
 bookshelf.plugin(require("bookshelf-json-columns"));
 bookshelf.plugin(require("bookshelf-uuid"), { type: "v1" });
 
+module.exports = async () => {
+  return {
+    knex,  
+    bookshelf,
+    Resource,
+    Feed,
+    FeedItem,
+  };
+}
+
 const BaseModel = bookshelf.Model.extend({
   hasTimestamps: true,
   initialize: function () {
@@ -51,10 +61,3 @@ const FeedItem = BaseModel.extend({
   },
 });
 
-module.exports = {
-  knex,
-  bookshelf,
-  Resource,
-  Feed,
-  FeedItem,
-};
