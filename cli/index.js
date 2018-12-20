@@ -40,10 +40,22 @@ const init = fn => (...args) => (async () => {
   
   try {
     await fn(...args, { models, log, });
+    const client = models.knex.client;
+    const pool = client.pool;
+    console.log(
+      "DERP DERP",
+      pool.numUsed(),
+      pool.numFree(),
+      pool.numPendingAcquires(),
+      pool.numPendingCreates(),
+    );
     await new Promise(resolve => setTimeout(async () => {
-      await models.knex.destroy();
-      resolve();
+      models.knex.destroy(() => {
+        console.log("WANG");
+        resolve();
+      });
     }, 1));
+    console.log("EXITING");
   } catch(error) {
     log.error(error);
   }

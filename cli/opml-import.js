@@ -20,16 +20,21 @@ async function command (filename, env, context) {
     // for (let item of items) {
     for (let item of items.slice(0, 50)) {
       if (item["#type"] !== "feed") { continue; }
-      const { title, text, description, xmlurl, htmlurl, folder } = item;
-
+      const {
+        title = "",
+        text = "",
+        description = "",
+        xmlurl = "",
+        htmlurl = "",
+        folder = ""
+      } = item;
       const feed = Feed.forge({
-        title: text || title || "",
-        subtitle: description || "",
-        link: htmlurl || "",
+        title: text || title,
+        subtitle: description,
+        link: htmlurl,
       });
       await feed.createOrUpdate({ data: item });
-      
-      log.debug("ITEM [%s] %s %s", folder, text, xmlurl);
+      log.debug("ITEM [%s] %s %s %s", folder, feed.id, text, xmlurl);
       count++;
     }
     log.info("Imported %s feeds", count);
