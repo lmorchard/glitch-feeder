@@ -1,5 +1,7 @@
 dependencies:
   bookshelf: 0.14.2
+  bookshelf-json-columns: 2.1.1
+  bookshelf-uuid: 1.0.0
   express: 4.16.4
   knex: 0.16.3
   sqlite3: 4.0.4
@@ -190,6 +192,22 @@ packages:
       node: '>= 0.8'
     resolution:
       integrity: sha1-WykhmP/dVTs6DyDe0FkrlWlVyLQ=
+  /bookshelf-json-columns/2.1.1:
+    dev: false
+    engines:
+      node: '>= 4'
+    peerDependencies:
+      bookshelf: '>= 0.7'
+    resolution:
+      integrity: sha1-DBBOT2s8Qu33YV+pa4eG6Zd+efg=
+  /bookshelf-uuid/1.0.0:
+    dependencies:
+      lodash.merge: 4.6.1
+      lodash.result: 4.5.2
+      uuid: 2.0.3
+    dev: false
+    resolution:
+      integrity: sha1-rBvpjvAK1GUCOgTFEZLqkJTapsA=
   /bookshelf/0.14.2:
     dependencies:
       bluebird: 3.5.3
@@ -1193,6 +1211,14 @@ packages:
       node: '>= 0.8'
     resolution:
       integrity: sha1-IAkpG7Mc6oYbvxCnwVooyvdcMew=
+  /lodash.merge/4.6.1:
+    dev: false
+    resolution:
+      integrity: sha512-AOYza4+Hf5z1/0Hztxpm2/xiPZgi/cjMqdnKTUWTBSKchJlxXXuUSxCCl8rJlf4g6yww/j6mA8nC8Hw/EZWxKQ==
+  /lodash.result/4.5.2:
+    dev: false
+    resolution:
+      integrity: sha1-y0Wyf7kU6qjY7m8M57KHC4fLcKo=
   /lodash/4.17.11:
     dev: false
     resolution:
@@ -2130,6 +2156,10 @@ packages:
       node: '>= 0.4.0'
     resolution:
       integrity: sha1-n5VxD1CiZ5R7LMwSR0HBAoQn5xM=
+  /uuid/2.0.3:
+    dev: false
+    resolution:
+      integrity: sha1-Z+LoY3lyFVMN/zGOW/nc6/1Hsho=
   /uuid/3.3.2:
     dev: false
     hasBin: true
@@ -2185,6 +2215,8 @@ shrinkwrapMinorVersion: 9
 shrinkwrapVersion: 3
 specifiers:
   bookshelf: ^0.14.2
+  bookshelf-json-columns: ^2.1.1
+  bookshelf-uuid: ^1.0.0
   express: ^4.16.4
   knex: ^0.16.3
   sqlite3: ^4.0.4
