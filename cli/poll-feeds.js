@@ -4,13 +4,14 @@ module.exports = (init, program) => {
   program
     .command("poll-feeds")
     .description("Poll feeds for updated content")
+    .option("-f, --force", "Force polling on fresh feeds")
     .action(init(command));
 };
 
-async function command (env, context) {
+async function command (options, context) {
   const { models, log } = context;
   const { Feed } = models;
-  
+
   const fetchQueue = new PQueue({ concurrency: 8 });
 
   const timeStart = Date.now();
@@ -24,7 +25,7 @@ async function command (env, context) {
                 fetchQueue.size);
   }, 1000);
   
-  await Feed.pollAll(fetchQueue, context);
+  await Feed.pollAll(fetchQueue, context, options);
   log.info("Feed polling complete. (%sms)", Date.now() - timeStart);
   
   clearInterval(queueStatusTimer);

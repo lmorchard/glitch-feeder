@@ -9,8 +9,11 @@ module.exports = models => models.BaseModel.extend({
   tableName: "Feeds",
   uuid: true,
   
-  async pollResource (context, options = {}) {
+  async pollResource (context, options) {
     const { log } = context;
+    const {
+      force = false
+    } = options;
     
     const {
       title,
@@ -36,7 +39,7 @@ module.exports = models => models.BaseModel.extend({
     }
     
     const age = timeStart - lastValidated;
-    if (lastValidated !== 0 && age < maxAge) {
+    if (!force && lastValidated !== 0 && age < maxAge) {
       log.verbose("Skipping poll for fresh feed %s (%s < %s)", title, age, maxAge);
       return;
     }
@@ -81,6 +84,8 @@ module.exports = models => models.BaseModel.extend({
       await this.save();      
 
       if (response.status !== 200) {
+        log.verbose("Skipping parse for feed (%s %s) %s",
+                    response.status, response.statusText, title);
         return;
       }
       
@@ -159,9 +164,8 @@ module.exports = models => models.BaseModel.extend({
       .where("id", id)
       .fetch()
       .then(feed => feed.pollResource(context, options));
-    return fetchQueue.addAll(
-      feedIds.map(({ id }) => () => pollById(id))
-    );
+    const polls = feedIds.map(({ id }) => () => pollById(id))
+    return fetchQueue.addAll(polls);
   },
 });
 
@@ -171,6 +175,7 @@ const parseOpmlStream = ({ stream }, { log }) =>
     const items = [];
     
     const parser = new OpmlParser();
+    
     parser.on("error", reject);
     parser.on("readable", function () {
       meta = this.meta;
@@ -180,6 +185,7 @@ const parseOpmlStream = ({ stream }, { log }) =>
       }
     });
     parser.on("end", () => resolve({ meta, items }));
+    
     stream.pipe(parser);
   });
 
@@ -192,6 +198,7 @@ const parseFeedStream = ({ stream, resourceUrl }, context) =>
       addmeta: false,
       feedurl: resourceUrl,
     });
+    
     parser.on("error", reject);
     parser.on("end", () => resolve({ meta, items }));
     parser.on("readable", function () {
