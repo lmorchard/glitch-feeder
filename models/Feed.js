@@ -1,5 +1,7 @@
+const { Readable } = require("stream");
 const AbortController = require("abort-controller");
 const fetch = require("node-fetch");
+const FeedParser = require("feedparser");
 const { stripNullValues } = require("../lib/common");
 
 module.exports = ({
@@ -8,7 +10,7 @@ module.exports = ({
   tableName: "Feeds",
   uuid: true,
   
-  async poll ({ log }) {
+  async poll ({ log }, options = {}) {
     const {
       title,
       resourceUrl,      
@@ -94,9 +96,10 @@ module.exports = ({
     }
   },
   
-  async parse ({ log }) {
+  async parse ({ log }, options = {}) {
     const {
       id: feedId,
+      resourceUrl,      
       title,
       body,      
       disabled = false,
@@ -114,16 +117,37 @@ module.exports = ({
       return;
     }
     
-    const age = timeStart - lastValidated;
-    if (lastParsed !== 0 && lastParsed < maxAge) {
-      log.verbose("Skipping fresh feed %s (%s < %s)", title, age, maxAge);
+    if (lastParsed !== 0 && lastParsed < lastValidated) {
+      log.verbose("Skipping fresh feed %s (%s < %s)", title, lastParsed, lastValidated);
       return;
     }
     
     try {
+      let meta;
+      const items = [];
+      
+      await new Promise((resolve, reject) => {
+        const stream = new Readable();
+        const parser = new FeedParser({
+          feedurl: resourceUrl,
+        });
+        parser.on("error", reject);
+        parser.on("readable", function () {
+          meta = this.meta;
+          let item;
+          while (item = stream.read()) {
+            items.push(item);
+          }
+        });
+        stream.push(body);
+        stream.push(null);
+      });
+      
       this.set({
         lastParsed: timeStart,
         data: Object.assign(data, {
+          meta,
+          items,
           parseDuration: Date.now() - timeStart,
         })
       });
@@ -160,15 +184,21 @@ module.exports = ({
     }).createOrUpdate({ data: item });
   },
   
-  async pollAll (context) {
+  async pollAll (context, options = {}) {
     const { log, fetchQueue } = context;
-    
-    const feeds = (await this.collection().fetch()); //.slice(0, 10);
-    
+    const feeds = await this.collection().fetch();
     log.debug("Enqueueing %s feeds to poll", feeds.length);
-    
     return fetchQueue.addAll(
-      feeds.map(feed => () => feed.poll(context))
+      feeds.map(feed => () => feed.poll(context, options))
     );
-  }
+  },
+  
+  async parseAll (context, options = {}) {
+    const { log, parseQueue } = context;
+    const feeds = await this.collection().fetch();
+    log.debug("Enqueueing %s feeds to parse", feeds.length);
+    return parseQueue.addAll(
+      feeds.map(feed => () => feed.parse(context, options))
+    );
+  },
 });
