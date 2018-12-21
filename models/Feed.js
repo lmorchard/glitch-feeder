@@ -35,7 +35,7 @@ module.exports = ({
     const {
       force = false,
       timeout = 10000,
-      maxage = 60 * 60 * 1000,
+      maxage = 30 * 60 * 1000,
     } = options;
     
     const {

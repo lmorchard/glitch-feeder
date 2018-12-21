@@ -18,16 +18,16 @@ export async function init(appEl) {
       ],
       name => selectors[name](state)
     ));
+    
+    // HACK: This belongs in a component, like a lot other things here
     const iframes = $(appEl, "iframe");
     for (let iframe of iframes) {
       (() => {
         iframe.onload = () => {
           //iframe.width  = iframe.contentWindow.document.body.scrollWidth;
           iframe.height = iframe.contentWindow.document.body.scrollHeight;
-          console.log("IFRAME");
         };
       })(iframe);
-      console.log("iframe", iframe);
     }
   };
 
