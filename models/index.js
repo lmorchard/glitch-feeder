@@ -1,6 +1,7 @@
 const knexfile = require("../knexfile");
 const knex = require("knex")(knexfile.development);
 const bookshelf = require("bookshelf")(knex);
+const { stripNullValues } = require("../lib/common");
 
 bookshelf.plugin("pagination");
 bookshelf.plugin("virtuals");
@@ -11,7 +12,7 @@ const BaseModel = bookshelf.Model.extend({
   hasTimestamps: true,
   serialize: function (options) {
     const {data, ...obj} = bookshelf.Model.prototype.serialize.call(this, options);
-    return Object.assign(obj, data);
+    return Object.assign(stripNullValues(data), obj);
   },
   async createOrUpdate (props) {
     const model = (await this.fetch()) || this;
