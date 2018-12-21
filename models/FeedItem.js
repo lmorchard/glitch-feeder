@@ -40,9 +40,9 @@ module.exports = ({
       link = "",
       description = "",
       summary = "",
-      date = "",
-      pubdate = "",
       author = "",          
+      date = new Date(),
+      pubdate = new Date(),
     } = stripNullValues(item);
 
     try {
@@ -62,8 +62,8 @@ module.exports = ({
         title,
         link,
         summary,
-        date,
-        pubdate,
+        date: date.toISOString(),
+        pubdate: pubdate.toISOString(),
         data: item,
       });
     } catch (err) {

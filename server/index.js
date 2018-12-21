@@ -61,8 +61,8 @@ module.exports = (options, context) => {
   apiRouter.route("/items").get(async (req, res) => {
     const items = (await FeedItem
       .collection()
-      .orderBy("-updated_at")
-      .fetchPage({ withRelated: ["feed"], limit: 25, offset: 0 }));
+      .orderBy("-date")
+      .fetchPage({ withRelated: ["feed"], limit: 200, offset: 0 }));
     res.json(items);
   });
 
