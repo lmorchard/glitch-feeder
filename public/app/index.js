@@ -25,6 +25,18 @@ export async function init(appEl) {
   const apiRoot = await fetchJson("/api/v1");
   const apiFeeds = await fetchJson(apiRoot.hrefs.feeds);  
   store.dispatch(actions.loadFeeds(apiFeeds));
+  
+  addEventListeners(appEl, {
+    click: async (ev) => {
+      console.log(ev);
+      if (ev.target.classList.contains("feed")) {
+        const id = ev.target.id;
+        console.log("FEED", ev.target.id, ev.target.innerText);
+        const state = store.getState();
+        const feed = selectors.getFeed(state)(
+      }
+    },
+  });
 }
 
 const fetchJson = (url, options = {}) =>
@@ -37,6 +49,12 @@ const appTemplate = (props) => {
   const { feeds, items } = props;
   
   return html`
+    <style>
+      .feeds { width: 25%; float: left; }
+      .feed { cursor: pointer }
+      .items { width: 75%; float: right; }
+      footer { clear: both; }
+    </style>
     <nav class="feeds">
       <ul>
         ${repeat(
@@ -59,12 +77,11 @@ const appTemplate = (props) => {
 };
 
 const feedTemplate = ({
+  id,
   title,
   link,
 }) => html`
-  <li>
-    <a href=${link}>${title}</a>
-  </li>
+  <li class="feed" id=${id}>${title}</li>
 `;
 
 const itemTemplate = ({

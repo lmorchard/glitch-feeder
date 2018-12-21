@@ -13,24 +13,36 @@ export const defaultState = {
 
 export const selectors = {
   feeds: state => state.feeds,
+  getFeed: state => id => state.feeds[id],
   items: state => state.items,
+  getItem: state => id => state.items[id],
 };
 
 export const actions = createActions(
   {},
   "loadFeeds",
+  "loadItems",
 );
 
 export const reducers = {
   feeds: handleActions({
     [actions.loadFeeds]: (state, { payload: feeds = [] }) => {
-      const newFeeds = Object.assign({}, state.feeds);
+      const newState = Object.assign({}, state);
       for (let feed of feeds) {
-        newFeeds[feed.id] = feed;
+        newState[feed.id] = feed;
       }
-      return newFeeds;
+      return newState;
     }
   }, defaultState.feeds),
+  items: handleActions({
+    [actions.loadItems]: (state, { payload: items = [] }) => {
+      const newState = Object.assign({}, state);
+      for (let item of items) {
+        newState[item.id] = item;
+      }
+      return newState;
+    }
+  }, defaultState.items),
   /*
   ui: handleActions({
   }, defaultState.ui),
