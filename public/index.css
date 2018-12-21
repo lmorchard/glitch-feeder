@@ -70,10 +70,13 @@ footer {
   border-top: 1px solid lightgrey;
 }
 
-.feeds { padding: 1em; width: 25%; float: left; height: 700px; overflow: auto }
+.feeds { padding: 0; width: 25%; float: left; height: 700px; overflow: auto }
+.feeds ul { list-style-type: none; margin: 0; padding: 0;}
+.feeds ul li { padding: 0.25em; margin: 0;}
+.feeds ul li:hover { background-color: #ddd; }
 .feed { cursor: pointer }
-.items { padding: 1em; width: 75%; float: right; height: 700px; overflow: auto }
-footer { clear: both; }
+.items { padding: 0.25em; width: 75%; float: right; height: 700px; overflow: auto }
+.items header h1 { margin: 0 0 0.5em 0; padding: 0 }
 .items ul { list-style-type: none; margin: 0; padding: 0;}
 .item { margin-bottom: 1em; }
 .item iframe {
@@ -81,3 +84,4 @@ footer { clear: both; }
   width: 100%;
   min-height: 1em;
 }
+footer { clear: both; }

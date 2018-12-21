@@ -24,8 +24,10 @@ export async function init(appEl) {
     for (let iframe of iframes) {
       (() => {
         iframe.onload = () => {
-          //iframe.width  = iframe.contentWindow.document.body.scrollWidth;
-          iframe.height = iframe.contentWindow.document.body.scrollHeight;
+          //iframe.width  = 
+          //  iframe.contentWindow.document.body.scrollWidth;
+          iframe.height = 
+            iframe.contentWindow.document.body.scrollHeight;
         };
       })(iframe);
     }
