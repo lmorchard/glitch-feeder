@@ -69,3 +69,8 @@ footer {
   padding-top: 25px;
   border-top: 1px solid lightgrey;
 }
+
+.feeds { padding: 1em; width: 25%; float: left; height: 700px; overflow: auto }
+.feed { cursor: pointer }
+.items { padding: 1em; width: 75%; float: right; height: 700px; overflow: auto }
+footer { clear: both; }

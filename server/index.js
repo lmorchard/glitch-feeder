@@ -21,10 +21,7 @@ module.exports = (options, context) => {
     response.sendFile(__dirname + "/views/index.html");
   });
 
-  const apiBasePath = "/api/v1";
-  const apiRouter = express.Router();
-
-  apiRouter.route("/").get(async (req, res) => {
+  app.get("/api").get(async (req, res) => {
     res.json({
       hrefs: {
         feeds: `${API_BASE_URL}/feeds`,
@@ -32,6 +29,8 @@ module.exports = (options, context) => {
       }
     });
   });
+
+  const apiRouter = express.Router();
   
   apiRouter.route("/feeds").get(async (req, res) => {
     const feeds = (await Feed.collection().fetch());

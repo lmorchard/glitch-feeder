@@ -23,7 +23,7 @@ export async function init(appEl) {
   store.subscribe(render);
   render();
   
-  const apiRoot = await fetchJson("/api/v1");
+  const apiRoot = await fetchJson("/api");
   const apiFeeds = await fetchJson(apiRoot.hrefs.feeds);  
   store.dispatch(actions.loadFeeds(apiFeeds));
   
@@ -53,12 +53,6 @@ const appTemplate = (props) => {
   const { feeds, items, currentFeed } = props;
   
   return html`
-    <style>
-      .feeds { width: 25%; float: left; }
-      .feed { cursor: pointer }
-      .items { width: 75%; float: right; }
-      footer { clear: both; }
-    </style>
     <nav class="feeds">
       <ul>
         ${repeat(
@@ -90,6 +84,7 @@ const feedTemplate = ({
 `;
 
 const currentFeedTemplate = ({
+  id,
   title,
   link,
 }) => html`
@@ -97,12 +92,15 @@ const currentFeedTemplate = ({
 `;
 
 const itemTemplate = ({
+  id,
   date,
   title,
   link,
+  summary,
 }) => html`
   <li>
-    ${date}: <a href=${link}>${title}</a>
+    <a id=${id} class="item" href=${link}>${date}</a>: <a href=${link}>${title}</a>
+    <p>${summary}</p>
   </li>
 `;
 
