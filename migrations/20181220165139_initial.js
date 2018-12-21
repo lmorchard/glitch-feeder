@@ -14,7 +14,8 @@ exports.up = knex => knex.schema
     t.string("etag");
     t.boolean("disabled");
     t.string("encoding");
-    t.string("statusCode");
+    t.string("status");
+    t.string("statusText");
     t.string("lastError");
     t.string("maxAge");
     t.text("body", "longtext");
