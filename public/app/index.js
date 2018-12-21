@@ -1,7 +1,7 @@
 import {render, html} from "https://unpkg.com/lit-html@0.14.0/lit-html.js";
 import {repeat} from "https://unpkg.com/lit-html@0.14.0/directives/repeat.js";
 
-import { $$, addEventListeners, mapToObject } from "./utils.js";
+import { $, $$, addEventListeners, mapToObject } from "./utils.js";
 import { createAppStore, actions, selectors } from "./store.js";
 import "./components/index.js";
 
@@ -18,6 +18,17 @@ export async function init(appEl) {
       ],
       name => selectors[name](state)
     ));
+    const iframes = $(appEl, "iframe");
+    for (let iframe of iframes) {
+      (() => {
+        iframe.onload = () => {
+          //iframe.width  = iframe.contentWindow.document.body.scrollWidth;
+          iframe.height = iframe.contentWindow.document.body.scrollHeight;
+          console.log("IFRAME");
+        };
+      })(iframe);
+      console.log("iframe", iframe);
+    }
   };
 
   store.subscribe(render);
