@@ -225,15 +225,11 @@ module.exports = models => models.BaseModel.extend({
     const { knex, Feed } = models;
     
     const feedIds = await knex.from("Feeds").select("id");
+    log.debug("Updating items for %s feeds", feedIds.length);
     
-    log.debug("Enqueueing %s feeds to update", feedIds.length);
-    
-    for (let feedId of feedIds) {
-      const feed = await (Feed.forge({ id: feedId }).fetch());
-      console.log("FEED ID", feedId, feed.id);
-      /*
+    for (let { id } of feedIds) {
+      const feed = await Feed.where("id", id).fetch();
       await feed.updateItems(context, options);
-      */
     }
   },
 });
