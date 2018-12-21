@@ -24,6 +24,7 @@ const init = fn => (...args) => (async () => {
   const command = args[args.length - 1];
   
   const fetchQueue = new PQueue({ concurrency: 16 });
+  const parseQueue = new PQueue({ concurrency: 4 });
   
   const models = await require("../models")();
   
@@ -49,6 +50,7 @@ const init = fn => (...args) => (async () => {
         models,
         log,
         fetchQueue,
+        parseQueue,
       }
     );
 

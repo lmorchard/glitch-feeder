@@ -21,7 +21,7 @@ module.exports = ({
     
     const {
       headers: prevHeaders = {},
-    } = data;   
+    } = data;  
     
     const timeStart = Date.now();
     
@@ -92,7 +92,54 @@ module.exports = ({
       });
       await this.save();      
     }
-  }
+  },
+  
+  async parse ({ log }) {
+    const {
+      id: feedId,
+      title,
+      body,      
+      disabled = false,
+      data = {},
+      lastValidated = 0,
+      lastParsed = 0,
+    } = stripNullValues(this.toJSON());
+
+    const timeStart = Date.now();
+    
+    log.debug("Starting parse of %s", title);
+    
+    if (disabled === true) {
+      log.verbose("Skipping disabled feed %s", title);
+      return;
+    }
+    
+    const age = timeStart - lastValidated;
+    if (lastParsed !== 0 && lastParsed < maxAge) {
+      log.verbose("Skipping fresh feed %s (%s < %s)", title, age, maxAge);
+      return;
+    }
+    
+    try {
+      this.set({
+        lastParsed: timeStart,
+        data: Object.assign(data, {
+          parseDuration: Date.now() - timeStart,
+        })
+      });
+      await this.save();      
+    } catch (err) {
+      log.error("Feed parse failed for %s - %s", title, err);
+      this.set({
+        lastParsed: timeStart,
+        lastError: err,
+        data: Object.assign(data, {
+          duration: Date.now() - timeStart,
+        })
+      });
+      await this.save();      
+    }
+  },
 }, {
   async importFeed (item, { log }) {
     const {
