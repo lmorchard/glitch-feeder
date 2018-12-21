@@ -1,10 +1,11 @@
 import {render, html} from "https://unpkg.com/lit-html@0.14.0/lit-html.js";
 import {repeat} from "https://unpkg.com/lit-html@0.14.0/directives/repeat.js";
+
 import { $$, addEventListeners, mapToObject } from "./utils.js";
 import { createAppStore, actions, selectors } from "./store.js";
 import "./components/index.js";
 
-export function init(appEl) {
+export async function init(appEl) {
 
   const store = createAppStore();
 
@@ -18,7 +19,12 @@ export function init(appEl) {
   };
   store.subscribe(render);
   render();
+  
+  const apiRoot = await fetch("/api/v1");
+  console.log(await apiRoot.json());
 }
+
+const fetchJson
 
 const renderApp = (appEl, props) =>
   render(appTemplate(props), appEl);
