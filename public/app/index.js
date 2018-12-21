@@ -83,7 +83,7 @@ const appTemplate = (props) => {
       <header>${currentFeed && currentFeedTemplate(currentFeed)}</header>
       <ul>
         ${repeat(
-          Object.values(items).slice(0, 10),
+          Object.values(items).slice(0, 50),
           item => item.id,
           itemTemplate,
         )}

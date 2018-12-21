@@ -59,10 +59,18 @@ module.exports = (options, context) => {
   });
 
   apiRouter.route("/items").get(async (req, res) => {
-    const items = await FeedItem
+    const items = (await FeedItem
       .collection()
       // .orderBy("-pubdate", "-date", "-created_at")
-      .fetchPage({ limit: 25, offset: 0 });
+      .fetchPage({ withRelated: ["feed"], limit: 25, offset: 0 }))      
+      .map(item => {
+        return Object.assign(
+          {},
+          item,
+          { butt: true },
+        );
+      })
+    ;
     res.json(items);
   });
 
