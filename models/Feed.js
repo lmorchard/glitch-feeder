@@ -11,8 +11,11 @@ module.exports = models => models.BaseModel.extend({
   
   async pollResource (context, options) {
     const { log } = context;
+    
     const {
-      force = false
+      force = false,
+      timeout = 10000,
+      maxage = 60 * 60 * 1000,
     } = options;
     
     const {
@@ -20,9 +23,7 @@ module.exports = models => models.BaseModel.extend({
       resourceUrl,      
       disabled = false,
       data = {},
-      timeout = 20000,
       lastValidated = 0,
-      maxAge = 60 * 60 * 1000,
     } = stripNullValues(this.toJSON());
     
     const {
@@ -39,23 +40,19 @@ module.exports = models => models.BaseModel.extend({
     }
     
     const age = timeStart - lastValidated;
-    if (!force && lastValidated !== 0 && age < maxAge) {
-      log.verbose("Skipping poll for fresh feed %s (%s < %s)", title, age, maxAge);
+    if (!force && lastValidated !== 0 && age < maxage) {
+      log.verbose("Skipping poll for fresh feed %s (%s < %s)", title, age, maxage);
       return;
     }
-    
-    const controller = new AbortController();
-    const abortTimeout = setTimeout(
-      () => controller.abort(),
-      parseInt(timeout)
-    );
     
     try {
       const fetchOptions = {
         method: "GET",
-        signal: controller.signal,
         headers: {}
       };
+
+      // Set up some headers for conditional GET so we can see
+      // some of those sweet 304 Not Modified responses 
       if (prevHeaders.etag) {
         fetchOptions.headers["If-None-Match"] = prevHeaders.etag;
       }
@@ -63,6 +60,15 @@ module.exports = models => models.BaseModel.extend({
         fetchOptions.headers["If-Modified-Match"] = prevHeaders["last-modified"];
       }
 
+      // Set up an abort timeout - we're not waiting forever for a feed    
+      const controller = new AbortController();
+      const abortTimeout = setTimeout(
+        () => controller.abort(),
+        parseInt(timeout)
+      );
+      fetchOptions.signal = controller.signal;
+
+      
       const response = await fetch(resourceUrl, fetchOptions);
       clearTimeout(abortTimeout);
 
@@ -158,14 +164,18 @@ module.exports = models => models.BaseModel.extend({
   async pollAll (fetchQueue, context, options = {}) {
     const { log, models } = context;
     const { knex, Feed } = models;
-    const feedIds = await knex.from("Feeds").select("id");
+    
+    // We could load up the whole feed collection here, but
+    // that eats a lot of memory. So, let's just load IDs and
+    // fetch feeds as needed in queue jobs...
+    const feedIds = await knex.from("Feeds").select("id").pluck("id");
     log.debug("Enqueueing %s feeds to poll", feedIds.length);
     const pollById = id => Feed
       .where("id", id)
       .fetch()
       .then(feed => feed.pollResource(context, options));
-    const polls = feedIds.map(({ id }) => () => pollById(id))
-    return fetchQueue.addAll(polls);
+    const jobs = feedIds.map(id => () => pollById(id))
+    return fetchQueue.addAll(jobs);
   },
 });
 
