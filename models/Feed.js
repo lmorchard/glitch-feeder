@@ -203,11 +203,20 @@ module.exports = models => models.BaseModel.extend({
   },
   
   async pollAll (context, options = {}) {
-    const { log, fetchQueue } = context;
-    const feeds = await this.collection().fetch();
-    log.debug("Enqueueing %s feeds to poll", feeds.length);
+    const { log, fetchQueue, models } = context;
+    const { knex, Feed } = models;
+    const feedIds = await knex.from("Feeds").select("id");
+
+    log.debug("Enqueueing %s feeds to poll", feedIds.length);
     return fetchQueue.addAll(
-      feeds.map(feed => () => feed.pollResource(context, options))
+      feedIds.map(
+        ({ id }) => 
+          () =>
+            Feed
+              .where("id", id)
+              .fetch()
+              .then(feed => feed.pollResource(context, options))
+        )
     );
   },
   
