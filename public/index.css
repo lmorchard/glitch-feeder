@@ -86,4 +86,8 @@ footer {
   width: 100%;
   min-height: 1em;
 }
+.item .summary {
+  max-height: 5.5em;
+  overflow: hidden;
+}
 footer { clear: both; }

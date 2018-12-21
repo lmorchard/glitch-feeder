@@ -21,10 +21,17 @@ module.exports = ({
         feed: `${API_BASE_URL}/feeds/${this.get("feed_id")}`,
       };
     },
+    // TODO: move html & text virtuals into parsing?
+    html () {
+      // TODO: do some HTML sanitizing here
+      return this.get("description") || this.get("summary");
+    },
     text () {
-      const source = this.get("summary") || this.get("description");
-      if (!source) { return null; }
       try {
+        const source = this.get("summary") || this.get("description");
+        if (!source) {
+          return null;
+        }
         const $ = cheerio.load(source);
         return $.text();
       } catch (e) {

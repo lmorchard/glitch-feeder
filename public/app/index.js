@@ -128,7 +128,11 @@ const itemTemplate = ({
     <a id=${id} class="item" href=${link}>${pubdate || date}</a>:
     <a href=${feedLink}>${feedTitle}</a> - 
     <a href=${link}>${title}</a>
-    ${ text && html`<p>${text}</p>` }
+    ${text && html`
+      <p class="summary">
+        ${text.length < 320 ? text : text.substr(0, 320) + "..."}
+      </p>
+    `}
   </li>
 `;
 /*
