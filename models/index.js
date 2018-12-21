@@ -21,8 +21,12 @@ const BaseModel = bookshelf.Model.extend({
   jsonColumns: ["data"]
 });
 
-module.exports = async () => {
-  const apiBasePath = "/api/v1";
+module.exports = async ({ config }) => {
+  const {
+    SITE_URL
+  } = config;
+  
+  const apiBasePath = `${SITE_URL}/api/v1`;
   const models = {
     knex,  
     bookshelf,

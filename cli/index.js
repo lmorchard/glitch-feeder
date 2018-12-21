@@ -27,10 +27,22 @@ function main (argv) {
 const init = fn => (...args) => (async () => {
   const command = args[args.length - 1];
   
+  const {
+    HOST,
+    PORT,
+    PROJECT_DOMAIN,
+  } = process.env;
+
   const SITE_DOMAIN = `${PROJECT_DOMAIN}.glitch.me`;
   const SITE_URL = `https://${SITE_DOMAIN}`;
   
-  const models = await require("../models")();
+  const config = {
+    PROJECT_DOMAIN,
+    SITE_DOMAIN,
+    SITE_URL,
+    HOST,
+    PORT,
+  };
   
   let logLevel = "info";
   if (command.parent.verbose) { logLevel = "verbose"; }
@@ -47,8 +59,10 @@ const init = fn => (...args) => (async () => {
     ]
   });
   
+  const models = await require("../models")({ config, log });
+  
   try {
-    await fn(...args, { models, log });
+    await fn(...args, { config, log, models });
 
     // HACK / FIXME: destroying the DB connection always results in an error 
     // involving PendingOperation unless we wait a little bit. There's got to

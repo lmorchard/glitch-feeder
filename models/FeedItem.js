@@ -7,14 +7,16 @@ module.exports = ({
 }) => models.BaseModel.extend({
   tableName: "FeedItems",
   uuid: true,
+  
   virtuals: {
-    href () {
-      return `${apiBasePath}/items/${this.get("id")}`
-    },
-    feedHref () {
-      return `${apiBasePath}/feeds/${this.get("feed_id")}`
+    hrefs () {
+      return {
+        self: `${apiBasePath}/items/${this.get("id")}`,
+        feed: `${apiBasePath}/feeds/${this.get("feed_id")}`,
+      };
     },
   },
+  
   feed () {
     return this.belongsTo(models.Feed, "feed_id");
   },

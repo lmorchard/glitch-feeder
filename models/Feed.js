@@ -11,14 +11,20 @@ module.exports = ({
 }) => models.BaseModel.extend({
   tableName: "Feeds",
   uuid: true,
+  
   virtuals: {
-    href () {
-      return `${apiBasePath}/feeds/${this.get("id")}`
+    hrefs () {
+      return {
+        self: `${apiBasePath}/feeds/${this.get("id")}`,
+        items: `${apiBasePath}/feeds/${this.get("id")}/items`,
+      };
     },
   },
+  
   items () {
     return this.hasMany(models.FeedItem, "feed_id");
   },
+  
   async pollResource (context, options) {
     const { log } = context;
     
