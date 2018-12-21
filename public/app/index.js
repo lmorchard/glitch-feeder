@@ -6,7 +6,6 @@ import { createAppStore, actions, selectors } from "./store.js";
 import "./components/index.js";
 
 export async function init(appEl) {
-
   const store = createAppStore();
 
   const render = () => {
@@ -19,6 +18,7 @@ export async function init(appEl) {
       name => selectors[name](state)
     ));
   };
+
   store.subscribe(render);
   render();
   
@@ -34,19 +34,40 @@ const renderApp = (appEl, props) =>
   render(appTemplate(props), appEl);
 
 const appTemplate = (props) => {
-  const { feeds } = props;
+  const { feeds, items } = props;
+  
   return html`
-    <ul>
-    ${repeat(
-      Object.values(feeds),
-      feed => feed.id,
-      feedTemplate,
-    )}
-    </ul>
+    <nav class="feeds">
+      <ul>
+        ${repeat(
+          Object.values(feeds),
+          feed => feed.id,
+          feedTemplate,
+        )}
+      </ul>
+    </nav>
+    <section class="items">
+      <ul>
+        ${repeat(
+          Object.values(items),
+          item => item.id,
+          itemTemplate,
+        )}
+      </ul>
+    </section>
   `;
 };
 
 const feedTemplate = ({
+  title,
+  link,
+}) => html`
+  <li>
+    <a href=${link}>${title}</a>
+  </li>
+`;
+
+const itemTemplate = ({
   title,
   link,
 }) => html`
