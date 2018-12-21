@@ -130,7 +130,7 @@ const itemTemplate = ({
     <a href=${link}>${title}</a>
     ${text && html`
       <p class="summary">
-        ${text.length < 320 ? text : text.substr(0, 320) + "..."}
+        ${text.length < 320 ? text : text.substr(0, 320) + "[...]"}
       </p>
     `}
   </li>
