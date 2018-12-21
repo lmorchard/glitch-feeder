@@ -1,8 +1,6 @@
-/* global arguments */
 const program = require("commander");
 const winston = require("winston");
 const packageJson = require("../package.json");
-
 const setupModels = require("../models");
 const setupConfig = require("../lib/config");
 
@@ -15,9 +13,9 @@ function main (argv) {
 
   // TODO: list directory for modules?
   const commandModules = [
-    "server",
     "opml-import",
     "poll-feeds",
+    "server",
   ];
   commandModules.forEach(name =>
     require(`./${name}`)(init, program));
@@ -32,8 +30,8 @@ const init = fn => (...args) => (async () => {
   const log = await setupLogging({ config, command });   
   const models = await setupModels({ config, log });
   
-  const exit = () => {
-    models.knex.destroy(() => process.exit());
+  const exit = (code = 0) => {
+    models.knex.destroy(() => process.exit(code));
   };
   
   try {

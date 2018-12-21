@@ -20,5 +20,6 @@ async function command (filename, env, context) {
     await Feed.importOpmlStream(stream, context);
 
   log.info("Imported %s feeds", count);
+  
   exit();
 };
