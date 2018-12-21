@@ -27,6 +27,9 @@ function main (argv) {
 const init = fn => (...args) => (async () => {
   const command = args[args.length - 1];
   
+  const SITE_DOMAIN = `${PROJECT_DOMAIN}.glitch.me`;
+  const SITE_URL = `https://${SITE_DOMAIN}`;
+  
   const models = await require("../models")();
   
   let logLevel = "info";

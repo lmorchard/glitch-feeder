@@ -1,9 +1,20 @@
 const crypto = require("crypto");
 const { stripNullValues } = require("../lib/common");
 
-module.exports = models => models.BaseModel.extend({
+module.exports = ({
+  models,
+  apiBasePath
+}) => models.BaseModel.extend({
   tableName: "FeedItems",
   uuid: true,
+  virtuals: {
+    href () {
+      return `${apiBasePath}/items/${this.get("id")}`
+    },
+    feedHref () {
+      return `${apiBasePath}/feeds/${this.get("feed_id")}`
+    },
+  },
   feed () {
     return this.belongsTo(models.Feed, "feed_id");
   },

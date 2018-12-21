@@ -3,6 +3,7 @@ const knex = require("knex")(knexfile.development);
 const bookshelf = require("bookshelf")(knex);
 
 bookshelf.plugin("pagination");
+bookshelf.plugin("virtuals");
 bookshelf.plugin(require("bookshelf-json-columns"));
 bookshelf.plugin(require("bookshelf-uuid"), { type: "v1" });
 
@@ -21,6 +22,7 @@ const BaseModel = bookshelf.Model.extend({
 });
 
 module.exports = async () => {
+  const apiBasePath = "/api/v1";
   const models = {
     knex,  
     bookshelf,
@@ -31,7 +33,10 @@ module.exports = async () => {
     "FeedItem",
   ];
   for (let name of modelModules) {
-    models[name] = await require(`./${name}`)(models);
+    models[name] = await require(`./${name}`)({
+      models,
+      apiBasePath
+    });
   }
   return models;
 }

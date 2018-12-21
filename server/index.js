@@ -5,7 +5,7 @@ const PQueue = require("p-queue");
 
 module.exports = (options, context) => {
   const { models, log } = context;
-  const { knex, Feed } = models;
+  const { knex, Feed, FeedItem } = models;
 
   const fetchQueue = new PQueue({ concurrency: 8 });
 
@@ -22,18 +22,34 @@ module.exports = (options, context) => {
   const apiRouter = express.Router();
   
   apiRouter.route("/feeds").get(async (req, res) => {
-    const feeds = (await Feed.collection().fetch())
-      .map(feed => Object.assign(feed.toJSON(), {
-        href: `${apiBasePath}/feeds/${feed.id}`
-      }));
+    const feeds = (await Feed.collection().fetch());
     res.json(feeds);
   });
 
   apiRouter.route("/feeds/:uuid").get(async (req, res) => {
     const { uuid } = req.params;
     try {
+      res.json(await Feed.where("id", uuid).fetch());
+    } catch (e) {
+      res.status(404).send({ status: "NOT FOUND" });
+    }
+  });
+
+  apiRouter.route("/feeds/:uuid/items").get(async (req, res) => {
+    const { uuid } = req.params;
+    try {
       const feed = await Feed.where("id", uuid).fetch();
-      res.json(feed);
+      const items = await feed.items().fetch();
+      res.json(items);
+    } catch (e) {
+      res.status(404).send({ status: "NOT FOUND" });
+    }
+  });
+
+  apiRouter.route("/items/:uuid").get(async (req, res) => {
+    const { uuid } = req.params;
+    try {
+      res.json(await FeedItem.where("id", uuid).fetch());
     } catch (e) {
       res.status(404).send({ status: "NOT FOUND" });
     }

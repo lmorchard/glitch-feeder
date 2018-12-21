@@ -5,10 +5,20 @@ const OpmlParser = require("opmlparser");
 const FeedParser = require("feedparser");
 const { stripNullValues } = require("../lib/common");
 
-module.exports = models => models.BaseModel.extend({
+module.exports = ({
+  models,
+  apiBasePath
+}) => models.BaseModel.extend({
   tableName: "Feeds",
   uuid: true,
-  
+  virtuals: {
+    href () {
+      return `${apiBasePath}/feeds/${this.get("id")}`
+    },
+  },
+  items () {
+    return this.hasMany(models.FeedItem, "feed_id");
+  },
   async pollResource (context, options) {
     const { log } = context;
     
