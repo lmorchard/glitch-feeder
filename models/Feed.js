@@ -1,12 +1,8 @@
-const crypto = require("crypto");
 const AbortController = require("abort-controller");
 const fetch = require("node-fetch");
 const { parseFeedBody, stripNullValues } = require("../lib/common");
 
-module.exports = ({
-  BaseModel,
-  FeedItem,
-}) => BaseModel.extend({
+module.exports = models => models.BaseModel.extend({
   tableName: "Feeds",
   uuid: true,
   
@@ -180,39 +176,12 @@ module.exports = ({
     
     try {
       for (let item of items) {
-        const {
-          title = "",
-          link = "",
-          description = "",
-          summary = "",
-          date = "",
-          pubdate = "",
-          author = "",          
-        } = item;
-        
-        let guid = item.guid ||
-          crypto
-            .createHash("md5")
-            .update(title)
-            .update(link)
-            .digest("hex");
-        
-        log.debug("ITEM %s", Object.keys(item), JSON.stringify(item));
-        
         updateQueue.add(() =>
-          FeedItem.forge({
-            feed_id: feedId,
-            guid,
-          }).createOrUpdate({
-            title,
-            link,
-            summary,
-            updated: pubdate,
-            data: item,
-          })
-        );
+
+        models.FeedItem.updateItem(this, item, context, options);
       }
     } catch (err) {
+      log.error("Feed update failed for %s - %s", title, err);
     }
   },
 }, {
