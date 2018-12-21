@@ -14,6 +14,7 @@ function main (argv) {
 
   // TODO: list directory for modules?
   const commandModules = [
+    "server",
     "opml-import",
     "poll-feeds",
   ];
