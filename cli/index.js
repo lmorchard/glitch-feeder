@@ -14,7 +14,12 @@ function main (argv) {
   ;
 
   // TODO: list directory for modules?
-  const commandModules = ["opml-import", "poll-feeds", "parse-feeds"];
+  const commandModules = [
+    "opml-import",
+    "poll-feeds",
+    "parse-feeds",
+    "update-feeds"
+  ];
   commandModules.forEach(name => require(`./${name}`)(init, program));
 
   program.parse(argv);
@@ -25,6 +30,7 @@ const init = fn => (...args) => (async () => {
   
   const fetchQueue = new PQueue({ concurrency: 16 });
   const parseQueue = new PQueue({ concurrency: 4 });
+  const updateQueue = new PQueue({ concurrency: 4 });
   
   const models = await require("../models")();
   
@@ -51,6 +57,7 @@ const init = fn => (...args) => (async () => {
         log,
         fetchQueue,
         parseQueue,
+        updateQueue,
       }
     );
 

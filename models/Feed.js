@@ -34,7 +34,7 @@ module.exports = ({
     
     const age = timeStart - lastValidated;
     if (lastValidated !== 0 && age < maxAge) {
-      log.verbose("Skipping fresh feed %s (%s < %s)", title, age, maxAge);
+      log.verbose("Skipping poll for fresh feed %s (%s < %s)", title, age, maxAge);
       return;
     }
     
@@ -117,8 +117,9 @@ module.exports = ({
       return;
     }
     
-    if (lastParsed !== 0 && lastParsed < lastValidated) {
-      log.verbose("Skipping fresh feed %s (%s < %s)", title, lastParsed, lastValidated);
+    log.verbose("FOOP %s (%s > %s)", title, lastParsed, lastValidated);
+    if (lastParsed !== 0 && lastParsed > lastValidated) {
+      log.verbose("Skipping parse for fresh feed %s (%s > %s)", title, lastParsed, lastValidated);
       return;
     }
     
@@ -176,6 +177,20 @@ module.exports = ({
     }
     
     try {
+      for (let item of items) {
+        const {
+          title = "",
+          link = "",
+          description = "",
+          summary = "",
+          date = "",
+          pubdate = "",
+          guid = "",
+          author = "",
+          
+        } = item;
+        log.debug("ITEM %s", Object.keys(item), JSON.stringify(item));
+      }
     } catch (err) {
     }
   },
@@ -210,10 +225,19 @@ module.exports = ({
   
   async parseAll (context, options = {}) {
     const { log, parseQueue } = context;
-    const feeds = (await this.collection().fetch());
+    const feeds = await this.collection().fetch();
     log.debug("Enqueueing %s feeds to parse", feeds.length);
     return parseQueue.addAll(
       feeds.map(feed => () => feed.parseBody(context, options))
+    );
+  },
+  
+  async updateAll (context, options = {}) {
+    const { log, updateQueue } = context;
+    const feeds = (await this.collection().fetch()).slice(0, 1);
+    log.debug("Enqueueing %s feeds to update", feeds.length);
+    return updateQueue.addAll(
+      feeds.map(feed => () => feed.updateItems(context, options))
     );
   },
 });
