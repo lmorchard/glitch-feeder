@@ -102,7 +102,8 @@ const itemTemplate = ({
 }) => html`
   <li class="item">
     <a id=${id} class="item" href=${link}>${date}</a>: <a href=${link}>${title}</a>
-    <iframe frameBorder="0" src=${hrefs.html}></iframe>
+    ${(summary || description) && 
+      html`<iframe frameBorder="0" src=${hrefs.html}></iframe>`}
   </li>
 `;
 
