@@ -8,14 +8,10 @@ bookshelf.plugin(require("bookshelf-uuid"), { type: "v1" });
 
 const BaseModel = bookshelf.Model.extend({
   hasTimestamps: true,
-  /*
-  initialize () {
-    return bookshelf.Model.prototype.initialize.apply(this, arguments);
+  serialize: function (options) {
+    const {data, ...obj} = bookshelf.Model.prototype.serialize.call(this, options);
+    return Object.assign(obj, data);
   },
-  save () {
-    return bookshelf.Model.prototype.save.apply(this, arguments);
-  },
-  */
   async createOrUpdate (props) {
     const model = (await this.fetch()) || this;
     return model.save(props);

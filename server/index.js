@@ -18,15 +18,29 @@ module.exports = (options, context) => {
     response.sendFile(__dirname + "/views/index.html");
   });
 
+  const apiBasePath = "/api/v1";
   const apiRouter = express.Router();
   
   apiRouter.route("/feeds").get(async (req, res) => {
-    const feeds = (await Feed.collection().fetch()).toJSON();
-    res.json({ feeds });
+    const feeds = (await Feed.collection().fetch())
+      .map(feed => Object.assign(feed.toJSON(), {
+        href: `${apiBasePath}/feeds/${feed.id}`
+      }));
+    res.json(feeds);
   });
 
-  app.use("/api/v1", apiRouter);
+  apiRouter.route("/feeds/:uuid").get(async (req, res) => {
+    const { uuid } = req.params;
+    try {
+      const feed = await Feed.where("id", uuid).fetch();
+      res.json(feed);
+    } catch (e) {
+      res.status(404).send({ status: "NOT FOUND" });
+    }
+  });
   
+  app.use(apiBasePath, apiRouter);
+
   var listener = app.listen(process.env.PORT, function() {
     console.log("Your app is listening on port " + listener.address().port);
   });
