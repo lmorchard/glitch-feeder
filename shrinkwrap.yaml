@@ -7,6 +7,7 @@ dependencies:
   knex: 0.16.3
   node-fetch: 2.3.0
   opmlparser: 0.8.0
+  p-queue: 3.0.0
   sqlite3: 4.0.4
   winston: 3.1.0
 packages:
@@ -1649,6 +1650,12 @@ packages:
     dev: false
     resolution:
       integrity: sha512-0CWcCECdMVc2Rw3U5w9ZjqX6ga6ubk1xDVKxtBQPK7wis/0F2r9T6k4ydGYhecl7YUBxBVxhL5oisPsNxAPe2g==
+  /p-queue/3.0.0:
+    dev: false
+    engines:
+      node: '>=6'
+    resolution:
+      integrity: sha512-2tv/MRmPXfmfnjLLJAHl+DdU8p2DhZafAnlpm/C/T5BpF5L9wKz5tMin4A4N2zVpJL2YMhPlRmtO7s5EtNrjfA==
   /parse-filepath/1.0.2:
     dependencies:
       is-absolute: 1.0.0
@@ -2402,5 +2409,6 @@ specifiers:
   knex: ^0.16.3
   node-fetch: ^2.3.0
   opmlparser: ^0.8.0
+  p-queue: ^3.0.0
   sqlite3: ^4.0.4
   winston: ^3.1.0

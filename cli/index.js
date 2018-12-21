@@ -2,6 +2,8 @@
 const program = require("commander");
 const packageJson = require("../package.json");
 const winston = require("winston");
+const PQueue = require("p-queue");
+
 const models = require("../models");
 
 function main (argv) {
@@ -21,6 +23,8 @@ function main (argv) {
 const init = fn => (...args) => (async () => {
   const command = args[args.length - 1];
   
+  const fetchQueue = new PQueue({ concurrency: 8 });
+  
   const models = await require("../models")();
   
   let logLevel = "info";
@@ -39,11 +43,23 @@ const init = fn => (...args) => (async () => {
   });
   
   try {
-    await fn(...args, { models, log, });
+    await fn(
+      ...args,
+      {
+        models,
+        log,
+        fetchQueue,
+      }
+    );
 
     // HACK / FIXME: destroying the DB connection always results in an error 
     // involving PendingOperation unless we wait a little bit
-    await new Promise(resolve => setTimeout(() => models.knex.destroy(resolve()), 500));
+    await new Promise(resolve =>
+      setTimeout(
+        () => models.knex.destroy(resolve()),
+        500
+      )
+    );
   } catch(error) {
     log.error(error);
   }
