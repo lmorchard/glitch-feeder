@@ -23,7 +23,7 @@ module.exports = ({
       headers: prevHeaders = {},
     } = data;   
     
-    const timeNow = Date.now();
+    const timeStart = Date.now();
     
     log.verbose("Starting poll of %s", title);
     
@@ -33,7 +33,7 @@ module.exports = ({
       return;
     }
     
-    const age = timeNow - lastValidated;
+    const age = timeStart - lastValidated;
     if (lastValidated !== 0 && age < maxAge) {
       log.verbose("Skipping fresh feed %s (%s < %s)", title, age, maxAge);
       return;
@@ -63,23 +63,32 @@ module.exports = ({
       
       const response = await fetch(resourceUrl, fetchOptions);
       clearTimeout(abortTimeout);
+
+      const headers = {};
+      for (let [k, v] of response.headers) { headers[k] = v; }
       
       log.debug("Fetch status %s %s for %s %s",
-                response.status, response.statusText, title, response.headers);
+                typeof(response.status), response.statusText, title, JSON.stringify(headers));
       
+      if (response.status === 200) {
+        this.set("body", await response.text());
+      }
+      
+      const duration = Date.now() - timeStart;
+
       this.set({
-        body: await response.text(),
         lastValidated: timeNow,
         status: response.status,
         statusText: response.statusText,
         data: Object.assign(data, {
-          headers: response.headers,        
+          headers,
+          duration,
         })
       });
 
       await this.save();
       
-      log.debug("Fetched feed %s", title);
+      log.info("Fetched feed %s", title);
     } catch (err) {
       clearTimeout(abortTimeout);
       throw err;      
