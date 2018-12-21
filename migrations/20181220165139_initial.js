@@ -17,7 +17,6 @@ exports.up = knex => knex.schema
     t.string("lastError");
     t.bigInteger("lastValidated");
     t.bigInteger("lastParsed");
-    t.text("body", "longtext");
   })
   .createTable("FeedItems", t => {
     commonFields(t);

@@ -17,10 +17,9 @@ function main (argv) {
   const commandModules = [
     "opml-import",
     "poll-feeds",
-    "parse-feeds",
-    "update-feeds"
   ];
-  commandModules.forEach(name => require(`./${name}`)(init, program));
+  commandModules.forEach(name =>
+    require(`./${name}`)(init, program));
 
   program.parse(argv);
 }
@@ -29,8 +28,6 @@ const init = fn => (...args) => (async () => {
   const command = args[args.length - 1];
   
   const fetchQueue = new PQueue({ concurrency: 8 });
-  const parseQueue = new PQueue({ concurrency: 4 });
-  const updateQueue = new PQueue({ concurrency: 2 });
   
   const models = await require("../models")();
   
@@ -56,8 +53,6 @@ const init = fn => (...args) => (async () => {
         models,
         log,
         fetchQueue,
-        parseQueue,
-        updateQueue,
       }
     );
 

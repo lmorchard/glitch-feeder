@@ -1,10 +1,9 @@
+const stream = require("stream");
 const AbortController = require("abort-controller");
 const fetch = require("node-fetch");
-const { parseFeedBody, stripNullValues } = require("../lib/common");
-const util = require("util");
-const zlib = require("zlib");
-const deflate = util.promisify(zlib.deflate);
-const inflate = util.promisify(zlib.inflate);
+const OpmlParser = require("opmlparser");
+const FeedParser = require("feedparser");
+const { stripNullValues } = require("../lib/common");
 
 module.exports = models => models.BaseModel.extend({
   tableName: "Feeds",
@@ -68,22 +67,36 @@ module.exports = models => models.BaseModel.extend({
       log.verbose("Fetched feed (%s %s) %s",
                   response.status, response.statusText, title);
 
-      if (response.status === 200) {
-        const body = await response.text();
-        const zbody = await deflate(body);
-        this.set("body", zbody);
-      }
-
       this.set({
         lastValidated: timeStart,
         status: response.status,
         statusText: response.statusText,
         data: Object.assign(data, {
           headers,
-          duration: Date.now() - timeStart,
+          fetchDuration: Date.now() - timeStart,
         })
       });
       await this.save();      
+
+      if (response.status !== 200) {
+        return;
+      }
+      
+      const body = await response.text();
+      const { meta, items } = await parseFeedBody(
+        { body, resourceUrl },
+        context
+      );
+      
+      this.set({
+        lastParsed: timeStart,
+        data: Object.assign(data, {
+          meta,
+          parseDuration: Date.now() - timeStart,
+        })
+      });
+      await this.save();      
+
     } catch (err) {
       log.error("Feed fetch failed for %s - %s", title, err);
       clearTimeout(abortTimeout);
@@ -135,16 +148,6 @@ module.exports = models => models.BaseModel.extend({
       
       log.verbose("Parsed %s items from feed %s",
                   items.length, title);
-      
-      this.set({
-        lastParsed: timeStart,
-        data: Object.assign(data, {
-          meta,
-          items,
-          parseDuration: Date.now() - timeStart,
-        })
-      });
-      await this.save();      
     } catch (err) {
       log.error("Feed parse failed for %s - %s", title, err);
       this.set({
@@ -261,3 +264,46 @@ module.exports = models => models.BaseModel.extend({
     */
   },
 });
+
+const parseOpmlStream = (stream, { log }) =>
+  new Promise((resolve, reject) => {
+    let meta = {};
+    const items = [];
+    
+    const parser = new OpmlParser();
+    parser.on("error", reject);
+    parser.on("readable", function () {
+      meta = this.meta;
+      let outline;
+      while (outline = this.read()) {
+        items.push(outline);
+      }
+    });
+    parser.on("end", () => resolve({ meta, items }));
+    stream.pipe(parser);
+  });
+
+const parseFeedBody = ({ body, resourceUrl }, context) =>
+  new Promise((resolve, reject) => {
+    let meta;
+    const items = [];
+
+    const s = new stream.Readable();
+    s._read = () => {};
+    s.push(body);
+    s.push(null);
+
+    const parser = new FeedParser({
+      feedurl: resourceUrl,
+    });
+    parser.on("error", reject);
+    parser.on("end", () => resolve({ meta, items }));
+    parser.on("readable", function () {
+      meta = this.meta;
+      let item;
+      while (item = this.read()) {
+        items.push(item);
+      }
+    });
+    s.pipe(parser);
+  });
