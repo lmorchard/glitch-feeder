@@ -84,9 +84,8 @@ module.exports = models => models.BaseModel.extend({
         return;
       }
       
-      const body = await response.text();
-      const { meta, items } = await parseFeedBody(
-        { body, resourceUrl },
+      const { meta, items } = await parseFeedStream(
+        { stream: response.body, resourceUrl },
         context
       );
       
@@ -121,7 +120,7 @@ module.exports = models => models.BaseModel.extend({
   async importOpmlStream (stream, context) {
     const { log } = context;
     const { meta, items } =
-      await parseOpmlStream(stream, context);
+      await parseOpmlStream({ stream }, context);
 
     let count = 0;
     for (let item of items) {
@@ -131,6 +130,7 @@ module.exports = models => models.BaseModel.extend({
     }
     return count;
   },
+  
   async importFeed (item, { log }) {
     const {
       title = "",
@@ -163,47 +163,9 @@ module.exports = models => models.BaseModel.extend({
       feedIds.map(({ id }) => () => pollById(id))
     );
   },
-  
-  async parseAll (context, options = {}) {
-    const { log, parseQueue } = context;
-    const { knex, Feed } = models;
-    const feedIds = await knex.from("Feeds").select("id");
-
-    log.debug("Enqueueing %s feeds to parse", feedIds.length);
-    
-    return parseQueue.addAll(
-      feedIds.map(({ id }) => () => Feed
-        .where("id", id)
-        .fetch()
-        .then(feed => feed.parseBody(context, options))
-      )
-    );
-  },
-  
-  async updateAll (context, options = {}) {
-    const { log, updateQueue, models } = context;
-    const { knex, Feed } = models;
-    
-    const feedIds = await knex.from("Feeds").select("id");
-    log.debug("Updating items for %s feeds", feedIds.length);
-    
-    return updateQueue.addAll(
-      feedIds.map(({ id }) => () => Feed
-        .where("id", id)
-        .fetch()
-        .then(feed => feed.updateItems(context, options))
-      )
-    );
-    /*    
-    for (let { id } of feedIds) {
-      const feed = await Feed.where("id", id).fetch();
-      await feed.updateItems(context, options);
-    }
-    */
-  },
 });
 
-const parseOpmlStream = (stream, { log }) =>
+const parseOpmlStream = ({ stream }, { log }) =>
   new Promise((resolve, reject) => {
     let meta = {};
     const items = [];
@@ -221,17 +183,13 @@ const parseOpmlStream = (stream, { log }) =>
     stream.pipe(parser);
   });
 
-const parseFeedBody = ({ body, resourceUrl }, context) =>
+const parseFeedStream = ({ stream, resourceUrl }, context) =>
   new Promise((resolve, reject) => {
     let meta;
     const items = [];
 
-    const s = new stream.Readable();
-    s._read = () => {};
-    s.push(body);
-    s.push(null);
-
     const parser = new FeedParser({
+      addmeta: false,
       feedurl: resourceUrl,
     });
     parser.on("error", reject);
@@ -243,5 +201,6 @@ const parseFeedBody = ({ body, resourceUrl }, context) =>
         items.push(item);
       }
     });
-    s.pipe(parser);
+    
+    stream.pipe(parser);
   });

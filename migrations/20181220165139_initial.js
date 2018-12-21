@@ -25,7 +25,8 @@ exports.up = knex => knex.schema
     t.string("title");
     t.string("link");
     t.string("summary");
-    t.string("updated");
+    t.string("date");
+    t.string("pubdate");
   })
 ;
 

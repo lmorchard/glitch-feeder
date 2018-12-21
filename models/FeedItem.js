@@ -44,7 +44,8 @@ module.exports = models => models.BaseModel.extend({
         title,
         link,
         summary,
-        updated: pubdate,
+        date,
+        pubdate,
         data: item,
       });
     } catch (err) {

@@ -1,7 +1,6 @@
 const util = require("util");
 const fs = require("fs");
 const readFile = util.promisify(fs.readFile);
-const { parseOpmlStream } = require("../lib/common");
 
 module.exports = (init, program) => {
   program
