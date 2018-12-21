@@ -50,12 +50,14 @@ const init = fn => (...args) => (async () => {
     // HACK / FIXME: destroying the DB connection always results in an error 
     // involving PendingOperation unless we wait a little bit. There's got to
     // be some other event we can tap into here.
+    /*
     await new Promise(resolve =>
       setTimeout(
         () => models.knex.destroy(resolve()),
         500
       )
     );
+    */
   } catch(error) {
     log.error(error);
   }
