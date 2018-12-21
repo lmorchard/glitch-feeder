@@ -1,4 +1,7 @@
-// client-side js
-// run by the browser each time your view template referencing it is loaded
+import app from "./app/index.js";
 
-console.log('hello world :o');
+function init() {
+  app.init(document.getElementById("app"));
+}
+
+document.addEventListener("DOMContentLoaded", init);
