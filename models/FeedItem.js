@@ -12,6 +12,7 @@ module.exports = models => models.BaseModel.extend({
     const { log } = context;
     
     const {
+      id: feedId,
       title: feedTitle,
       data: feedData = {},
     } = stripNullValues(feed.toJSON());
@@ -26,25 +27,28 @@ module.exports = models => models.BaseModel.extend({
       author = "",          
     } = stripNullValues(item);
 
-    let guid = item.guid ||
-      crypto
-        .createHash("md5")
-        .update(title)
-        .update(link)
-        .digest("hex");
+    try {
+      let guid = item.guid ||
+        crypto
+          .createHash("md5")
+          .update(title)
+          .update(link)
+          .digest("hex");
 
-    log.debug("Updating item %s - %s - %s", feedTitle, title, guid);
-    return;
-    
-    return this.forge({
-      feed_id: feed.id,
-      guid,
-    }).createOrUpdate({
-      title,
-      link,
-      summary,
-      updated: pubdate,
-      data: item,
-    });
+      log.debug("Updating item %s - %s - %s", feedId, feedTitle, title, guid);
+
+      return this.forge({
+        feed_id: feedId,
+        guid,
+      }).createOrUpdate({
+        title,
+        link,
+        summary,
+        updated: pubdate,
+        data: item,
+      });
+    } catch (err) {
+      log.error("Feed item update failed %s", err);
+    }
   }  
 });
