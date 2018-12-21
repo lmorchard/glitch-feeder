@@ -35,7 +35,7 @@ module.exports = async () => {
     "FeedItem",
   ];
   for (let name of modelModules) {
-    models[name] = await require(`./${name}.js`)(models);
+    models[name] = await require(`./${name}`)(models);
   }
   return models;
 }

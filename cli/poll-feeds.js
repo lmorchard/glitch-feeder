@@ -7,7 +7,7 @@ module.exports = (init, program) => {
 
 async function command (env, context) {
   const { models, log } = context;
-  const { Resource, Feed } = models;
-
+  const { Feed } = models;
+  log.debug("Polling all feeds");
   await Feed.pollAll(context);
 }
