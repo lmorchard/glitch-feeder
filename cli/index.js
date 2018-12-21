@@ -30,7 +30,7 @@ const init = fn => (...args) => (async () => {
   
   const fetchQueue = new PQueue({ concurrency: 16 });
   const parseQueue = new PQueue({ concurrency: 4 });
-  const updateQueue = new PQueue({ concurrency: 4 });
+  const updateQueue = new PQueue({ concurrency: 1 });
   
   const models = await require("../models")();
   

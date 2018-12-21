@@ -176,9 +176,9 @@ module.exports = models => models.BaseModel.extend({
     
     try {
       for (let item of items) {
-        updateQueue.add(() =>
-
-        models.FeedItem.updateItem(this, item, context, options);
+        updateQueue.add(
+          () => models.FeedItem.updateItem(this, item, context, options)
+        );
       }
     } catch (err) {
       log.error("Feed update failed for %s - %s", title, err);
@@ -224,7 +224,7 @@ module.exports = models => models.BaseModel.extend({
   
   async updateAll (context, options = {}) {
     const { log, updateQueue } = context;
-    const feeds = (await this.collection().fetch()).slice(0, 1);
+    const feeds = await this.collection().fetch();
     log.debug("Enqueueing %s feeds to update", feeds.length);
     return updateQueue.addAll(
       feeds.map(feed => () => feed.updateItems(context, options))

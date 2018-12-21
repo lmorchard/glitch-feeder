@@ -9,7 +9,7 @@ module.exports = models => models.BaseModel.extend({
   },
 }, {
   async updateItem (feed, item, context, options = {}) {
-    const { log, updateQueue } = context;
+    const { log } = context;
     
     const {
       title: feedTitle,
@@ -34,18 +34,17 @@ module.exports = models => models.BaseModel.extend({
         .digest("hex");
 
     log.debug("Updating item %s - %s - %s", feedTitle, title, guid);
-
-    updateQueue.add(() =>
-      this.forge({
-        feed_id: feed.id,
-        guid,
-      }).createOrUpdate({
-        title,
-        link,
-        summary,
-        updated: pubdate,
-        data: item,
-      })
-    );
+    return;
+    
+    return this.forge({
+      feed_id: feed.id,
+      guid,
+    }).createOrUpdate({
+      title,
+      link,
+      summary,
+      updated: pubdate,
+      data: item,
+    });
   }  
 });
