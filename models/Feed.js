@@ -27,17 +27,18 @@ module.exports = ({
     
     log.verbose("Starting poll of %s", title);
     
+    /*
     if (disabled === true) {
       log.verbose("Skipping disabled feed %s", title);
       return;
     }
     
     const age = timeNow - lastValidated;
-    log.debug("Age %s %s", age, title);
-    if (lastValidated !== 0 && age > maxAge) {
-      log.verbose("Skipping fresh feed %s (%s > %s)", title, age, maxAge);
+    if (lastValidated !== 0 && age < maxAge) {
+      log.verbose("Skipping fresh feed %s (%s < %s)", title, age, maxAge);
       return;
     }
+    */
     
     const controller = new AbortController();
     const abortTimeout = setTimeout(
@@ -61,25 +62,28 @@ module.exports = ({
       log.debug("Fetch options %s %s", title, JSON.stringify(fetchOptions));
       
       const response = await fetch(resourceUrl, fetchOptions);
+      clearTimeout(abortTimeout);
+      
+      log.debug("Fetch status %s %s for %s %s",
+                response.status, response.statusText, title, response.headers);
       
       this.set({
         body: await response.text(),
         lastValidated: timeNow,
+        status: response.status,
+        statusText: response.statusText,
         data: Object.assign(data, {
-          status: response.status,
-          statusText: response.statusText,
           headers: response.headers,        
         })
       });
-      
+
       await this.save();
       
       log.debug("Fetched feed %s", title);
     } catch (err) {
+      clearTimeout(abortTimeout);
       throw err;      
     }
-    
-    clearTimeout(abortTimeout);    
   }
 }, {
   async importFeed (item, { log }) {
@@ -103,8 +107,11 @@ module.exports = ({
   
   async pollAll (context) {
     const { log, fetchQueue } = context;
+    
     const feeds = (await this.collection().fetch()).slice(0, 10);
+    
     log.debug("Enqueueing %s feeds to poll", feeds.length);
+    
     return fetchQueue.addAll(
       feeds.map(feed => () => feed.poll(context))
     );

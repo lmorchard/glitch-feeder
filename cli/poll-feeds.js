@@ -6,8 +6,12 @@ module.exports = (init, program) => {
 };
 
 async function command (env, context) {
-  const { models, log } = context;
+  const { models, log, fetchQueue } = context;
   const { Feed } = models;
-  log.debug("Polling all feeds");
+  
+  
+  
+  log.debug("Polling all feeds...");  
   await Feed.pollAll(context);
+  log.debug("Feed polling complete.");
 }
