@@ -36,10 +36,6 @@ export async function init(appEl) {
   store.subscribe(render);
   render();
 
-  const apiRoot = await fetchJson("/api");
-  const apiFeeds = await fetchJson(apiRoot.hrefs.feeds);  
-  store.dispatch(actions.loadFeeds(apiFeeds));
-  
   addEventListeners(appEl, {
     click: async (ev) => {
       if (ev.target.classList.contains("feed")) {
@@ -54,6 +50,14 @@ export async function init(appEl) {
       }
     },
   });
+
+  const apiRoot = await fetchJson("/api");
+  
+  const apiFeeds = await fetchJson(apiRoot.hrefs.feeds);  
+  store.dispatch(actions.loadFeeds(apiFeeds));
+
+  const apiItems = await fetchJson(apiRoot.hrefs.items);  
+  store.dispatch(actions.loadItems(apiItems));
 }
 
 const fetchJson = (url, options = {}) =>
