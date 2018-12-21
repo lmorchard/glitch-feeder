@@ -19,7 +19,8 @@
     "bookshelf-uuid": "^1.0.0",
     "opmlparser": "^0.8.0",
     "commander": "^2.19.0",
-    "winston": "^3.1.0"
+    "winston": "^3.1.0",
+    "node-fetch": "^2.3.0"
   },
   "engines": {
     "node": "8.x"

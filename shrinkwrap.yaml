@@ -5,6 +5,7 @@ dependencies:
   commander: 2.19.0
   express: 4.16.4
   knex: 0.16.3
+  node-fetch: 2.3.0
   opmlparser: 0.8.0
   sqlite3: 4.0.4
   winston: 3.1.0
@@ -1490,6 +1491,12 @@ packages:
       node: '>= 0.6'
     resolution:
       integrity: sha1-KzJxhOiZIQEXeyhWP7XnECrNDKk=
+  /node-fetch/2.3.0:
+    dev: false
+    engines:
+      node: 4.x || >=6.0.0
+    resolution:
+      integrity: sha512-MOd8pV3fxENbryESLgVIeaGKrdl+uaYhCSSVkjeOb/31/njTpcis5aWfdqgNlHIrKOLRbMnfPINPOML2CIFeXA==
   /node-pre-gyp/0.10.3:
     dependencies:
       detect-libc: 1.0.3
@@ -2393,6 +2400,7 @@ specifiers:
   commander: ^2.19.0
   express: ^4.16.4
   knex: ^0.16.3
+  node-fetch: ^2.3.0
   opmlparser: ^0.8.0
   sqlite3: ^4.0.4
   winston: ^3.1.0

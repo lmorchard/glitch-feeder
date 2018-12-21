@@ -6,15 +6,6 @@ bookshelf.plugin("pagination");
 bookshelf.plugin(require("bookshelf-json-columns"));
 bookshelf.plugin(require("bookshelf-uuid"), { type: "v1" });
 
-module.exports = async () => {
-  return {
-    knex,  
-    bookshelf,
-    Feed,
-    FeedItem,
-  };
-}
-
 const BaseModel = bookshelf.Model.extend({
   hasTimestamps: true,
   /*
@@ -33,15 +24,18 @@ const BaseModel = bookshelf.Model.extend({
   jsonColumns: ["data"]
 });
 
-const Feed = BaseModel.extend({
-  tableName: "Feeds",
-  uuid: true,
-});
-
-const FeedItem = BaseModel.extend({
-  tableName: "FeedItems",
-  uuid: true,
-  feed () {
-    return this.belongsTo(Feed, "feed_id");
-  },
-});
+module.exports = async () => {
+  const models = {
+    knex,  
+    bookshelf,
+    BaseModel,
+  };
+  const modelModules = [
+    "Feed",
+    "FeedItem",
+  ];
+  for (let name of modelModules) {
+    models[name] = await require(`./${name}.js`)(models);
+  }
+  return models;
+}
