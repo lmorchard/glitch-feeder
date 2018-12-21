@@ -13,6 +13,8 @@ export async function init(appEl) {
     const state = store.getState();
     renderApp(appEl, mapToObject(
       [
+        "feeds",
+        "items",
       ],
       name => selectors[name](state)
     ));
@@ -20,20 +22,37 @@ export async function init(appEl) {
   store.subscribe(render);
   render();
   
-  const apiRoot = await fetch("/api/v1");
-  console.log(await apiRoot.json());
+  const apiRoot = await fetchJson("/api/v1");
+  const apiFeeds = await fetchJson(apiRoot.hrefs.feeds);  
+  store.dispatch(actions.loadFeeds(apiFeeds));
 }
 
-const fetchJson
+const fetchJson = (url, options = {}) =>
+  fetch(url, options).then(response => response.json());
 
 const renderApp = (appEl, props) =>
   render(appTemplate(props), appEl);
 
 const appTemplate = (props) => {
-  const { selectedCard } = props;
+  const { feeds } = props;
   return html`
-    <h1>HELLO WORLD!</h1>
+    <ul>
+    ${repeat(
+      Object.values(feeds),
+      feed => feed.id,
+      feedTemplate,
+    )}
+    </ul>
   `;
 };
+
+const feedTemplate = ({
+  title,
+  link,
+}) => html`
+  <li>
+    <a href=${link}>${title}</a>
+  </li>
+`;
 
 export default { init };
