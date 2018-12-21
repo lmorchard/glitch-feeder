@@ -28,9 +28,9 @@ function main (argv) {
 const init = fn => (...args) => (async () => {
   const command = args[args.length - 1];
   
-  const fetchQueue = new PQueue({ concurrency: 16 });
+  const fetchQueue = new PQueue({ concurrency: 8 });
   const parseQueue = new PQueue({ concurrency: 4 });
-  const updateQueue = new PQueue({ concurrency: 4 });
+  const updateQueue = new PQueue({ concurrency: 2 });
   
   const models = await require("../models")();
   

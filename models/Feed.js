@@ -12,7 +12,7 @@ module.exports = models => models.BaseModel.extend({
       resourceUrl,      
       disabled = false,
       data = {},
-      timeout = 10000,
+      timeout = 20000,
       lastValidated = 0,
       maxAge = 60 * 60 * 1000,
     } = stripNullValues(this.toJSON());
@@ -208,13 +208,11 @@ module.exports = models => models.BaseModel.extend({
 
     log.debug("Enqueueing %s feeds to poll", feedIds.length);
     return fetchQueue.addAll(
-      feedIds.map(
-        ({ id }) => 
-          async () => {
-            const feed = await Feed.where("id", id).fetch();
-            feed.pollResource(context, options);
-          }
-        )
+      feedIds.map(({ id }) => () => Feed
+        .where("id", id)
+        .fetch()
+        .then(feed => feed.pollResource(context, options))
+      )
     );
   },
   
@@ -225,21 +223,13 @@ module.exports = models => models.BaseModel.extend({
 
     log.debug("Enqueueing %s feeds to parse", feedIds.length);
     
-    for (let { id } of feedIds) {
-      const feed = await Feed.where("id", id).fetch();
-      await feed.parseBody(context, options);
-    }
-    /*
     return parseQueue.addAll(
-      feedIds.map(
-        ({ id }) => 
-          async () => {
-            const feed = await Feed.where("id", id).fetch();
-            feed.parseBody(context, options);
-          }
-        )
+      feedIds.map(({ id }) => () => Feed
+        .where("id", id)
+        .fetch()
+        .then(feed => feed.parseBody(context, options))
+      )
     );
-    */
   },
   
   async updateAll (context, options = {}) {
@@ -249,9 +239,18 @@ module.exports = models => models.BaseModel.extend({
     const feedIds = await knex.from("Feeds").select("id");
     log.debug("Updating items for %s feeds", feedIds.length);
     
+    return updateQueue.addAll(
+      feedIds.map(({ id }) => () => Feed
+        .where("id", id)
+        .fetch()
+        .then(feed => feed.updateItems(context, options))
+      )
+    );
+    /*    
     for (let { id } of feedIds) {
       const feed = await Feed.where("id", id).fetch();
       await feed.updateItems(context, options);
     }
+    */
   },
 });
