@@ -13,6 +13,8 @@ body {
 h1 {
   font-style: italic;
   color: #373fff;
+  margin: 0 0 0.5em 0;
+  padding: 0;
 }
 
 .bold {
