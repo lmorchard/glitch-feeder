@@ -7,6 +7,7 @@ module.exports = (options, context) => {
   const { config, models, log } = context;
   const { knex, Feed, FeedItem } = models;
   const {
+    API_BASE_PATH,
     API_BASE_URL,
   } = config;
 
@@ -21,7 +22,7 @@ module.exports = (options, context) => {
     response.sendFile(__dirname + "/views/index.html");
   });
 
-  app.get("/api").get(async (req, res) => {
+  app.get("/api", async (req, res) => {
     res.json({
       hrefs: {
         feeds: `${API_BASE_URL}/feeds`,
@@ -73,8 +74,17 @@ module.exports = (options, context) => {
       res.status(404).send({ status: "NOT FOUND" });
     }
   });
+
+  apiRouter.route("/items/:uuid/html").get(async (req, res) => {
+    const { uuid } = req.params;
+    try {
+      res.json(await FeedItem.where("id", uuid).fetch());
+    } catch (e) {
+      res.status(404).send({ status: "NOT FOUND" });
+    }
+  });
   
-  app.use(apiBasePath, apiRouter);
+  app.use(API_BASE_PATH, apiRouter);
 
   var listener = app.listen(process.env.PORT, function() {
     console.log("Your app is listening on port " + listener.address().port);

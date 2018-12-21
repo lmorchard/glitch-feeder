@@ -22,7 +22,7 @@ export async function init(appEl) {
 
   store.subscribe(render);
   render();
-  
+
   const apiRoot = await fetchJson("/api");
   const apiFeeds = await fetchJson(apiRoot.hrefs.feeds);  
   store.dispatch(actions.loadFeeds(apiFeeds));
@@ -97,10 +97,11 @@ const itemTemplate = ({
   title,
   link,
   summary,
+  description,
 }) => html`
   <li>
     <a id=${id} class="item" href=${link}>${date}</a>: <a href=${link}>${title}</a>
-    <p>${summary}</p>
+    <p .innerHTML=${summary || description} />
   </li>
 `;
 

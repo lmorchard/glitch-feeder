@@ -16,6 +16,7 @@ module.exports = ({
     hrefs () {
       return {
         self: `${API_BASE_URL}/items/${this.get("id")}`,
+        self: `${API_BASE_URL}/items/${this.get("id")}/html`,
         feed: `${API_BASE_URL}/feeds/${this.get("feed_id")}`,
       };
     },
