@@ -94,10 +94,7 @@ module.exports = ({
     }
   },
   
-  async parse (context, options = {}) {
-    console.log("CONTEXT", context);
-    return;
-    
+  async parseBody (context, options = {}) {
     const { log } = context;
     
     const {
@@ -126,10 +123,14 @@ module.exports = ({
     }
     
     try {
-      const { meta, items } = parseFeedBody(
+      const { meta, items } = await parseFeedBody(
         { body, resourceUrl },
         context
       );
+      
+      log.verbose("Parsed feed (%s items) %s",
+                  items, title);
+      
       this.set({
         lastParsed: timeStart,
         data: Object.assign(data, {
@@ -182,10 +183,10 @@ module.exports = ({
   
   async parseAll (context, options = {}) {
     const { log, parseQueue } = context;
-    const feeds = (await this.collection().fetch()).slice(0, 1);
+    const feeds = (await this.collection().fetch()).slice(0, 10);
     log.debug("Enqueueing %s feeds to parse", feeds.length);
     return parseQueue.addAll(
-      feeds.map(feed => () => feed.parse(context, options))
+      feeds.map(feed => () => feed.parseBody(context, options))
     );
   },
 });
