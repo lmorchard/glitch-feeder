@@ -13,18 +13,9 @@ module.exports = (init, program) => {
 async function command (filename, env, context) {
   const { models, log } = context;
   const { Feed } = models;
-
-  const { meta, items } = await parseOpmlStream(
-    fs.createReadStream(filename, { encoding: "utf8" }),
-    context
-  );
-
-  let count = 0;
-  for (let item of items) {
-    if (item["#type"] !== "feed") { continue; }
-    await Feed.importFeed(item, context);
-    count++;
-  }
-  
+  const stream =
+    fs.createReadStream(filename, { encoding: "utf8" });
+  const count =
+    await Feed.importOpmlStream(stream, context);
   log.info("Imported %s feeds", count);
 };

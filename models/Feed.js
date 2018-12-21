@@ -9,7 +9,9 @@ module.exports = models => models.BaseModel.extend({
   tableName: "Feeds",
   uuid: true,
   
-  async pollResource ({ log }, options = {}) {
+  async pollResource (context, options = {}) {
+    const { log } = context;
+    
     const {
       title,
       resourceUrl,      
@@ -95,10 +97,15 @@ module.exports = models => models.BaseModel.extend({
           parseDuration: Date.now() - timeStart,
         })
       });
-      await this.save();      
-
+      await this.save();
+      
+      for (let item of items) {
+        await models.FeedItem.updateItem(this, item, context, options);
+      }
+      
+      log.verbose("Parsed %s items for feed %s", items.length, title);
     } catch (err) {
-      log.error("Feed fetch failed for %s - %s", title, err);
+      log.error("Feed poll failed for %s - %s", title, err);
       clearTimeout(abortTimeout);
       this.set({
         lastValidated: timeStart,
@@ -110,88 +117,20 @@ module.exports = models => models.BaseModel.extend({
       await this.save();      
     }
   },
-  
-  async parseBody (context, options = {}) {
-    const { log } = context;
-    
-    const {
-      id: feedId,
-      resourceUrl,      
-      title,
-      body: zbody,      
-      disabled = false,
-      data = {},
-      lastValidated = 0,
-      lastParsed = 0,
-    } = stripNullValues(this.toJSON());
-
-    const timeStart = Date.now();
-    
-    log.debug("Starting parse of %s", title);
-    
-    if (disabled === true) {
-      log.verbose("Skipping disabled feed %s", title);
-      return;
-    }
-    
-    if (lastParsed !== 0 && lastParsed > lastValidated) {
-      log.verbose("Skipping parse for fresh feed %s (%s > %s)", title, lastParsed, lastValidated);
-      return;
-    }
-    
-    try {
-      const body = await inflate(zbody);
-      const { meta, items } = await parseFeedBody(
-        { body, resourceUrl },
-        context
-      );
-      
-      log.verbose("Parsed %s items from feed %s",
-                  items.length, title);
-    } catch (err) {
-      log.error("Feed parse failed for %s - %s", title, err);
-      this.set({
-        lastParsed: timeStart,
-        lastError: err,
-        data: Object.assign(data, {
-          duration: Date.now() - timeStart,
-        })
-      });
-      await this.save();      
-    }
-  },
-  
-  async updateItems (context, options = {}) {
-    const { log, updateQueue } = context;
-    
-    const {
-      id: feedId,
-      resourceUrl,      
-      title,
-      disabled = false,
-      data = {},
-    } = stripNullValues(this.toJSON());
-
-    const {
-      items
-    } = data;
-
-    log.debug("Starting update of %s", title);
-
-    if (disabled === true) {
-      log.verbose("Skipping disabled feed %s", title);
-      return;
-    }
-    
-    try {
-      for (let item of items) {
-        await models.FeedItem.updateItem(this, item, context, options);
-      }
-    } catch (err) {
-      log.error("Feed update failed for %s - %s", title, err);
-    }
-  },
 }, {
+  async importOpmlStream (stream, context) {
+    const { log } = context;
+    const { meta, items } =
+      await parseOpmlStream(stream, context);
+
+    let count = 0;
+    for (let item of items) {
+      if (item["#type"] !== "feed") { continue; }
+      await this.importFeed(item, context);
+      count++;
+    }
+    return count;
+  },
   async importFeed (item, { log }) {
     const {
       title = "",

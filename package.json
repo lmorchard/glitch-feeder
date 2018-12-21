@@ -8,7 +8,9 @@
   "main": "server.js",
   "private": true,
   "scripts": {
-    "start": "node server.js"
+    "start": "node server.js",
+    "reset": "rm -rf .data && mkdir .data && knex migrate:latest && ./bin/feeder -d opml-import ./sample.opml",
+    "poll": "npm run 
   },
   "dependencies": {
     "bookshelf": "^0.14.2",
