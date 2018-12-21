@@ -8,7 +8,7 @@
   "main": "server.js",
   "private": true,
   "scripts": {
-    "start": "node server.js",
+    "start": "./bin/feeder server",
     "migrate": "knex migrate:latest",
     "reset": "rm -rf .data && mkdir .data && knex migrate:latest && ./bin/feeder -v opml-import ./sample.opml",
     "poll": "./bin/feeder -v poll-feeds"

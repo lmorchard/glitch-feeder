@@ -10,12 +10,5 @@ module.exports = (init, program) => {
 };
 
 async function command (options, context) {
-  const { models, log } = context;
-  const { Feed } = models;
-  const {
-    port,
-    host
-  } = options;
-
-  log.info("SERVER", port, host);
+  require("../server")(options, context);
 }
