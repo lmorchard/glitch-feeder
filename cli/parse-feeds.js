@@ -8,6 +8,7 @@ module.exports = (init, program) => {
 async function command (env, context) {
   const { models, log, parseQueue } = context;
   const { Feed } = models;
+  const options = {};
 
   const timeStart = Date.now();
   
@@ -20,7 +21,7 @@ async function command (env, context) {
                 parseQueue.size);
   }, 500);
   
-  await Feed.parseAll(context);
+  await Feed.parseAll(context, options);
   log.info("Feed parsing complete. (%sms)", Date.now() - timeStart);
   
   clearInterval(queueStatusTimer);

@@ -95,9 +95,10 @@ module.exports = ({
   },
   
   async parse (context, options = {}) {
-    const {
-      log
-    } = context;
+    console.log("CONTEXT", context);
+    return;
+    
+    const { log } = context;
     
     const {
       id: feedId,
