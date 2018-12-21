@@ -45,10 +45,18 @@ module.exports = models => models.BaseModel.extend({
       return;
     }
     
+    // Set up an abort timeout - we're not waiting forever for a feed    
+    const controller = new AbortController();
+    const abortTimeout = setTimeout(
+      () => controller.abort(),
+      parseInt(timeout)
+    );
+    
     try {
       const fetchOptions = {
         method: "GET",
-        headers: {}
+        headers: {},
+        signal: controller.signal,
       };
 
       // Set up some headers for conditional GET so we can see
@@ -60,18 +68,11 @@ module.exports = models => models.BaseModel.extend({
         fetchOptions.headers["If-Modified-Match"] = prevHeaders["last-modified"];
       }
 
-      // Set up an abort timeout - we're not waiting forever for a feed    
-      const controller = new AbortController();
-      const abortTimeout = setTimeout(
-        () => controller.abort(),
-        parseInt(timeout)
-      );
-      fetchOptions.signal = controller.signal;
-
-      
+      // Finally, fire off the GET request for the feed resource.
       const response = await fetch(resourceUrl, fetchOptions);
       clearTimeout(abortTimeout);
 
+      // Response headers are a Map - convert to plain object
       const headers = {};
       for (let [k, v] of response.headers) { headers[k] = v; }
       
@@ -90,6 +91,8 @@ module.exports = models => models.BaseModel.extend({
       await this.save();      
 
       if (response.status !== 200) {
+        // This is most likely where we hit 304 Not Modified,
+        // so skip parsing.
         log.verbose("Skipping parse for feed (%s %s) %s",
                     response.status, response.statusText, title);
         return;
@@ -116,7 +119,9 @@ module.exports = models => models.BaseModel.extend({
       log.verbose("Parsed %s items for feed %s", items.length, title);
     } catch (err) {
       log.error("Feed poll failed for %s - %s", title, err);
+      
       clearTimeout(abortTimeout);
+
       this.set({
         lastValidated: timeStart,
         lastError: err,
@@ -187,6 +192,7 @@ const parseOpmlStream = ({ stream }, { log }) =>
     const parser = new OpmlParser();
     
     parser.on("error", reject);
+    parser.on("end", () => resolve({ meta, items }));
     parser.on("readable", function () {
       meta = this.meta;
       let outline;
@@ -194,7 +200,6 @@ const parseOpmlStream = ({ stream }, { log }) =>
         items.push(outline);
       }
     });
-    parser.on("end", () => resolve({ meta, items }));
     
     stream.pipe(parser);
   });
