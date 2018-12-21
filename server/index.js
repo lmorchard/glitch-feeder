@@ -4,8 +4,11 @@ var bodyParser = require("body-parser");
 const PQueue = require("p-queue");
 
 module.exports = (options, context) => {
-  const { models, log } = context;
+  const { config, models, log } = context;
   const { knex, Feed, FeedItem } = models;
+  const {
+    API_BASE_URL,
+  } = config;
 
   const fetchQueue = new PQueue({ concurrency: 8 });
 
@@ -20,6 +23,15 @@ module.exports = (options, context) => {
 
   const apiBasePath = "/api/v1";
   const apiRouter = express.Router();
+
+  apiRouter.route("/").get(async (req, res) => {
+    res.json({
+      hrefs: {
+        feeds: `${API_BASE_URL}/feeds`,
+        items: `${API_BASE_URL}/items`,
+      }
+    });
+  });
   
   apiRouter.route("/feeds").get(async (req, res) => {
     const feeds = (await Feed.collection().fetch());

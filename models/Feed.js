@@ -6,8 +6,12 @@ const FeedParser = require("feedparser");
 const { stripNullValues } = require("../lib/common");
 
 module.exports = ({
+  context: {
+    config: {
+      API_BASE_URL
+    }
+  },
   models,
-  apiBasePath
 }) => models.BaseModel.extend({
   tableName: "Feeds",
   uuid: true,
@@ -15,8 +19,8 @@ module.exports = ({
   virtuals: {
     hrefs () {
       return {
-        self: `${apiBasePath}/feeds/${this.get("id")}`,
-        items: `${apiBasePath}/feeds/${this.get("id")}/items`,
+        self: `${API_BASE_URL}/feeds/${this.get("id")}`,
+        items: `${API_BASE_URL}/feeds/${this.get("id")}/items`,
       };
     },
   },

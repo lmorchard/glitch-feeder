@@ -21,7 +21,8 @@ const BaseModel = bookshelf.Model.extend({
   jsonColumns: ["data"]
 });
 
-module.exports = async ({ config }) => {
+module.exports = async (context) => {
+  const { config } = context;
   const {
     SITE_URL
   } = config;
@@ -38,8 +39,8 @@ module.exports = async ({ config }) => {
   ];
   for (let name of modelModules) {
     models[name] = await require(`./${name}`)({
+      context,
       models,
-      apiBasePath
     });
   }
   return models;
