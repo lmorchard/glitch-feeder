@@ -10,7 +10,7 @@ module.exports = (init, program) => {
 };
 
 async function command (filename, env, context) {
-  const { models, log } = context;
+  const { models, log, exit } = context;
   const { Feed } = models;
 
   const stream =
@@ -20,4 +20,5 @@ async function command (filename, env, context) {
     await Feed.importOpmlStream(stream, context);
 
   log.info("Imported %s feeds", count);
+  exit();
 };

@@ -9,7 +9,7 @@ module.exports = (init, program) => {
 };
 
 async function command (options, context) {
-  const { models, log } = context;
+  const { models, log, exit } = context;
   const { Feed } = models;
 
   const fetchQueue = new PQueue({ concurrency: 8 });
@@ -29,4 +29,5 @@ async function command (options, context) {
   log.info("Feed polling complete. (%sms)", Date.now() - timeStart);
   
   clearInterval(queueStatusTimer);
+  exit();
 }

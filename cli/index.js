@@ -1,9 +1,10 @@
 /* global arguments */
 const program = require("commander");
-const packageJson = require("../package.json");
 const winston = require("winston");
+const packageJson = require("../package.json");
 
-const models = require("../models");
+const setupModels = require("../models");
+const setupConfig = require("../lib/config");
 
 function main (argv) {
   program
@@ -26,14 +27,28 @@ function main (argv) {
 
 const init = fn => (...args) => (async () => {
   const command = args[args.length - 1];
-
-  const config = require("../lib/config")(process.env);
   
-  let logLevel = "info";
+  const config = await setupConfig(process.env);
+  const log = await setupLogging({ config, command });   
+  const models = await setupModels({ config, log });
+  
+  const exit = () => {
+    models.knex.destroy(() => process.exit());
+  };
+  
+  try {
+    await fn(...args, { config, log, models, exit });
+  } catch(error) {
+    log.error(error);
+  }
+})();
+
+async function setupLogging({ config, command }) {
+  let logLevel = command.parent.logLevel || "info";
   if (command.parent.verbose) { logLevel = "verbose"; }
   if (command.parent.debug) { logLevel = "debug"; }
   
-  const log = winston.createLogger({
+  return winston.createLogger({
     level: logLevel,
     format: winston.format.combine(
       winston.format.splat(),
@@ -43,26 +58,6 @@ const init = fn => (...args) => (async () => {
       new winston.transports.Console()
     ]
   });
-  
-  const models = await require("../models")({ config, log });
-  
-  try {
-    await fn(...args, { config, log, models });
-
-    // HACK / FIXME: destroying the DB connection always results in an error 
-    // involving PendingOperation unless we wait a little bit. There's got to
-    // be some other event we can tap into here.
-    /*
-    await new Promise(resolve =>
-      setTimeout(
-        () => models.knex.destroy(resolve()),
-        500
-      )
-    );
-    */
-  } catch(error) {
-    log.error(error);
-  }
-})();
+}
 
 module.exports = { main };
