@@ -79,11 +79,10 @@ module.exports = ({
           duration: Date.now() - timeStart,
         })
       });
-      await this.save();
-      
+      await this.save();      
     } catch (err) {
+      log.error("Feed fetch failed for %s - %s", title, err);
       clearTimeout(abortTimeout);
-      
       this.set({
         lastValidated: timeStart,
         lastError: err,
@@ -91,9 +90,7 @@ module.exports = ({
           duration: Date.now() - timeStart,
         })
       });
-      await this.save();
-      
-      log.error("Feed fetch failed %s %s", err, title);
+      await this.save();      
     }
   }
 }, {
@@ -106,7 +103,7 @@ module.exports = ({
       htmlurl = "",
     } = item;
     
-    log.debug("Importing feed '%s' (%s)", title || text, xmlurl);
+    log.verbose("Imported feed '%s' (%s)", title || text, xmlurl);
     
     return this.forge({
       title: text || title,

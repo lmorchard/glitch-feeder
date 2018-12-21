@@ -15,7 +15,7 @@ async function command (env, context) {
   log.info("Polling %s feeds...", count);
   
   const queueStatusTimer = setInterval(() => {
-    log.verbose("fetchQueue status (%s / %s)",
+    log.verbose("Fetch queue status (%s / %s)",
                 fetchQueue.pending,
                 fetchQueue.size);
   }, 500);

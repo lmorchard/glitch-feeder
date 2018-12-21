@@ -7,18 +7,16 @@ const commonFields = t => {
 exports.up = knex => knex.schema
   .createTable("Feeds", t => {
     commonFields(t);
+    t.boolean("disabled");
+    t.string("resourceUrl").index().unique();
     t.string("title");
     t.string("subtitle");
     t.string("link");
-    t.string("resourceUrl").index().unique();
-    t.string("etag");
-    t.boolean("disabled");
-    t.string("encoding");
     t.string("status");
     t.string("statusText");
     t.string("lastError");
     t.bigInteger("lastValidated");
-    t.string("maxAge");
+    t.bigInteger("lastParsed");
     t.text("body", "longtext");
   })
   .createTable("FeedItems", t => {
