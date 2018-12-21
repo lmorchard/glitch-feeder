@@ -229,8 +229,8 @@ module.exports = models => models.BaseModel.extend({
     log.debug("Enqueueing %s feeds to update", feedIds.length);
     
     for (let feedId of feedIds) {
-      const feed = await (Feed.collection().query({ where: { id: feedId }}).fetchOne());
-      console.log("FEED ID", feedId, feed.get("title"));
+      const feed = await (Feed.forge({ id: feedId }).fetch());
+      console.log("FEED ID", feedId, feed.id);
       /*
       await feed.updateItems(context, options);
       */
