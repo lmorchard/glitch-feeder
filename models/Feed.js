@@ -25,9 +25,8 @@ module.exports = ({
     
     const timeStart = Date.now();
     
-    log.verbose("Starting poll of %s", title);
+    log.debug("Starting poll of %s", title);
     
-    /*
     if (disabled === true) {
       log.verbose("Skipping disabled feed %s", title);
       return;
@@ -38,7 +37,6 @@ module.exports = ({
       log.verbose("Skipping fresh feed %s (%s < %s)", title, age, maxAge);
       return;
     }
-    */
     
     const controller = new AbortController();
     const abortTimeout = setTimeout(
@@ -58,23 +56,19 @@ module.exports = ({
       if (prevHeaders["last-modified"]) {
         fetchOptions.headers["If-Modified-Match"] = prevHeaders["last-modified"];
       }
-      
-      log.debug("Fetch options %s %s", title, JSON.stringify(fetchOptions));
-      
+
       const response = await fetch(resourceUrl, fetchOptions);
       clearTimeout(abortTimeout);
 
       const headers = {};
       for (let [k, v] of response.headers) { headers[k] = v; }
       
-      log.debug("Fetch status %s %s for %s %s",
-                typeof(response.status), response.statusText, title, JSON.stringify(headers));
-      
+      log.verbose("Fetched feed (%s %s) %s",
+                  response.status, response.statusText, title);
+
       if (response.status === 200) {
         this.set("body", await response.text());
       }
-      
-      const duration = Date.now() - timeStart;
 
       this.set({
         lastValidated: timeStart,
@@ -82,16 +76,24 @@ module.exports = ({
         statusText: response.statusText,
         data: Object.assign(data, {
           headers,
-          duration,
+          duration: Date.now() - timeStart,
         })
       });
-
       await this.save();
       
-      log.info("Fetched feed %s", title);
     } catch (err) {
       clearTimeout(abortTimeout);
-      throw err;      
+      
+      this.set({
+        lastValidated: timeStart,
+        lastError: err,
+        data: Object.assign(data, {
+          duration: Date.now() - timeStart,
+        })
+      });
+      await this.save();
+      
+      log.error("Feed fetch failed %s %s", err, title);
     }
   }
 }, {
