@@ -8,7 +8,7 @@ module.exports = ({
   tableName: "Feeds",
   uuid: true,
   
-  async poll ({ log }, options = {}) {
+  async pollResource ({ log }, options = {}) {
     const {
       title,
       resourceUrl,      
@@ -152,6 +152,33 @@ module.exports = ({
       await this.save();      
     }
   },
+  
+  async updateItems (context, options = {}) {
+    const { log } = context;
+    
+    const {
+      id: feedId,
+      resourceUrl,      
+      title,
+      disabled = false,
+      data = {},
+    } = stripNullValues(this.toJSON());
+
+    const {
+      items
+    } = data;
+
+    log.debug("Starting update of %s", title);
+
+    if (disabled === true) {
+      log.verbose("Skipping disabled feed %s", title);
+      return;
+    }
+    
+    try {
+    } catch (err) {
+    }
+  },
 }, {
   async importFeed (item, { log }) {
     const {
@@ -177,7 +204,7 @@ module.exports = ({
     const feeds = await this.collection().fetch();
     log.debug("Enqueueing %s feeds to poll", feeds.length);
     return fetchQueue.addAll(
-      feeds.map(feed => () => feed.poll(context, options))
+      feeds.map(feed => () => feed.pollResource(context, options))
     );
   },
   
