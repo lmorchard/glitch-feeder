@@ -224,6 +224,12 @@ module.exports = models => models.BaseModel.extend({
     const feedIds = await knex.from("Feeds").select("id");
 
     log.debug("Enqueueing %s feeds to parse", feedIds.length);
+    
+    for (let { id } of feedIds) {
+      const feed = await Feed.where("id", id).fetch();
+      await feed.parseBody(context, options);
+    }
+    /*
     return parseQueue.addAll(
       feedIds.map(
         ({ id }) => 
@@ -233,6 +239,7 @@ module.exports = models => models.BaseModel.extend({
           }
         )
     );
+    */
   },
   
   async updateAll (context, options = {}) {

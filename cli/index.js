@@ -30,7 +30,7 @@ const init = fn => (...args) => (async () => {
   
   const fetchQueue = new PQueue({ concurrency: 16 });
   const parseQueue = new PQueue({ concurrency: 4 });
-  const updateQueue = new PQueue({ concurrency: 1 });
+  const updateQueue = new PQueue({ concurrency: 4 });
   
   const models = await require("../models")();
   
@@ -63,12 +63,14 @@ const init = fn => (...args) => (async () => {
 
     // HACK / FIXME: destroying the DB connection always results in an error 
     // involving PendingOperation unless we wait a little bit
+    /*
     await new Promise(resolve =>
       setTimeout(
         () => models.knex.destroy(resolve()),
         500
       )
     );
+    */
   } catch(error) {
     log.error(error);
   }
