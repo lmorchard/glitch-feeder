@@ -221,11 +221,19 @@ module.exports = models => models.BaseModel.extend({
   },
   
   async updateAll (context, options = {}) {
-    const { log, updateQueue } = context;
-    const feeds = await this.collection().fetch();
-    log.debug("Enqueueing %s feeds to update", feeds.length);
-    for (let feed of feeds) {
+    const { log, updateQueue, models } = context;
+    const { knex, Feed } = models;
+    
+    const feedIds = await knex.from("Feeds").select("id");
+    
+    log.debug("Enqueueing %s feeds to update", feedIds.length);
+    
+    for (let feedId of feedIds) {
+      const feed = await Feed.forge({ id: feedId }).fetch();
+      console.log("FEED ID", feedId, feed.get("title"));
+      /*
       await feed.updateItems(context, options);
+      */
     }
   },
 });
