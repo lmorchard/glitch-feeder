@@ -77,11 +77,8 @@ module.exports = (options, context) => {
 
   apiRouter.route("/items/:uuid/html").get(async (req, res) => {
     const { uuid } = req.params;
-    try {
-      res.json(await FeedItem.where("id", uuid).fetch());
-    } catch (e) {
-      res.status(404).send({ status: "NOT FOUND" });
-    }
+    const item = await FeedItem.where("id", uuid).fetch();
+    res.send(item.get("summary") || item.get("description"));
   });
   
   app.use(API_BASE_PATH, apiRouter);

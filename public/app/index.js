@@ -66,7 +66,7 @@ const appTemplate = (props) => {
       <header>${currentFeed && currentFeedTemplate(currentFeed)}</header>
       <ul>
         ${repeat(
-          Object.values(items),
+          Object.values(items).slice(0, 10),
           item => item.id,
           itemTemplate,
         )}
@@ -98,10 +98,11 @@ const itemTemplate = ({
   link,
   summary,
   description,
+  hrefs,
 }) => html`
-  <li>
+  <li class="item">
     <a id=${id} class="item" href=${link}>${date}</a>: <a href=${link}>${title}</a>
-    <p .innerHTML=${summary || description} />
+    <iframe frameBorder="0" src=${hrefs.html}></iframe>
   </li>
 `;
 
