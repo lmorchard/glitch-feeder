@@ -128,8 +128,8 @@ module.exports = ({
         context
       );
       
-      log.verbose("Parsed feed (%s items) %s",
-                  items, title);
+      log.verbose("Parsed %s items from feed %s",
+                  items.length, title);
       
       this.set({
         lastParsed: timeStart,
@@ -183,7 +183,7 @@ module.exports = ({
   
   async parseAll (context, options = {}) {
     const { log, parseQueue } = context;
-    const feeds = (await this.collection().fetch()).slice(0, 10);
+    const feeds = (await this.collection().fetch());
     log.debug("Enqueueing %s feeds to parse", feeds.length);
     return parseQueue.addAll(
       feeds.map(feed => () => feed.parseBody(context, options))
