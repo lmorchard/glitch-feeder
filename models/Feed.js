@@ -1,6 +1,10 @@
 const AbortController = require("abort-controller");
 const fetch = require("node-fetch");
 const { parseFeedBody, stripNullValues } = require("../lib/common");
+const util = require("util");
+const zlib = require("zlib");
+const deflate = util.promisify(zlib.deflate);
+const inflate = util.promisify(zlib.inflate);
 
 module.exports = models => models.BaseModel.extend({
   tableName: "Feeds",
@@ -65,7 +69,9 @@ module.exports = models => models.BaseModel.extend({
                   response.status, response.statusText, title);
 
       if (response.status === 200) {
-        this.set("body", await response.text());
+        const body = await response.text();
+        const zbody = await deflate(body);
+        this.set("body", zbody);
       }
 
       this.set({
@@ -99,7 +105,7 @@ module.exports = models => models.BaseModel.extend({
       id: feedId,
       resourceUrl,      
       title,
-      body,      
+      body: zbody,      
       disabled = false,
       data = {},
       lastValidated = 0,
@@ -121,6 +127,7 @@ module.exports = models => models.BaseModel.extend({
     }
     
     try {
+      const body = await inflate(zbody);
       const { meta, items } = await parseFeedBody(
         { body, resourceUrl },
         context
