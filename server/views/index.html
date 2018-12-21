@@ -10,8 +10,8 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <title>Welcome to Glitch!</title>
-    <meta name="description" content="A cool thing made with Glitch">
+    <title>Glitch Feeder</title>
+    <meta name="description" content="Read your feeds on clitch">
     <link id="favicon" rel="icon" href="https://glitch.com/edit/favicon-app.ico" type="image/x-icon">
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -21,31 +21,20 @@
     <link rel="stylesheet" href="/index.css">
     
     <!-- import the webpage's client-side javascript file -->
-    <script src="https://unpkg.com/@webcomponents/webcomponentsjs@latest/webcomponents-loader.js"></script>
-    <script src="https://unpkg.com/redux@latest/dist/redux.min.js"></script>
-    <script src="https://unpkg.com/redux-actions@latest/dist/redux-actions.js"></script>
+    <script src="https://unpkg.com/@webcomponents/webcomponentsjs@2.2.1/webcomponents-loader.js"></script>
+    <script src="https://unpkg.com/redux@4.0.1/dist/redux.min.js"></script>
+    <script src="https://unpkg.com/redux-actions@2.6.4/dist/redux-actions.js"></script>
     <script type="module" src="/index.js"></script>
   </head>
   <body>
     <header>
       <h1>
-        A Dream of the Future
+        Glitch Feeder
       </h1>
     </header>
 
     <main>
-      <p class="bold">Oh hi,</p>
-      
-      <p>Tell me your hopes and dreams:</p>
-      
-      <form>
-        <input name="dream" type="text" maxlength="100" placeholder="Dreams!" aria-labelledby="submit-dream">
-        <button type="submit" id="submit-dream">Submit Dream</button>
-      </form>
-      
-      <section class="dreams">
-        <ul id="dreams"></ul>
-      </section>
+      <div id="app"></div>
     </main>
 
     <footer>
@@ -56,6 +45,5 @@
           to make it easier for folks to view source and remix -->
     <div class="glitchButton" style="position:fixed;top:20px;right:20px;"></div>
     <script src="https://button.glitch.me/button.js"></script>
-
   </body>
 </html>
