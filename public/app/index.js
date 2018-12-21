@@ -116,9 +116,15 @@ const itemTemplate = ({
   summary,
   description,
   hrefs,
+  feed: {
+    title: feedTitle,
+    link: feedLink,
+  },
 }) => html`
   <li class="item">
-    <a id=${id} class="item" href=${link}>${date}</a>: <a href=${link}>${title}</a>
+    <a id=${id} class="item" href=${link}>${date}</a>:
+    <a href=${feedLink}>${feedTitle}</a> - 
+    <a href=${link}>${title}</a>
     ${(summary || description) && 
       html`<iframe frameBorder="0" src=${hrefs.html}></iframe>`}
   </li>

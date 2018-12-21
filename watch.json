@@ -1,3 +1,20 @@
 {
+  "install": {
+    "include": [
+      "^package\\.json$"
+    ]
+  },
+  "restart": {
+    "exclude": [
+    ],
+    "include": [
+      "^server/",
+      "^models/",
+      "^public/",
+      "^lib/",
+      "^\\.env$",
+      "^package\\.json$"
+    ]
+  },
   "throttle": 1000
 }
