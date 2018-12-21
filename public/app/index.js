@@ -117,6 +117,7 @@ const itemTemplate = ({
   link,
   summary,
   description,
+  text,
   hrefs,
   feed: {
     title: feedTitle,
@@ -127,6 +128,7 @@ const itemTemplate = ({
     <a id=${id} class="item" href=${link}>${pubdate || date}</a>:
     <a href=${feedLink}>${feedTitle}</a> - 
     <a href=${link}>${title}</a>
+    ${ text && html`<p>${text}</p>` }
   </li>
 `;
 /*

@@ -1,4 +1,5 @@
 const crypto = require("crypto");
+const cheerio = require("cheerio");
 const { stripNullValues } = require("../lib/common");
 
 module.exports = ({
@@ -19,6 +20,16 @@ module.exports = ({
         html: `${API_BASE_URL}/items/${this.get("id")}/html`,
         feed: `${API_BASE_URL}/feeds/${this.get("feed_id")}`,
       };
+    },
+    text () {
+      const source = this.get("summary") || this.get("description");
+      if (!source) { return null; }
+      try {
+        const $ = cheerio.load(source);
+        return $.text();
+      } catch (e) {
+        return null;
+      }
     },
   },
   
