@@ -14,6 +14,7 @@ export async function init(appEl) {
       [
         "feeds",
         "items",
+        "currentFeed",
       ],
       name => selectors[name](state)
     ));
@@ -28,12 +29,15 @@ export async function init(appEl) {
   
   addEventListeners(appEl, {
     click: async (ev) => {
-      console.log(ev);
       if (ev.target.classList.contains("feed")) {
         const id = ev.target.id;
-        console.log("FEED", ev.target.id, ev.target.innerText);
         const state = store.getState();
-        const feed = selectors.getFeed(state)(
+
+        const feed = selectors.getFeed(state)(id);
+        store.dispatch(actions.setCurrentFeed(feed));
+        
+        const apiItems = await fetchJson(feed.hrefs.items);
+        store.dispatch(actions.loadItems(apiItems));
       }
     },
   });
@@ -46,7 +50,7 @@ const renderApp = (appEl, props) =>
   render(appTemplate(props), appEl);
 
 const appTemplate = (props) => {
-  const { feeds, items } = props;
+  const { feeds, items, currentFeed } = props;
   
   return html`
     <style>
@@ -65,6 +69,7 @@ const appTemplate = (props) => {
       </ul>
     </nav>
     <section class="items">
+      <header>${currentFeed && currentFeedTemplate(currentFeed)}</header>
       <ul>
         ${repeat(
           Object.values(items),
@@ -84,12 +89,20 @@ const feedTemplate = ({
   <li class="feed" id=${id}>${title}</li>
 `;
 
+const currentFeedTemplate = ({
+  title,
+  link,
+}) => html`
+  <h1><a href=${link}>${title}</a></h1>
+`;
+
 const itemTemplate = ({
+  date,
   title,
   link,
 }) => html`
   <li>
-    <a href=${link}>${title}</a>
+    ${date}: <a href=${link}>${title}</a>
   </li>
 `;
 

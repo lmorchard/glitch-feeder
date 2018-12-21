@@ -4,6 +4,7 @@ const { createStore, combineReducers, compose } = Redux;
 
 export const defaultState = {
   ui: {
+    currentFeed: null,
   },
   feeds: {
   },
@@ -16,18 +17,24 @@ export const selectors = {
   getFeed: state => id => state.feeds[id],
   items: state => state.items,
   getItem: state => id => state.items[id],
+  currentFeed: state => state.ui.currentFeed,
 };
 
 export const actions = createActions(
   {},
+  "setCurrentFeed",
   "loadFeeds",
   "loadItems",
 );
 
 export const reducers = {
+  ui: handleActions({
+    [actions.setCurrentFeed]: (state, { payload: feed }) =>
+      Object.assign({}, state, { currentFeed: feed }),
+  }, defaultState.ui),
   feeds: handleActions({
     [actions.loadFeeds]: (state, { payload: feeds = [] }) => {
-      const newState = Object.assign({}, state);
+      const newState = {};
       for (let feed of feeds) {
         newState[feed.id] = feed;
       }
@@ -36,17 +43,13 @@ export const reducers = {
   }, defaultState.feeds),
   items: handleActions({
     [actions.loadItems]: (state, { payload: items = [] }) => {
-      const newState = Object.assign({}, state);
+      const newState = {};
       for (let item of items) {
         newState[item.id] = item;
       }
       return newState;
     }
   }, defaultState.items),
-  /*
-  ui: handleActions({
-  }, defaultState.ui),
-  */
 };
 
 const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
