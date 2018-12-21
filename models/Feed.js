@@ -77,7 +77,7 @@ module.exports = ({
       const duration = Date.now() - timeStart;
 
       this.set({
-        lastValidated: timeNow,
+        lastValidated: timeStart,
         status: response.status,
         statusText: response.statusText,
         data: Object.assign(data, {
@@ -117,7 +117,7 @@ module.exports = ({
   async pollAll (context) {
     const { log, fetchQueue } = context;
     
-    const feeds = (await this.collection().fetch()).slice(0, 10);
+    const feeds = (await this.collection().fetch()); //.slice(0, 10);
     
     log.debug("Enqueueing %s feeds to poll", feeds.length);
     
