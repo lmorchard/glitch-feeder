@@ -14,7 +14,7 @@ function main (argv) {
   ;
 
   // TODO: list directory for modules?
-  const commandModules = ["opml-import", "poll-feeds"];
+  const commandModules = ["opml-import", "poll-feeds", "parse-feeds"];
   commandModules.forEach(name => require(`./${name}`)(init, program));
 
   program.parse(argv);

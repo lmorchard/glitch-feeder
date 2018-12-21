@@ -1,8 +1,6 @@
-const { Readable } = require("stream");
 const AbortController = require("abort-controller");
 const fetch = require("node-fetch");
-const FeedParser = require("feedparser");
-const { stripNullValues } = require("../lib/common");
+const { parseFeedBody, stripNullValues } = require("../lib/common");
 
 module.exports = ({
   BaseModel,
@@ -96,7 +94,11 @@ module.exports = ({
     }
   },
   
-  async parse ({ log }, options = {}) {
+  async parse (context, options = {}) {
+    const {
+      log
+    } = context;
+    
     const {
       id: feedId,
       resourceUrl,      
@@ -123,26 +125,10 @@ module.exports = ({
     }
     
     try {
-      let meta;
-      const items = [];
-      
-      await new Promise((resolve, reject) => {
-        const stream = new Readable();
-        const parser = new FeedParser({
-          feedurl: resourceUrl,
-        });
-        parser.on("error", reject);
-        parser.on("readable", function () {
-          meta = this.meta;
-          let item;
-          while (item = stream.read()) {
-            items.push(item);
-          }
-        });
-        stream.push(body);
-        stream.push(null);
-      });
-      
+      const { meta, items } = parseFeedBody(
+        { body, resourceUrl },
+        context
+      );
       this.set({
         lastParsed: timeStart,
         data: Object.assign(data, {
@@ -195,7 +181,7 @@ module.exports = ({
   
   async parseAll (context, options = {}) {
     const { log, parseQueue } = context;
-    const feeds = await this.collection().fetch();
+    const feeds = (await this.collection().fetch()).slice(0, 1);
     log.debug("Enqueueing %s feeds to parse", feeds.length);
     return parseQueue.addAll(
       feeds.map(feed => () => feed.parse(context, options))
