@@ -1,3 +1,5 @@
+const PQueue = require("p-queue");
+
 module.exports = (init, program) => {
   program
     .command("poll-feeds")
@@ -6,8 +8,10 @@ module.exports = (init, program) => {
 };
 
 async function command (env, context) {
-  const { models, log, fetchQueue } = context;
+  const { models, log } = context;
   const { Feed } = models;
+  
+  const fetchQueue = new PQueue({ concurrency: 8 });
 
   const timeStart = Date.now();
   
@@ -18,9 +22,9 @@ async function command (env, context) {
     log.verbose("Fetch queue status (%s / %s)",
                 fetchQueue.pending,
                 fetchQueue.size);
-  }, 500);
+  }, 1000);
   
-  await Feed.pollAll(context);
+  await Feed.pollAll(fetchQueue, context);
   log.info("Feed polling complete. (%sms)", Date.now() - timeStart);
   
   clearInterval(queueStatusTimer);

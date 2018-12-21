@@ -150,18 +150,17 @@ module.exports = models => models.BaseModel.extend({
     }).createOrUpdate({ data: item });
   },
   
-  async pollAll (context, options = {}) {
-    const { log, fetchQueue, models } = context;
+  async pollAll (fetchQueue, context, options = {}) {
+    const { log, models } = context;
     const { knex, Feed } = models;
     const feedIds = await knex.from("Feeds").select("id");
-
     log.debug("Enqueueing %s feeds to poll", feedIds.length);
+    const pollById = id => Feed
+      .where("id", id)
+      .fetch()
+      .then(feed => feed.pollResource(context, options));
     return fetchQueue.addAll(
-      feedIds.map(({ id }) => () => Feed
-        .where("id", id)
-        .fetch()
-        .then(feed => feed.pollResource(context, options))
-      )
+      feedIds.map(({ id }) => () => pollById(id))
     );
   },
   

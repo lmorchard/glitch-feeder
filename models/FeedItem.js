@@ -35,7 +35,7 @@ module.exports = models => models.BaseModel.extend({
           .update(link)
           .digest("hex");
 
-      log.debug("Updating item %s - %s - %s", feedId, feedTitle, title, guid);
+      log.debug("Updating item %s - %s", feedTitle, title, guid);
 
       return this.forge({
         feed_id: feedId,
