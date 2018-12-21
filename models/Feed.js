@@ -115,7 +115,6 @@ module.exports = models => models.BaseModel.extend({
       return;
     }
     
-    log.verbose("FOOP %s (%s > %s)", title, lastParsed, lastValidated);
     if (lastParsed !== 0 && lastParsed > lastValidated) {
       log.verbose("Skipping parse for fresh feed %s (%s > %s)", title, lastParsed, lastValidated);
       return;
@@ -211,21 +210,28 @@ module.exports = models => models.BaseModel.extend({
     return fetchQueue.addAll(
       feedIds.map(
         ({ id }) => 
-          () =>
-            Feed
-              .where("id", id)
-              .fetch()
-              .then(feed => feed.pollResource(context, options))
+          async () => {
+            const feed = await Feed.where("id", id).fetch();
+            feed.pollResource(context, options);
+          }
         )
     );
   },
   
   async parseAll (context, options = {}) {
     const { log, parseQueue } = context;
-    const feeds = await this.collection().fetch();
-    log.debug("Enqueueing %s feeds to parse", feeds.length);
+    const { knex, Feed } = models;
+    const feedIds = await knex.from("Feeds").select("id");
+
+    log.debug("Enqueueing %s feeds to parse", feedIds.length);
     return parseQueue.addAll(
-      feeds.map(feed => () => feed.parseBody(context, options))
+      feedIds.map(
+        ({ id }) => 
+          async () => {
+            const feed = await Feed.where("id", id).fetch();
+            feed.parseBody(context, options);
+          }
+        )
     );
   },
   
