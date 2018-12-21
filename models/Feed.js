@@ -160,6 +160,7 @@ module.exports = ({
 
     let count = 0;
     for (let item of items) {
+      console.log(item);
       if (item["#type"] !== "feed") { continue; }
       await this.importFeed(item, context);
       count++;

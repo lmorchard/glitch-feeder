@@ -10,10 +10,12 @@ bookshelf.plugin(require("bookshelf-uuid"), { type: "v1" });
 
 const BaseModel = bookshelf.Model.extend({
   hasTimestamps: true,
+  /*
   serialize: function (options) {
     const {data, ...obj} = bookshelf.Model.prototype.serialize.call(this, options);
     return Object.assign(stripNullValues(data), obj);
   },
+  */
   async createOrUpdate (props) {
     const model = (await this.fetch()) || this;
     return model.save(props);

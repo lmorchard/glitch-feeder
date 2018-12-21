@@ -62,7 +62,7 @@ module.exports = (options, context) => {
     const items = (await FeedItem
       .collection()
       .orderBy("-date")
-      .fetchPage({ withRelated: ["feed"], limit: 1000, offset: 0 }));
+      .fetchPage({ withRelated: ["feed"], limit: 25, offset: 0 }));
     res.json(items);
   });
 
