@@ -17,6 +17,7 @@ exports.up = knex => knex.schema
     t.string("status");
     t.string("statusText");
     t.string("lastError");
+    t.bigInteger("lastValidated");
     t.string("maxAge");
     t.text("body", "longtext");
   })
