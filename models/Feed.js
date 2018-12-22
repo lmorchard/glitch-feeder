@@ -1,3 +1,4 @@
+const { Model } = require("objection");
 const BaseModel = require("./BaseModel");
 
 class Feed extends BaseModel {
@@ -5,6 +6,52 @@ class Feed extends BaseModel {
     return "Feeds";
   }
   
+  static get relationMappings() {
+    const FeedItem = require("./FeedItem");
+    return {
+      items: {
+        relation: Model.HasManyRelation,
+        modelClass: FeedItem,
+        join: {
+          from: "Feeds.id",
+          to: "FeedItems.feed_id",
+        }
+      }
+    }
+  }
+  
+  static async importOpmlStream (stream, context) {
+    const { log } = context;
+    const { meta, items } =
+      await parseOpmlStream({ stream }, context);
+
+    let count = 0;
+    for (let item of items) {
+      if (item["#type"] !== "feed") { continue; }
+      await this.importFeed(item, context);
+      count++;
+    }
+    return count;
+  }
+
+  static async importFeed (item, { log }) {
+    const {
+      title = "",
+      text = "",
+      description = "",
+      xmlurl = "",
+      htmlurl = "",
+    } = item;
+
+    log.verbose("Imported feed '%s' (%s)", title || text, xmlurl);
+    
+    return this.forge({
+      title: text || title,
+      subtitle: description,
+      link: htmlurl,
+      resourceUrl: xmlurl,
+    }).createOrUpdate(item);
+  }  
 }
 
 /*
@@ -222,6 +269,7 @@ module.exports = ({
     return fetchQueue.addAll(jobs);
   },
 });
+*/
 
 const parseOpmlStream = ({ stream }, { log }) =>
   new Promise((resolve, reject) => {
@@ -265,4 +313,3 @@ const parseFeedStream = ({ stream, resourceUrl }, context) =>
     
     stream.pipe(parser);
   });
-*/

@@ -1,7 +1,7 @@
+const guid = require("objection-guid")();
 const { Model } = require("objection");
-const guid = require('objection-guid')();
 
-class BaseModel extends Model {
+class BaseModel extends guid(Model) {
 }
 
 module.exports = BaseModel;

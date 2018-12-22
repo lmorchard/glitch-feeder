@@ -1,6 +1,24 @@
+const { Model } = require("objection");
 const BaseModel = require("./BaseModel");
 
 class FeedItem extends BaseModel {
+  static get tableName() {
+    return "FeedItems";
+  }
+  
+  static get relationMappings() {
+    const Feed = require("./Feed");
+    return {
+      feed: {
+        relation: Model.BelongsToOneRelation,
+        modelClass: Feed,
+        join: {
+          from: "FeedItems.feed_id",
+          to: "Feeds.feed_id",
+        }
+      }
+    }
+  }
 }
 
 /*
