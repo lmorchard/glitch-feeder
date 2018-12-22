@@ -1,7 +1,7 @@
 const program = require("commander");
 const winston = require("winston");
 const packageJson = require("../package.json");
-const setupModels = require("../models");
+// const setupModels = require("../models");
 const setupConfig = require("../lib/config");
 
 function main (argv) {
@@ -28,7 +28,8 @@ const init = fn => (...args) => (async () => {
   
   const config = await setupConfig(process.env);
   const log = await setupLogging({ config, command });   
-  const models = await setupModels({ config, log });
+  // const models = await setupModels({ config, log });
+  const models = require("../models");
   
   const exit = (code = 0) => {
     models.knex.destroy(() => process.exit(code));

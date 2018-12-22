@@ -21,6 +21,8 @@ class FeedItem extends BaseModel {
   }
 }
 
+module.exports = FeedItem;
+
 /*
 const crypto = require("crypto");
 const cheerio = require("cheerio");

@@ -5,6 +5,7 @@ const { Model } = require("objection");
 Model.knex(knex);
 
 module.exports = {
+  knex,
   Feed: require("./Feed"),  
   FeedItem: require("./FeedItem"),  
 };

@@ -1,4 +1,11 @@
 const { Model } = require("objection");
+const FeedParser = require("feedparser");
+const OpmlParser = require("opmlparser");
+const stream = require("stream");
+const AbortController = require("abort-controller");
+const fetch = require("node-fetch");
+const { stripNullValues } = require("../lib/common");
+
 const BaseModel = require("./BaseModel");
 
 class Feed extends BaseModel {
@@ -38,29 +45,46 @@ class Feed extends BaseModel {
     const {
       title = "",
       text = "",
-      description = "",
-      xmlurl = "",
-      htmlurl = "",
+      description: subtitle = "",
+      xmlurl: resourceUrl = "",
+      htmlurl: link = "",
+      ...json
     } = item;
-
-    log.verbose("Imported feed '%s' (%s)", title || text, xmlurl);
     
-    return this.forge({
+    log.verbose("Imported feed '%s' (%s)", title || text, resourceUrl);
+    
+    return this.query().insert({
       title: text || title,
-      subtitle: description,
-      link: htmlurl,
-      resourceUrl: xmlurl,
-    }).createOrUpdate(item);
-  }  
+      subtitle,
+      link,
+      resourceUrl,
+      json
+    });
+  }
+   
+  async pollAll (fetchQueue, context, options = {}) {
+    const { log, models } = context;
+    const { knex, Feed } = models;
+    
+    // We could load up the whole feed collection here, but
+    // that eats a lot of memory. So, let's just load IDs and
+    // fetch feeds as needed in queue jobs...
+    const feedIds = await knex.from("Feeds").select("id").pluck("id");
+    log.debug("Enqueueing %s feeds to poll", feedIds.length);
+    const pollById = id => Feed
+      .where("id", id)
+      .fetch()
+      .then(feed => feed.pollResource(context, options));
+    const jobs = feedIds.map(id => () => pollById(id))
+    return fetchQueue.addAll(jobs);
+  }
+  
 }
 
+module.exports = Feed;
+
 /*
-module.exports = BaseModel;const stream = require("stream");
-const AbortController = require("abort-controller");
-const fetch = require("node-fetch");
-const OpmlParser = require("opmlparser");
-const FeedParser = require("feedparser");
-const { stripNullValues } = require("../lib/common");
+module.exports = BaseModel;
 
 module.exports = ({
   context: {
@@ -219,55 +243,6 @@ module.exports = ({
     }
   },
 }, {
-  async importOpmlStream (stream, context) {
-    const { log } = context;
-    const { meta, items } =
-      await parseOpmlStream({ stream }, context);
-
-    let count = 0;
-    for (let item of items) {
-      if (item["#type"] !== "feed") { continue; }
-      await this.importFeed(item, context);
-      count++;
-    }
-    return count;
-  },
-  
-  async importFeed (item, { log }) {
-    const {
-      title = "",
-      text = "",
-      description = "",
-      xmlurl = "",
-      htmlurl = "",
-    } = item;
-    
-    log.verbose("Imported feed '%s' (%s)", title || text, xmlurl);
-    
-    return this.forge({
-      title: text || title,
-      subtitle: description,
-      link: htmlurl,
-      resourceUrl: xmlurl,
-    }).createOrUpdate(item);
-  },
-  
-  async pollAll (fetchQueue, context, options = {}) {
-    const { log, models } = context;
-    const { knex, Feed } = models;
-    
-    // We could load up the whole feed collection here, but
-    // that eats a lot of memory. So, let's just load IDs and
-    // fetch feeds as needed in queue jobs...
-    const feedIds = await knex.from("Feeds").select("id").pluck("id");
-    log.debug("Enqueueing %s feeds to poll", feedIds.length);
-    const pollById = id => Feed
-      .where("id", id)
-      .fetch()
-      .then(feed => feed.pollResource(context, options));
-    const jobs = feedIds.map(id => () => pollById(id))
-    return fetchQueue.addAll(jobs);
-  },
 });
 */
 
