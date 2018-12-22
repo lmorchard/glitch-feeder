@@ -88,14 +88,7 @@ module.exports = ({
       return this.forge({
         feed_id: feedId,
         guid,
-      }).createOrUpdate({
-        title,
-        link,
-        summary,
-        date: date.toISOString(),
-        pubdate: pubdate.toISOString(),
-        data: item,
-      });
+      }).createOrUpdate(item);
     } catch (err) {
       log.error("Feed item update failed %s", err);
     }

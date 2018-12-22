@@ -118,10 +118,8 @@ module.exports = ({
         lastValidated: timeStart,
         status: response.status,
         statusText: response.statusText,
-        data: Object.assign(data, {
-          headers,
-          fetchDuration: Date.now() - timeStart,
-        })
+        headers,
+        fetchDuration: Date.now() - timeStart,
       });
       await this.save();      
 
@@ -140,10 +138,8 @@ module.exports = ({
       
       this.set({
         lastParsed: timeStart,
-        data: Object.assign(data, {
-          meta,
-          parseDuration: Date.now() - timeStart,
-        })
+        meta,
+        parseDuration: Date.now() - timeStart,
       });
       await this.save();
       
@@ -160,9 +156,7 @@ module.exports = ({
       this.set({
         lastValidated: timeStart,
         lastError: err,
-        data: Object.assign(data, {
-          duration: Date.now() - timeStart,
-        })
+        duration: Date.now() - timeStart,
       });
       await this.save();      
     }
@@ -175,7 +169,6 @@ module.exports = ({
 
     let count = 0;
     for (let item of items) {
-      console.log(item);
       if (item["#type"] !== "feed") { continue; }
       await this.importFeed(item, context);
       count++;

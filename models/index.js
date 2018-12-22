@@ -12,22 +12,26 @@ const BaseModel = bookshelf.Model.extend({
   parse (attrs) {
     let newAttrs = {};
     try {
-      newAttrs = JSON.parse(attrs.data);
-    } catch (e) {
-      /* no-op */
+      newAttrs = JSON.parse(attrs.json);
+    } catch (e) { /* no-op */ }
+    for (let name of this.tableFields) {
+      if (typeof attrs[name] !== "undefined") {
+        newAttrs[name] = attrs[name];
+      }
     }
-    for (let name of  this.tableFields) {
-      newAttrs[name] = attrs[name];
-    }
+    console.log("PARSE", attrs, "\n to \n", newAttrs);
     return newAttrs;
   },
   format (attrs) {
     const newAttrs = {};
     for (let name of this.tableFields) {
-      newAttrs[name] = attrs[name] || null;
-      delete attrs[name];
+      if (typeof attrs[name] !== "undefined") {
+        newAttrs[name] = attrs[name];
+        delete attrs[name];
+      }
     }
-    newAttrs.data = JSON.stringify(attrs);
+    newAttrs.json = JSON.stringify(attrs);
+    console.log("FORMAT", attrs, "\n to \n", newAttrs);
     return newAttrs;
   },
   async createOrUpdate (props) {

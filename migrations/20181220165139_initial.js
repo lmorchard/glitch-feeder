@@ -1,7 +1,7 @@
 const commonFields = t => {
   t.uuid("id").primary();
   t.timestamps();
-  t.text("data");
+  t.text("json");
 };
 
 exports.up = knex => knex.schema
