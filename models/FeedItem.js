@@ -57,7 +57,9 @@ module.exports = ({
   },
   
   parse (attrs) {
-    return newAttrs;
+    const newAttrs = Object.assign({}, attrs);
+    
+    return models.BaseModel.call(this, newAttrs);
   },
   
   format (attrs) {
