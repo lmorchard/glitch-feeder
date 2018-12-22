@@ -1,7 +1,7 @@
 const guid = require("objection-guid")();
 const { Model } = require("objection");
 
-class BaseModel extends guid(Model) {
+class BaseModel extends Model {
   static get jsonAttributes() {
     return ["json"];
   }

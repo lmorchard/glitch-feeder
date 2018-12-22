@@ -2,7 +2,7 @@ const { Model } = require("objection");
 const guid = require("objection-guid")();
 const BaseModel = require("./BaseModel");
 
-class FeedItem extends guid(BaseModel {
+class FeedItem extends guid(BaseModel) {
   static get tableName() {
     return "FeedItems";
   }
