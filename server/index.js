@@ -49,7 +49,9 @@ module.exports = (options, context) => {
 
   apiRouter.route("/feeds/:uuid/items").get(async (req, res) => {
     const { uuid } = req.params;
-    const items = await FeedItem.collection().where("id", uuid).fetch({ withRelated: ["feed"] });
+    const items = (await FeedItem
+      .collection()
+      .fetchPage({ withRelated: ["feed"], limit: 25, offset: 0 }));
     res.json(items);
   });
 
