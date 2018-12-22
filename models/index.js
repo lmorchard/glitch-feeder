@@ -9,6 +9,12 @@ bookshelf.plugin(require("bookshelf-uuid"), { type: "v1" });
 
 const BaseModel = bookshelf.Model.extend({
   hasTimestamps: true,
+  
+  async createOrUpdate (props) {
+    const model = (await this.fetch()) || this;
+    return model.save(props);
+  },
+  
   parse (attrs) {
     let newAttrs = {};
     try {
@@ -21,6 +27,7 @@ const BaseModel = bookshelf.Model.extend({
     }
     return newAttrs;
   },
+  
   format (attrs) {
     const newAttrs = {};
     const newJson = {};
@@ -35,10 +42,6 @@ const BaseModel = bookshelf.Model.extend({
       newAttrs.json = JSON.stringify(newJson);
     }
     return newAttrs;
-  },
-  async createOrUpdate (props) {
-    const model = (await this.fetch()) || this;
-    return model.save(props);
   },
 });
 

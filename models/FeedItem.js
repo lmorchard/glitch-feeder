@@ -55,6 +55,14 @@ module.exports = ({
   feed () {
     return this.belongsTo(models.Feed, "feed_id");
   },
+  
+  parse (attrs) {
+    return newAttrs;
+  },
+  
+  format (attrs) {
+    return newAttrs;
+  },
 }, {
   async updateItem (feed, item, context, options = {}) {
     const { log } = context;
