@@ -40,21 +40,16 @@ module.exports = (options, context) => {
 
   apiRouter.route("/feeds/:uuid").get(async (req, res) => {
     const { uuid } = req.params;
-    try {
-      res.json(await Feed.where("id", uuid).fetch());
-    } catch (e) {
-      res.status(404).send({ status: "NOT FOUND" });
-    }
+    res.json(await Feed.where("id", uuid).fetch());
   });
 
   apiRouter.route("/feeds/:uuid/items").get(async (req, res) => {
     const { uuid } = req.params;
-    console.log("WANG", FeedItem.collection());
-    const items = (await FeedItem
+    const items = await FeedItem
       .collection()
       .query(qb => qb.where({ feed_id: uuid }))
       .orderBy("-date")
-      .fetchPage({ withRelated: ["feed"], limit: 25, offset: 0 }));
+      .fetchPage({ withRelated: ["feed"] });
     res.json(items);
   });
 
@@ -68,11 +63,7 @@ module.exports = (options, context) => {
 
   apiRouter.route("/items/:uuid").get(async (req, res) => {
     const { uuid } = req.params;
-    try {
-      res.json(await FeedItem.where("id", uuid).fetch());
-    } catch (e) {
-      res.status(404).send({ status: "NOT FOUND" });
-    }
+    res.json(await FeedItem.where("id", uuid).fetch());
   });
 
   apiRouter.route("/items/:uuid/html").get(async (req, res) => {
