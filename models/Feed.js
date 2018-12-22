@@ -13,8 +13,23 @@ module.exports = ({
   },
   models,
 }) => models.BaseModel.extend({
-  tableName: "Feeds",
   uuid: true,
+  tableName: "Feeds",
+  tableFields: [
+    "id",
+    "updated_at",
+    "created_at",
+    "disabled",
+    "resourceUrl",
+    "title",
+    "subtitle",
+    "link",
+    "status",
+    "statusText",
+    "lastError",
+    "lastValidated",
+    "lastParsed",
+  ],
   
   virtuals: {
     hrefs () {
@@ -153,22 +168,6 @@ module.exports = ({
     }
   },
 }, {
-  tableFields: [
-    "id",
-    "updated_at",
-    "created_at",
-    "disabled",
-    "resourceUrl",
-    "title",
-    "subtitle",
-    "link",
-    "status",
-    "statusText",
-    "lastError",
-    "lastValidated",
-    "lastParsed",
-  ],
-  
   async importOpmlStream (stream, context) {
     const { log } = context;
     const { meta, items } =
@@ -200,7 +199,7 @@ module.exports = ({
       subtitle: description,
       link: htmlurl,
       resourceUrl: xmlurl,
-    }).createOrUpdate({ data: item });
+    }).createOrUpdate(item);
   },
   
   async pollAll (fetchQueue, context, options = {}) {

@@ -9,24 +9,31 @@ bookshelf.plugin(require("bookshelf-uuid"), { type: "v1" });
 
 const BaseModel = bookshelf.Model.extend({
   hasTimestamps: true,
-  /*
-  serialize: function (options) {
-    const {data, ...obj} = bookshelf.Model.prototype.serialize.call(this, options);
-    return Object.assign(stripNullValues(data), obj);
-  },
-  */
-  parse () {
+  parse (attrs) {
+    let newAttrs = {};
+    try {
+      newAttrs = JSON.parse(attrs.data);
+    } catch (e) {
+      /* no-op */
+    }
+    for (let name of  this.tableFields) {
+      newAttrs[name] = attrs[name];
+    }
+    return newAttrs;
   },
   format (attrs) {
-    const data = {};
     const newAttrs = {};
+    for (let name of this.tableFields) {
+      newAttrs[name] = attrs[name] || null;
+      delete attrs[name];
+    }
+    newAttrs.data = JSON.stringify(attrs);
+    return newAttrs;
   },
   async createOrUpdate (props) {
     const model = (await this.fetch()) || this;
     return model.save(props);
   },
-}, {
-  jsonColumn: "data"
 });
 
 module.exports = async (context) => {

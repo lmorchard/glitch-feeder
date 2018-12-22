@@ -10,8 +10,20 @@ module.exports = ({
   },
   models,
 }) => models.BaseModel.extend({
-  tableName: "FeedItems",
   uuid: true,
+  tableName: "FeedItems",
+  tableFields: [
+    "id",
+    "updated_at",
+    "created_at",
+    "feed_id",
+    "guid",
+    "title",
+    "link",
+    "summary",
+    "date",
+    "pubdate",
+  ],
   
   virtuals: {
     hrefs () {
@@ -44,19 +56,6 @@ module.exports = ({
     return this.belongsTo(models.Feed, "feed_id");
   },
 }, {
-  tableFields: [
-    "id",
-    "updated_at",
-    "created_at",
-    "feed_id",
-    "guid",
-    "title",
-    "link",
-    "summary",
-    "date",
-    "pubdate",
-  ],
-  
   async updateItem (feed, item, context, options = {}) {
     const { log } = context;
     
