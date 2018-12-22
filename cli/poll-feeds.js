@@ -10,13 +10,13 @@ module.exports = (init, program) => {
 
 async function command (options, context) {
   const { models, log, exit } = context;
-  const { Feed } = models;
+  const { knex, Feed } = models;
 
   const fetchQueue = new PQueue({ concurrency: 8 });
 
   const timeStart = Date.now();
   
-  const count = await Feed.collection().count();
+  const { count } = await knex.from("Feeds").count({count: "*"}).first();
   log.info("Polling %s feeds...", count);
   
   const queueStatusTimer = setInterval(() => {

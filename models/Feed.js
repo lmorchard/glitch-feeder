@@ -62,7 +62,7 @@ class Feed extends BaseModel {
     });
   }
    
-  async pollAll (fetchQueue, context, options = {}) {
+  static async pollAll (fetchQueue, context, options = {}) {
     const { log, models } = context;
     const { knex, Feed } = models;
     
@@ -72,61 +72,19 @@ class Feed extends BaseModel {
     const feedIds = await knex.from("Feeds").select("id").pluck("id");
     log.debug("Enqueueing %s feeds to poll", feedIds.length);
     const pollById = id => Feed
+      .query()
       .where("id", id)
-      .fetch()
-      .then(feed => feed.pollResource(context, options));
+      .then(feed => feed[0].pollResource(context, options));
     const jobs = feedIds.map(id => () => pollById(id))
     return fetchQueue.addAll(jobs);
   }
   
-}
-
-module.exports = Feed;
-
-/*
-module.exports = BaseModel;
-
-module.exports = ({
-  context: {
-    config: {
-      API_BASE_URL
-    }
-  },
-  models,
-}) => models.BaseModel.extend({
-  uuid: true,
-  tableName: "Feeds",
-  tableFields: [
-    "id",
-    "updated_at",
-    "created_at",
-    "disabled",
-    "resourceUrl",
-    "title",
-    "subtitle",
-    "link",
-    "status",
-    "statusText",
-    "lastError",
-    "lastValidated",
-    "lastParsed",
-  ],
-  
-  virtuals: {
-    hrefs () {
-      return {
-        self: `${API_BASE_URL}/feeds/${this.get("id")}`,
-        items: `${API_BASE_URL}/feeds/${this.get("id")}/items`,
-      };
-    },
-  },
-  
-  items () {
-    return this.hasMany(models.FeedItem, "feed_id");
-  },
-  
   async pollResource (context, options) {
     const { log } = context;
+    
+    console.log("POLL", this);
+    
+    /*
     
     const {
       force = false,
@@ -241,6 +199,53 @@ module.exports = ({
       });
       await this.save();      
     }
+    */
+  }
+  
+}
+
+module.exports = Feed;
+
+/*
+module.exports = BaseModel;
+
+module.exports = ({
+  context: {
+    config: {
+      API_BASE_URL
+    }
+  },
+  models,
+}) => models.BaseModel.extend({
+  uuid: true,
+  tableName: "Feeds",
+  tableFields: [
+    "id",
+    "updated_at",
+    "created_at",
+    "disabled",
+    "resourceUrl",
+    "title",
+    "subtitle",
+    "link",
+    "status",
+    "statusText",
+    "lastError",
+    "lastValidated",
+    "lastParsed",
+  ],
+  
+  virtuals: {
+    hrefs () {
+      return {
+        self: `${API_BASE_URL}/feeds/${this.get("id")}`,
+        items: `${API_BASE_URL}/feeds/${this.get("id")}/items`,
+      };
+    },
+  },
+  
+  items () {
+    return this.hasMany(models.FeedItem, "feed_id");
   },
 }, {
 });
