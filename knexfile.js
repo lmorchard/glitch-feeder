@@ -1,6 +1,6 @@
 module.exports = {
   development: {
-    debug: false,
+    debug: true,
     client: 'sqlite3',
     connection: {
       filename: './.data/sqlite.db'

@@ -22,15 +22,18 @@ const BaseModel = bookshelf.Model.extend({
     return newAttrs;
   },
   format (attrs) {
-    const newAttrs = { json: {} };
+    const newAttrs = {};
+    const newJson = {};
     for (let name of Object.keys(attrs)) {
       if (this.tableFields.includes(name)) {
         newAttrs[name] = attrs[name];
       } else {
-        newAttrs.json[name] = attrs[name];     
+        newJson[name] = attrs[name];     
       }
     }
-    newAttrs.json = JSON.stringify(newAttrs.json);
+    if (Object.keys(newJson).length) {
+      newAttrs.json = JSON.stringify(newJson);
+    }
     return newAttrs;
   },
   async createOrUpdate (props) {

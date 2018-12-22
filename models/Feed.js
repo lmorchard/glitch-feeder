@@ -121,13 +121,13 @@ module.exports = ({
         headers,
         fetchDuration: Date.now() - timeStart,
       });
-      await this.save();      
 
       if (response.status !== 200) {
         // This is most likely where we hit 304 Not Modified,
         // so skip parsing.
         log.verbose("Skipping parse for feed (%s %s) %s",
                     response.status, response.statusText, title);
+        await this.save();
         return;
       }
       
@@ -149,7 +149,7 @@ module.exports = ({
       
       log.verbose("Parsed %s items for feed %s", items.length, title);
     } catch (err) {
-      log.error("Feed poll failed for %s - %s", title, err, ett.stack);
+      log.error("Feed poll failed for %s - %s", title, err, err.stack);
       
       clearTimeout(abortTimeout);
 
