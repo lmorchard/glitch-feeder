@@ -149,7 +149,7 @@ module.exports = ({
       
       log.verbose("Parsed %s items for feed %s", items.length, title);
     } catch (err) {
-      log.error("Feed poll failed for %s - %s", title, err);
+      log.error("Feed poll failed for %s - %s", title, err, ett.stack);
       
       clearTimeout(abortTimeout);
 
