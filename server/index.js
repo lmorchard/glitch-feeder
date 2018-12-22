@@ -49,13 +49,8 @@ module.exports = (options, context) => {
 
   apiRouter.route("/feeds/:uuid/items").get(async (req, res) => {
     const { uuid } = req.params;
-    try {
-      const feed = await Feed.where("id", uuid).fetch();
-      const items = await feed.items().fetch();
-      res.json(items);
-    } catch (e) {
-      res.status(404).send({ status: "NOT FOUND" });
-    }
+    const items = await FeedItem.collection().where("id", uuid).fetch({ withRelated: ["feed"] });
+    res.json(items);
   });
 
   apiRouter.route("/items").get(async (req, res) => {
