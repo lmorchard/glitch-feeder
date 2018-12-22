@@ -61,29 +61,21 @@ module.exports = ({
   parse (attrs) {
     const newAttrs = Object.assign({}, attrs);
     for (let [name, value] of Object.entries(attrs)) {
-      if (value === null || typeof value === "undefined") {
-        continue;
-      }
-      if (this.dateFields.includes(name)) {
+      if (value && this.dateFields.includes(name)) {
         newAttrs[name] = new Date(value);
       }
     }
-    console.log("PARSE", attrs, newAttrs);
-    return models.BaseModel.parse.call(this, newAttrs);
+    return models.BaseModel.prototype.parse.call(this, newAttrs);
   },
   
   format (attrs) {
     const newAttrs = Object.assign({}, attrs);
     for (let [name, value] of Object.entries(attrs)) {
-      if (value === null || typeof value === "undefined") {
-        continue;
-      }
-      if (this.dateFields.includes(name)) {
+      if (value && this.dateFields.includes(name)) {
         newAttrs[name] = value.toISOString();
       }
     }
-    console.log("FORMAT", attrs, newAttrs);
-    return models.BaseModel.format.call(this, newAttrs);
+    return models.BaseModel.prototype.format.call(this, newAttrs);
   },
 }, {
   async updateItem (feed, item, context, options = {}) {

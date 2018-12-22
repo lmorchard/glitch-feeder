@@ -49,7 +49,7 @@ module.exports = ({
     
     const {
       force = false,
-      timeout = 10000,
+      timeout = 20000,
       maxage = 30 * 60 * 1000,
     } = options;
     
