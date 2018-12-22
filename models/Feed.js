@@ -1,4 +1,6 @@
 const { Model } = require("objection");
+const guid = require("objection-guid")();
+
 const FeedParser = require("feedparser");
 const OpmlParser = require("opmlparser");
 const stream = require("stream");
@@ -8,7 +10,7 @@ const { stripNullValues } = require("../lib/common");
 
 const BaseModel = require("./BaseModel");
 
-class Feed extends BaseModel {
+class Feed extends guid(BaseModel) {
   static get tableName() {
     return "Feeds";
   }
@@ -53,13 +55,17 @@ class Feed extends BaseModel {
     
     log.verbose("Imported feed '%s' (%s)", title || text, resourceUrl);
     
-    return this.query().insert({
+    const feed = await this.query().insert({
       title: text || title,
       subtitle,
       link,
       resourceUrl,
       json
     });
+    
+    console.log("FEED", feed);
+    
+    return feed;
   }
    
   static async pollAll (fetchQueue, context, options = {}) {
@@ -69,7 +75,8 @@ class Feed extends BaseModel {
     // We could load up the whole feed collection here, but
     // that eats a lot of memory. So, let's just load IDs and
     // fetch feeds as needed in queue jobs...
-    const feedIds = await knex.from("Feeds").select("id").pluck("id");
+    const feedIds = await knex.from("Feeds").select("id");
+    console.log("FEEDIDS", feedIds);
     log.debug("Enqueueing %s feeds to poll", feedIds.length);
     const pollById = id => Feed
       .query()
@@ -81,10 +88,6 @@ class Feed extends BaseModel {
   
   async pollResource (context, options) {
     const { log } = context;
-    
-    console.log("POLL", this);
-    
-    /*
     
     const {
       force = false,
@@ -99,6 +102,10 @@ class Feed extends BaseModel {
       data = {},
       lastValidated = 0,
     } = stripNullValues(this.toJSON());
+    
+    console.log("FEED", title);    
+    
+    /*    
     
     const {
       headers: prevHeaders = {},
