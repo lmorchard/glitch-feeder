@@ -153,6 +153,22 @@ module.exports = ({
     }
   },
 }, {
+  tableFields: [
+    "id",
+    "updated_at",
+    "created_at",
+    "disabled",
+    "resourceUrl",
+    "title",
+    "subtitle",
+    "link",
+    "status",
+    "statusText",
+    "lastError",
+    "lastValidated",
+    "lastParsed",
+  ],
+  
   async importOpmlStream (stream, context) {
     const { log } = context;
     const { meta, items } =

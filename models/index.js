@@ -15,6 +15,12 @@ const BaseModel = bookshelf.Model.extend({
     return Object.assign(stripNullValues(data), obj);
   },
   */
+  parse () {
+  },
+  format (attrs) {
+    const data = {};
+    const newAttrs = {};
+  },
   async createOrUpdate (props) {
     const model = (await this.fetch()) || this;
     return model.save(props);

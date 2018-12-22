@@ -44,6 +44,19 @@ module.exports = ({
     return this.belongsTo(models.Feed, "feed_id");
   },
 }, {
+  tableFields: [
+    "id",
+    "updated_at",
+    "created_at",
+    "feed_id",
+    "guid",
+    "title",
+    "link",
+    "summary",
+    "date",
+    "pubdate",
+  ],
+  
   async updateItem (feed, item, context, options = {}) {
     const { log } = context;
     

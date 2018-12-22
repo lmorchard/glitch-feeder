@@ -31,7 +31,6 @@ exports.up = knex => knex.schema
 ;
 
 exports.down = knex => knex.schema
-  .dropTable("Resources")
   .dropTable("Feeds")
   .dropTable("FeedItems")
 ;
