@@ -1,5 +1,15 @@
 const knexfile = require("../knexfile");
 const knex = require("knex")(knexfile.development);
+
+const { Model } = require("objection");
+Model.knex(knex);
+
+module.exports = {
+  Feed: require("./Feed"),  
+  FeedItem: require("./FeedItem"),  
+};
+
+/*
 const bookshelf = require("bookshelf")(knex);
 const { stripNullValues } = require("../lib/common");
 
@@ -19,7 +29,9 @@ const BaseModel = bookshelf.Model.extend({
     let newAttrs = {};
     try {
       newAttrs = JSON.parse(attrs.json);
-    } catch (e) { /* no-op */ }
+    } catch (e) { 
+      // no-op 
+    }
     for (let name of this.tableFields) {
       if (typeof attrs[name] !== "undefined") {
         newAttrs[name] = attrs[name];
@@ -56,6 +68,7 @@ module.exports = async (context) => {
     knex,  
     bookshelf,
     BaseModel,
+    FeederBaseModel,
   };
   const modelModules = [
     "Feed",
@@ -69,3 +82,4 @@ module.exports = async (context) => {
   }
   return models;
 }
+*/

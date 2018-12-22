@@ -1,4 +1,14 @@
-const stream = require("stream");
+const BaseModel = require("./BaseModel");
+
+class Feed extends BaseModel {
+  static get tableName() {
+    return "Feeds";
+  }
+  
+}
+
+/*
+module.exports = BaseModel;const stream = require("stream");
 const AbortController = require("abort-controller");
 const fetch = require("node-fetch");
 const OpmlParser = require("opmlparser");
@@ -255,3 +265,4 @@ const parseFeedStream = ({ stream, resourceUrl }, context) =>
     
     stream.pipe(parser);
   });
+*/

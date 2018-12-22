@@ -1,3 +1,9 @@
+const BaseModel = require("./BaseModel");
+
+class FeedItem extends BaseModel {
+}
+
+/*
 const crypto = require("crypto");
 const cheerio = require("cheerio");
 const { stripNullValues } = require("../lib/common");
@@ -116,3 +122,4 @@ module.exports = ({
     }
   }  
 });
+*/

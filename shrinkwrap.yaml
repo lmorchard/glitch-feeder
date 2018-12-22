@@ -10,6 +10,7 @@ dependencies:
   knex: 0.16.3
   node-fetch: 2.3.0
   objection: 1.4.0
+  objection-guid: 3.0.2
   opmlparser: 0.8.0
   p-queue: 3.0.0
   sanitize-html: 1.20.0
@@ -2359,6 +2360,14 @@ packages:
       node: '>=0.10.0'
     resolution:
       integrity: sha1-h6EKxMFpS9Lhy/U1kaZhQftd10c=
+  /objection-guid/3.0.2:
+    dependencies:
+      uuid: 3.3.2
+    dev: false
+    engines:
+      node: '>=6'
+    resolution:
+      integrity: sha512-od83U6yvPkJ8KHkTIzzElQXIEFktG3bIvW9EchPX7CXx6OVDMcn9ayamh2N5K67qs9njPUO92zLKNtFgkLXngg==
   /objection/1.4.0:
     dependencies:
       ajv: 6.6.2
@@ -3546,6 +3555,7 @@ specifiers:
   knex: ^0.16.3
   node-fetch: ^2.3.0
   objection: ^1.4.0
+  objection-guid: ^3.0.2
   opmlparser: ^0.8.0
   p-queue: ^3.0.0
   sanitize-html: ^1.20.0
