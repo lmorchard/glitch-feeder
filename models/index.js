@@ -5,7 +5,6 @@ const { stripNullValues } = require("../lib/common");
 
 bookshelf.plugin("pagination");
 bookshelf.plugin("virtuals");
-bookshelf.plugin(require("bookshelf-json-columns"));
 bookshelf.plugin(require("bookshelf-uuid"), { type: "v1" });
 
 const BaseModel = bookshelf.Model.extend({
@@ -21,7 +20,7 @@ const BaseModel = bookshelf.Model.extend({
     return model.save(props);
   },
 }, {
-  jsonColumns: ["data"]
+  jsonColumn: "data"
 });
 
 module.exports = async (context) => {
