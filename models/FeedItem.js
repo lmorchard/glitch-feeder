@@ -12,10 +12,6 @@ class FeedItem extends guid(BaseModel) {
   static get tableName() {
     return "FeedItems";
   }
-    
-  static get uniqueAttributes() {
-    return [ "guid" ];
-  }
 
   static get relationMappings() {
     const Feed = require("./Feed");
@@ -29,6 +25,10 @@ class FeedItem extends guid(BaseModel) {
         }
       }
     }
+  }
+    
+  static get uniqueAttributes() {
+    return [ "guid" ];
   }
   
   static get virtualAttributes() {

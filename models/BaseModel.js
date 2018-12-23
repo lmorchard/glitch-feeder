@@ -1,7 +1,7 @@
 const { Model } = require("objection");
-const { DbErrors } = require('objection-db-errors');
 const guid = require("objection-guid")();
-const { UniqueViolationError } = require('objection-db-errors');
+const { DbErrors, UniqueViolationError } = require('objection-db-errors');
+const { mapToObject } = require("../lib/common");
 
 class BaseModel extends DbErrors(Model) {
   static get jsonAttributes() {
@@ -17,24 +17,26 @@ class BaseModel extends DbErrors(Model) {
   }
 
   static async insertOrUpdate(attrs, { log }) {
-    const { resourceUrl } = attrs;
-    let feed;
+    const uniqueAttrs = mapToObject(
+      this.uniqueAttributes,
+      name => attrs[name]
+    );
+    let model;
     try {
-      feed = await this.query().insert(attrs);    
-      log.verbose("Imported feed '%s' (%s)", feed.title, resourceUrl);
+      model = await this.query().insert(attrs);    
+      log.debug("Inserted model", uniqueAttrs);
     } catch (err) {
       if (err instanceof UniqueViolationError) { 
         // HACK: Only try an update on an insert failed on constraint
-        await this.query().where({ resourceUrl }).patch(attrs);
-        feed = await this.query().where({ resourceUrl }).first();
-        log.verbose("Updated feed '%s' (%s)", feed.title, resourceUrl);
+        await this.query().where(uniqueAttrs).patch(attrs);
+        model = await this.query().where(uniqueAttrs).first();
+        log.debug("Updated model", uniqueAttrs);
       } else {
         throw err; 
       }
     }
-    return feed;
+    return model;
   }
-  
 }
 
 module.exports = BaseModel;

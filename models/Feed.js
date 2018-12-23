@@ -17,10 +17,6 @@ class Feed extends guid(BaseModel) {
     return "Feeds";
   }
   
-  static get uniqueAttributes() {
-    return [ "resourceUrl" ];
-  }
-  
   static get relationMappings() {
     const FeedItem = require("./FeedItem");
     return {
@@ -33,6 +29,10 @@ class Feed extends guid(BaseModel) {
         }
       }
     }
+  }
+  
+  static get uniqueAttributes() {
+    return [ "resourceUrl" ];
   }
   
   static get virtualAttributes() {
@@ -60,7 +60,7 @@ class Feed extends guid(BaseModel) {
     return count;
   }
 
-  static async importFeed (item, { log }) {
+  static async importFeed (item, context) {
     const {
       title = "",
       text = "",
@@ -75,7 +75,7 @@ class Feed extends guid(BaseModel) {
       link,
       resourceUrl,
       json
-    }, { log });
+    }, context);
   }
    
   static async pollAll (fetchQueue, context, options = {}) {
