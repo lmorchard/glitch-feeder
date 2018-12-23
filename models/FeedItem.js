@@ -63,13 +63,13 @@ class FeedItem extends guid(BaseModel) {
     let item;
     try {
       item = await this.query().insert(attrs);    
-      log.verbose("Imported entry '%s'", guid);
+      log.debug("Inserted entry '%s'", guid);
     } catch (e) {
       // HACK: Only try an update on an insert failed on constraint
       if (e.code !== "SQLITE_CONSTRAINT") { throw e; }
       await this.query().where({ guid }).patch(attrs);
       item = await this.query().where({ guid }).first();
-      log.verbose("Updated entry '%s'", guid);
+      log.debug("Updated entry '%s'", guid);
     }
     return item;
   }
@@ -91,25 +91,20 @@ class FeedItem extends guid(BaseModel) {
       author = "",          
       date = new Date(),
       pubdate = new Date(),
+      ...json
     } = stripNullValues(item);
 
-    try {
-      let guid = item.guid ||
-        crypto
-          .createHash("md5")
-          .update(title)
-          .update(link)
-          .digest("hex");
-
-      log.debug("Updating item %s - %s", feedTitle, title, guid);
-
-      return this.insertOrUpdate(
-        Object.assign({ feed_id }, item),
-        { log }
-      );
-    } catch (err) {
-      log.error("Feed item update failed %s", err);
-    }
+    return this.insertOrUpdate({
+      feed_id,
+      guid: item.guid ||
+        crypto.createHash("md5").update(title).update(link).digest("hex"),
+      title,
+      link,
+      summary,
+      date: date ? date.toISOString() : "",
+      pubdate: pubdate ? pubdate.toISOString() : "",
+      json
+    }, { log });
   }  
 }
 

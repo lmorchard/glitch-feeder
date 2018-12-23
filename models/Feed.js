@@ -100,13 +100,13 @@ class Feed extends guid(BaseModel) {
     log.debug("Enqueueing %s feeds to poll", feedIds.length);
     const pollById = async id => {
       const feed = await this.query().where({ id }).first();
-      await feed.pollResource(context, options);
+      await feed.pollFeed(context, options);
     };
     const jobs = feedIds.map(({ id }) => () => pollById(id))
     return fetchQueue.addAll(jobs);
   }
   
-  async pollResource (context, options) {
+  async pollFeed (context, options) {
     const { log } = context;
     
     const {
