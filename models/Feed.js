@@ -59,6 +59,7 @@ class Feed extends guid(BaseModel) {
   }
 
   static async importFeed (item, context) {
+    const { log } = context;
     const {
       title = "",
       text = "",
@@ -67,13 +68,15 @@ class Feed extends guid(BaseModel) {
       htmlurl: link = "",
       ...json
     } = item;
-    return Feed.insertOrUpdate({
+    const feed = await Feed.insertOrUpdate({
       title: text || title,
       subtitle,
       link,
       resourceUrl,
       json
     }, context);
+    log.verbose("Imported feed %s (%s)", feed.title, feed.resourceUrl);
+    return feed;
   }
 
   static async pollAll (fetchQueue, context, options = {}) {
@@ -205,7 +208,6 @@ class Feed extends guid(BaseModel) {
 
         log.verbose("Parsed %s items for feed %s", items.length, title);
       }
-      log.verbose("I LIKE PIE");
     } catch (err) {
       log.error("Feed poll failed for %s - %s", title, err, err.stack);
       
@@ -221,9 +223,7 @@ class Feed extends guid(BaseModel) {
     }
 
     try {
-      log.verbose("UPDATE OF FEED AWAIT", id, attrs);
-      const result = await this.patch(attrs);
-      log.verbose("UPDATE OF FEED DONE", result, id, attrs);
+      return await this.$query().patch(attrs);
     } catch (err) {
       log.error("Feed update failed for %s - %s", title, err, err.stack);
     }
