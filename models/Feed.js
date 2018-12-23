@@ -99,7 +99,7 @@ class Feed extends guid(BaseModel) {
     
     const {
       force = false,
-      timeout = 20000,
+      timeout = 10000,
       maxage = 30 * 60 * 1000,
     } = options;
     
@@ -222,7 +222,7 @@ class Feed extends guid(BaseModel) {
     }
 
     try {
-      return await this.$query().patch(attrs);
+      return this.$query().patch(attrs);
     } catch (err) {
       log.error("Feed update failed for %s - %s", title, err, err.stack);
     }

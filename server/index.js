@@ -40,19 +40,13 @@ module.exports = (options, context) => {
 
   apiRouter.route("/feeds/:id").get(async (req, res) => {
     const { id } = req.params;
-    const feed = await Feed
-      .query()
-      .where({ id })
-      .first();
+    const feed = await Feed.query().where({ id }).first();
     res.json(feed);
   });
 
   apiRouter.route("/feeds/:feed_id/items").get(async (req, res) => {
     const { feed_id } = req.params;
-    const items = await FeedItem
-      .query()
-      .where({ feed_id })
-      .eager("feed");
+    const items = await FeedItem.query().where({ feed_id }).eager("feed");
     res.json(items);
   });
 
@@ -75,10 +69,10 @@ module.exports = (options, context) => {
     res.json(item);
   });
 
-  apiRouter.route("/items/:uuid/html").get(async (req, res) => {
-    const { uuid } = req.params;
-    const item = await FeedItem.where("id", uuid).fetch();
-    res.send(item.get("html"));
+  apiRouter.route("/items/:id/html").get(async (req, res) => {
+    const { id } = req.params;
+    const item = await FeedItem.query().where({ id }).first();
+    res.send(item.html());
   });
   
   app.use(API_BASE_PATH, apiRouter);
