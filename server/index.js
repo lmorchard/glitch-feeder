@@ -25,8 +25,8 @@ module.exports = (options, context) => {
   app.get("/api", async (req, res) => {
     res.json({
       hrefs: {
+        folders: `${API_BASE_URL}/folders`,
         feeds: `${API_BASE_URL}/feeds`,
-        folders: `${API_BASE_URL}/feeds`,
         items: `${API_BASE_URL}/items`,
       }
     });
@@ -34,8 +34,25 @@ module.exports = (options, context) => {
 
   const apiRouter = express.Router();
   
+  apiRouter.route("/folders").get(async (req, res) => {
+    const folders = await knex("Feeds").distinct("folder");
+    const out = {};
+    for (let { folder } of folders) {
+      out[folder] = {
+        feeds: `${API_BASE_URL}/feeds?folder=${folder}`,
+        items: `${API_BASE_URL}/items?folder=${folder}`,
+      };
+    }
+    res.json(out);
+  });
+  
   apiRouter.route("/feeds").get(async (req, res) => {
-    const feeds = await Feed.query();
+    const { folder } = req.query;
+    const where = {};
+    if (folder) {
+      where.folder = folder;
+    } 
+    const feeds = await Feed.query().where(where);
     res.json(feeds);
   });
 
@@ -52,8 +69,15 @@ module.exports = (options, context) => {
   });
 
   apiRouter.route("/items").get(async (req, res) => {
+    const { folder } = req.query;
+    const where = {};
+    if (folder) {
+      where["Feeds.folder"] = folder;
+    } 
     const items = await FeedItem
       .query()
+      .where(where)
+      .joinRelation("Feeds.feed")
       .eager("feed")
       .orderBy("date", "DESC")
       .limit(100, 0);
