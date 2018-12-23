@@ -34,30 +34,29 @@ module.exports = (options, context) => {
   const apiRouter = express.Router();
   
   apiRouter.route("/feeds").get(async (req, res) => {
-    const feeds = (await Feed.collection().fetch());
+    const feeds = await Feed.query();
     res.json(feeds);
   });
 
   apiRouter.route("/feeds/:uuid").get(async (req, res) => {
     const { uuid } = req.params;
-    res.json(await Feed.where("id", uuid).fetch());
+    const feed = await Feed.query().where("id", uuid).first();
+    res.json(feed);
   });
 
   apiRouter.route("/feeds/:uuid/items").get(async (req, res) => {
     const { uuid } = req.params;
-    const items = await FeedItem
-      .collection()
-      .query(qb => qb.where({ feed_id: uuid }))
-      .orderBy("-date")
-      .fetchPage({ withRelated: ["feed"] });
+    const feed = await Feed.query().where("id", uuid).first();
+    const items = await feed.$relatedQuery("items");
     res.json(items);
   });
 
   apiRouter.route("/items").get(async (req, res) => {
-    const items = (await FeedItem
-      .collection()
-      .orderBy("-date")
-      .fetchPage({ withRelated: ["feed"], limit: 25, offset: 0 }));
+    const items = await FeedItem
+      .query()
+      .eager("feed")
+      .orderBy("date", "DESC")
+      .limit(100, 0);
     res.json(items);
   });
 
