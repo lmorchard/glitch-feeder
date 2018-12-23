@@ -52,7 +52,6 @@ class Feed extends guid(BaseModel) {
       htmlurl: link = "",
       ...json
     } = item;
-    
     return Feed.insertOrUpdate({
       title: text || title,
       subtitle,
@@ -69,7 +68,7 @@ class Feed extends guid(BaseModel) {
       feed = await this.query().insert(attrs);    
       log.verbose("Imported feed '%s' (%s)", feed.title, resourceUrl);
     } catch (e) {
-      // HACK: Only try an update on a
+      // HACK: Only try an update on an insert failed on constraint
       if (e.code !== "SQLITE_CONSTRAINT") { throw e; }
       await this.query().where({ resourceUrl }).patch(attrs);
       feed = await this.query().where({ resourceUrl }).first();
@@ -86,13 +85,12 @@ class Feed extends guid(BaseModel) {
     // that eats a lot of memory. So, let's just load IDs and
     // fetch feeds as needed in queue jobs...
     const feedIds = await knex.from("Feeds").select("id");
-    console.log("FEEDIDS", feedIds);
     log.debug("Enqueueing %s feeds to poll", feedIds.length);
-    const pollById = id => Feed
-      .query()
-      .where("id", id)
-      .then(feed => feed[0].pollResource(context, options));
-    const jobs = feedIds.map(id => () => pollById(id))
+    const pollById = async id => {
+      const feed = await this.query().where({ id }).first();
+      feed.pollResource(context, options)
+    };
+    const jobs = feedIds.map(({ id }) => () => pollById(id))
     return fetchQueue.addAll(jobs);
   }
   
@@ -105,21 +103,18 @@ class Feed extends guid(BaseModel) {
       maxage = 30 * 60 * 1000,
     } = options;
     
+    const attrs = Object.values({}, 
     const {
       title,
       resourceUrl,      
       disabled = false,
-      data = {},
+      json = {},
       lastValidated = 0,
     } = stripNullValues(this.toJSON());
     
-    console.log("FEED", title);    
-    
-    /*    
-    
     const {
       headers: prevHeaders = {},
-    } = data;  
+    } = json;
     
     const timeStart = Date.now();
     
@@ -142,6 +137,8 @@ class Feed extends guid(BaseModel) {
       () => controller.abort(),
       parseInt(timeout)
     );
+    
+    const newAttrs = 
     
     try {
       const fetchOptions = {
@@ -183,10 +180,7 @@ class Feed extends guid(BaseModel) {
         // so skip parsing.
         log.verbose("Skipping parse for feed (%s %s) %s",
                     response.status, response.statusText, title);
-        await this.save();
-        return;
-      }
-      
+      } else {
       const { meta, items } = await parseFeedStream(
         { stream: response.body, resourceUrl },
         context
