@@ -26,6 +26,7 @@ module.exports = (options, context) => {
     res.json({
       hrefs: {
         feeds: `${API_BASE_URL}/feeds`,
+        folders: `${API_BASE_URL}/feeds`,
         items: `${API_BASE_URL}/items`,
       }
     });

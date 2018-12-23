@@ -65,6 +65,7 @@ class Feed extends guid(BaseModel) {
       description: subtitle = "",
       xmlurl: resourceUrl = "",
       htmlurl: link = "",
+      folder = "",
       ...json
     } = item;
     const feed = await Feed.insertOrUpdate({
@@ -72,6 +73,7 @@ class Feed extends guid(BaseModel) {
       subtitle,
       link,
       resourceUrl,
+      folder,
       json
     }, context);
     log.verbose("Imported feed %s (%s)", feed.title, feed.resourceUrl);
