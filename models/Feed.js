@@ -55,13 +55,20 @@ class Feed extends guid(BaseModel) {
     
     log.verbose("Imported feed '%s' (%s)", title || text, resourceUrl);
     
-    const feed = await this.query().insert({
+    const attrs = {
       title: text || title,
       subtitle,
       link,
       resourceUrl,
       json
-    });
+    };
+    
+    let feed;
+    try {
+      feed = await this.query().insert(attrs);
+    } catch (e) {
+      feed = await this.query().where({ resourceUrl }).patchAndFetch(attrs);
+    }
     
     console.log("FEED", feed);
     
