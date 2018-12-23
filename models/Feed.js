@@ -10,8 +10,6 @@ const { stripNullValues } = require("../lib/common");
 
 const BaseModel = require("./BaseModel");
 
-const API_BASE_URL = "";
-
 class Feed extends guid(BaseModel) {
   static get tableName() {
     return "Feeds";
@@ -40,6 +38,7 @@ class Feed extends guid(BaseModel) {
   }
 
   hrefs () {
+    const { API_BASE_URL } = this.constructor.config();
     return {
       self: `${API_BASE_URL}/feeds/${this.id}`,
       items: `${API_BASE_URL}/feeds/${this.id}/items`,
@@ -48,7 +47,6 @@ class Feed extends guid(BaseModel) {
   
   static async importOpmlStream (stream, context) {
     const { log } = context;
-    console.log("WANG", this.$$knex);
     const { meta, items } = await parseOpmlStream({ stream }, context);
     let count = 0;
     for (let item of items) {

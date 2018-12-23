@@ -6,8 +6,6 @@ const { stripNullValues } = require("../lib/common");
 
 const BaseModel = require("./BaseModel");
 
-const API_BASE_URL = "";
-
 class FeedItem extends guid(BaseModel) {
   static get tableName() {
     return "FeedItems";
@@ -36,6 +34,7 @@ class FeedItem extends guid(BaseModel) {
   }
 
   hrefs () {
+    const { API_BASE_URL } = this.constructor.config();
     return {
       self: `${API_BASE_URL}/items/${this.id}`,
       html: `${API_BASE_URL}/items/${this.id}/html`,

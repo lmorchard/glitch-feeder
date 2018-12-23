@@ -27,10 +27,8 @@ const init = fn => (...args) => (async () => {
   const command = args[args.length - 1];
   
   const config = await setupConfig(process.env);
-  const log = await setupLogging({ config, command });   
-  // const models = await setupModels({ config, log });
-  const models = require("../models");
-  models.config(config);
+  const log = await setupLogging({ config, command });
+  const models = await setupModels({ config });
   
   const exit = (code = 0) => {
     models.knex.destroy(() => process.exit(code));
@@ -42,6 +40,12 @@ const init = fn => (...args) => (async () => {
     log.error(error);
   }
 })();
+
+async function setupModels({ config }) {
+  const models = require("../models");
+  models.BaseModel.config(config);
+  return models;
+}
 
 async function setupLogging({ config, command }) {
   let logLevel = command.parent.logLevel || "info";

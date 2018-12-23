@@ -5,12 +5,14 @@ const { mapToObject } = require("../lib/common");
 
 const { defineNonEnumerableProperty } = require("objection/lib/model/modelUtils");
 
+let config = {};
+
 class BaseModel extends DbErrors(Model) {
   static config() {
     if (arguments.length) {
-      defineNonEnumerableProperty(this, '$$config', arguments[0]);
+      config = arguments[0];
     } else {
-      return this.$$config;
+      return config;
     }
   }
   
