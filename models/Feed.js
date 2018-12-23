@@ -232,8 +232,6 @@ class Feed extends guid(BaseModel) {
   
 }
 
-module.exports = Feed;
-
 const parseOpmlStream = ({ stream }, { log }) =>
   new Promise((resolve, reject) => {
     let meta = {};
@@ -276,3 +274,5 @@ const parseFeedStream = ({ stream, resourceUrl }, context) =>
     
     stream.pipe(parser);
   });
+
+module.exports = Feed;

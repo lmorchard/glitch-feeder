@@ -81,8 +81,8 @@ class FeedItem extends guid(BaseModel) {
       ...json
     } = stripNullValues(item);
 
-    // Some items don't have a guid, so let's use a 
-    // hash of the title & link as a rough fallback
+    // Some items don't have a guid, so let's use a hash of the 
+    // title & link as a rough fallback
     const guid = item.guid ||
         crypto
           .createHash("md5")
