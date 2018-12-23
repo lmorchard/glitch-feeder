@@ -81,10 +81,18 @@ class FeedItem extends guid(BaseModel) {
       ...json
     } = stripNullValues(item);
 
+    // Some items don't have a guid, so let's use a 
+    // hash of the title & link as a rough fallback
+    const guid = item.guid ||
+        crypto
+          .createHash("md5")
+          .update(title)
+          .update(link)
+          .digest("hex");
+
     return this.insertOrUpdate({
       feed_id,
-      guid: item.guid ||
-        crypto.createHash("md5").update(title).update(link).digest("hex"),
+      guid,
       title,
       link,
       summary,
