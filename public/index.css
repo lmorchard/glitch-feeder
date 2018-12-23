@@ -72,6 +72,11 @@ footer {
   border-top: 1px solid lightgrey;
 }
 
+.folders { }
+.folders ul { list-style-type: none; margin: 0; padding: 0;}
+.folders ul li { display: inline; padding: 0.25em 1em; cursor: pointer }
+.folders ul li:hover { background-color: #ddd; }
+
 .feeds { padding: 0; width: 25%; float: left; height: 700px; overflow: auto }
 .feeds ul { list-style-type: none; margin: 0; padding: 0;}
 .feeds ul li { padding: 0.25em; margin: 0;}

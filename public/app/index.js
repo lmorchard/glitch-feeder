@@ -12,6 +12,7 @@ export async function init(appEl) {
     const state = store.getState();
     renderApp(appEl, mapToObject(
       [
+        "folders",
         "feeds",
         "items",
         "currentFeed",
@@ -36,8 +37,32 @@ export async function init(appEl) {
   store.subscribe(render);
   render();
 
+  const apiRoot = await fetchJson("/api");
+  
+  const apiFolders = await fetchJson(apiRoot.hrefs.folders);  
+  store.dispatch(actions.loadFolders(apiFolders));
+
+  const apiFeeds = await fetchJson(apiRoot.hrefs.feeds);  
+  store.dispatch(actions.loadFeeds(apiFeeds));
+
+  const apiItems = await fetchJson(apiRoot.hrefs.items);  
+  store.dispatch(actions.loadItems(apiItems));
+
   addEventListeners(appEl, {
     click: async (ev) => {
+      if (ev.target.classList.contains("folder")) {
+        const id = ev.target.id;
+        if (id === "ALL") {
+          store.dispatch(actions.loadFeeds(await fetchJson(apiRoot.hrefs.feeds)));
+          store.dispatch(actions.loadItems(await fetchJson(apiRoot.hrefs.items)));
+        } else {
+          const state = store.getState();
+          const folder = selectors.getFolder(state)(id);
+          store.dispatch(actions.loadFeeds(await fetchJson(folder.feeds)));
+          store.dispatch(actions.loadItems(await fetchJson(folder.items)));
+        }
+      }
+      
       if (ev.target.classList.contains("feed")) {
         const id = ev.target.id;
         const state = store.getState();
@@ -50,17 +75,6 @@ export async function init(appEl) {
       }
     },
   });
-
-  const apiRoot = await fetchJson("/api");
-  
-  const apiFolders = await fetchJson(apiRoot.hrefs.folders);  
-  store.dispatch(actions.loadFolders(apiFolders));
-
-  const apiFeeds = await fetchJson(apiRoot.hrefs.feeds);  
-  store.dispatch(actions.loadFeeds(apiFeeds));
-
-  const apiItems = await fetchJson(apiRoot.hrefs.items);  
-  store.dispatch(actions.loadItems(apiItems));
 }
 
 const fetchJson = (url, options = {}) =>
@@ -70,17 +84,20 @@ const renderApp = (appEl, props) =>
   render(appTemplate(props), appEl);
 
 const appTemplate = (props) => {
-  const { feeds, items, currentFeed } = props;
+  const { folders, feeds, items, currentFeed } = props;
   
   return html`
-    <nav class="feeds">
+    <nav class="folders">
       <ul>
+        <li class="folder" id="ALL">ALL</li>
         ${repeat(
-          Object.values(feeds),
-          feed => feed.id,
-          feedTemplate,
+          Object.values(folders),
+          folder => folder.id,
+          folderTemplate,
         )}
       </ul>
+    </nav>
+    <nav class="feeds">
       <ul>
         ${repeat(
           Object.values(feeds),
@@ -101,6 +118,12 @@ const appTemplate = (props) => {
     </section>
   `;
 };
+
+const folderTemplate = ({
+  id,
+}) => html`
+  <li class="folder" id=${id}>${id}</li>
+`;
 
 const feedTemplate = ({
   id,
