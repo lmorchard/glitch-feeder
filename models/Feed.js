@@ -17,7 +17,12 @@ class Feed extends guid(BaseModel) {
     return "Feeds";
   }
   
+  static get uniqueAttributes() {
+    return [ "resourceUrl" ];
+  }
+  
   static get relationMappings() {
+    const FeedItem = require("./FeedItem");
     return {
       items: {
         relation: Model.HasManyRelation,
@@ -71,22 +76,6 @@ class Feed extends guid(BaseModel) {
       resourceUrl,
       json
     }, { log });
-  }
-
-  static async insertOrUpdate(attrs, { log }) {
-    const { resourceUrl } = attrs;
-    let feed;
-    try {
-      feed = await this.query().insert(attrs);    
-      log.verbose("Imported feed '%s' (%s)", feed.title, resourceUrl);
-    } catch (e) {
-      // HACK: Only try an update on an insert failed on constraint
-      if (e.code !== "SQLITE_CONSTRAINT") { throw e; }
-      await this.query().where({ resourceUrl }).patch(attrs);
-      feed = await this.query().where({ resourceUrl }).first();
-      log.verbose("Updated feed '%s' (%s)", feed.title, resourceUrl);
-    }
-    return feed;
   }
    
   static async pollAll (fetchQueue, context, options = {}) {

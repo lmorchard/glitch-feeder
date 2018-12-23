@@ -12,7 +12,11 @@ class FeedItem extends guid(BaseModel) {
   static get tableName() {
     return "FeedItems";
   }
-  
+    
+  static get uniqueAttributes() {
+    return [ "guid" ];
+  }
+
   static get relationMappings() {
     const Feed = require("./Feed");
     return {
@@ -56,22 +60,6 @@ class FeedItem extends guid(BaseModel) {
     } catch (e) {
       return null;
     }
-  }
-  
-  static async insertOrUpdate(attrs, { log }) {
-    const { guid } = attrs;
-    let item;
-    try {
-      item = await this.query().insert(attrs);    
-      log.debug("Inserted entry '%s'", guid);
-    } catch (e) {
-      // HACK: Only try an update on an insert failed on constraint
-      if (e.code !== "SQLITE_CONSTRAINT") { throw e; }
-      await this.query().where({ guid }).patch(attrs);
-      item = await this.query().where({ guid }).first();
-      log.debug("Updated entry '%s'", guid);
-    }
-    return item;
   }
 
   static async importItem (feed, item, context, options = {}) {
