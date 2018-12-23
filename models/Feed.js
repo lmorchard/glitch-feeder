@@ -48,9 +48,7 @@ class Feed extends guid(BaseModel) {
   
   static async importOpmlStream (stream, context) {
     const { log } = context;
-    const { meta, items } =
-      await parseOpmlStream({ stream }, context);
-
+    const { meta, items } = await parseOpmlStream({ stream }, context);
     let count = 0;
     for (let item of items) {
       if (item["#type"] !== "feed") { continue; }
@@ -77,22 +75,21 @@ class Feed extends guid(BaseModel) {
       json
     }, context);
   }
-   
+
   static async pollAll (fetchQueue, context, options = {}) {
-    const { log, models } = context;
-    const { knex, Feed } = models;
-    
-    // We could load up the whole feed collection here, but
-    // that eats a lot of memory. So, let's just load IDs and
-    // fetch feeds as needed in queue jobs...
-    const feedIds = await knex.from("Feeds").select("id");
+    const { log } = context;
+    const feedIds = await this.query().select("id");
     log.debug("Enqueueing %s feeds to poll", feedIds.length);
-    const pollById = async id => {
-      const feed = await this.query().where({ id }).first();
-      await feed.pollFeed(context, options);
-    };
-    const jobs = feedIds.map(({ id }) => () => pollById(id))
-    return fetchQueue.addAll(jobs);
+    return fetchQueue.addAll(
+      feedIds.map(({ id }) =>
+        () => this.pollFeedById(id, context, options)
+      )
+    );
+  }
+
+  static async pollFeedById (id, context, options) {
+    const feed = await this.query().where({ id }).first();
+    return feed.pollFeed(context, options);
   }
   
   async pollFeed (context, options) {
@@ -221,7 +218,8 @@ class Feed extends guid(BaseModel) {
         })
       });      
     }
-    
+
+    console.log("AWAIT THE SAVE OF FEED");
     await this.query().where({ id }).update(attrs);
   }
   
