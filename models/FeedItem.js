@@ -1,6 +1,12 @@
 const { Model } = require("objection");
 const guid = require("objection-guid")();
+const crypto = require("crypto");
+const cheerio = require("cheerio");
+const { stripNullValues } = require("../lib/common");
+
 const BaseModel = require("./BaseModel");
+
+const API_BASE_URL = "";
 
 class FeedItem extends guid(BaseModel) {
   static get tableName() {
@@ -20,14 +26,61 @@ class FeedItem extends guid(BaseModel) {
       }
     }
   }
+  
+  static get virtualAttributes() {
+    return [ "hrefs", "html", "text" ];
+  }
+
+  hrefs () {
+    return {
+      self: `${API_BASE_URL}/items/${this.get("id")}`,
+      html: `${API_BASE_URL}/items/${this.get("id")}/html`,
+      feed: `${API_BASE_URL}/feeds/${this.get("feed_id")}`,
+    };
+  }
+  
+  // TODO: move html & text virtuals into parsing?
+  html () {
+    // TODO: do some HTML sanitizing here
+    return this.get("description") || this.get("summary");
+  }
+  
+  text () {
+    try {
+      const source = this.get("summary") || this.get("description");
+      if (!source) {
+        return null;
+      }
+      const $ = cheerio.load(source);
+      return $.text();
+    } catch (e) {
+      return null;
+    }
+  }
+  
+  static async insertOrUpdate(attrs, { log }) {
+    const { guid } = attrs;
+    let item;
+    try {
+      item = await this.query().insert(attrs);    
+      log.verbose("Imported entry '%s'", feed.title, resourceUrl);
+    } catch (e) {
+      // HACK: Only try an update on an insert failed on constraint
+      if (e.code !== "SQLITE_CONSTRAINT") { throw e; }
+      await this.query().where({ resourceUrl }).patch(attrs);
+      feed = await this.query().where({ resourceUrl }).first();
+      log.verbose("Updated feed '%s' (%s)", feed.title, resourceUrl);
+    }
+    return feed;
+  }
+
+  async importItem (feed, item, context, options) {
+  }
 }
 
 module.exports = FeedItem;
 
 /*
-const crypto = require("crypto");
-const cheerio = require("cheerio");
-const { stripNullValues } = require("../lib/common");
 
 module.exports = ({
   context: {
@@ -37,73 +90,6 @@ module.exports = ({
   },
   models,
 }) => models.BaseModel.extend({
-  uuid: true,
-  tableName: "FeedItems",
-  tableFields: [
-    "id",
-    "updated_at",
-    "created_at",
-    "feed_id",
-    "guid",
-    "title",
-    "link",
-    "summary",
-    "date",
-    "pubdate",
-  ],
-  
-  virtuals: {
-    hrefs () {
-      return {
-        self: `${API_BASE_URL}/items/${this.get("id")}`,
-        html: `${API_BASE_URL}/items/${this.get("id")}/html`,
-        feed: `${API_BASE_URL}/feeds/${this.get("feed_id")}`,
-      };
-    },
-    // TODO: move html & text virtuals into parsing?
-    html () {
-      // TODO: do some HTML sanitizing here
-      return this.get("description") || this.get("summary");
-    },
-    text () {
-      try {
-        const source = this.get("summary") || this.get("description");
-        if (!source) {
-          return null;
-        }
-        const $ = cheerio.load(source);
-        return $.text();
-      } catch (e) {
-        return null;
-      }
-    },
-  },
-  
-  feed () {
-    return this.belongsTo(models.Feed, "feed_id");
-  },
-  
-  dateFields: ["date", "pubdate"],
-  
-  parse (attrs) {
-    const newAttrs = Object.assign({}, attrs);
-    for (let [name, value] of Object.entries(attrs)) {
-      if (value && this.dateFields.includes(name)) {
-        newAttrs[name] = new Date(value);
-      }
-    }
-    return models.BaseModel.prototype.parse.call(this, newAttrs);
-  },
-  
-  format (attrs) {
-    const newAttrs = Object.assign({}, attrs);
-    for (let [name, value] of Object.entries(attrs)) {
-      if (value && this.dateFields.includes(name)) {
-        newAttrs[name] = value.toISOString();
-      }
-    }
-    return models.BaseModel.prototype.format.call(this, newAttrs);
-  },
 }, {
   async updateItem (feed, item, context, options = {}) {
     const { log } = context;

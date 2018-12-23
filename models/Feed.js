@@ -10,6 +10,8 @@ const { stripNullValues } = require("../lib/common");
 
 const BaseModel = require("./BaseModel");
 
+const API_BASE_URL = "";
+
 class Feed extends guid(BaseModel) {
   static get tableName() {
     return "Feeds";
@@ -28,6 +30,17 @@ class Feed extends guid(BaseModel) {
       }
     }
   }
+  
+  static get virtualAttributes() {
+    return [ "hrefs" ];
+  }
+
+  hrefs () {
+    return {
+      self: `${API_BASE_URL}/feeds/${this.get("id")}`,
+      items: `${API_BASE_URL}/feeds/${this.get("id")}/items`,
+    };
+  };
   
   static async importOpmlStream (stream, context) {
     const { log } = context;
@@ -110,13 +123,14 @@ class Feed extends guid(BaseModel) {
     }, this.toJSON());
     
     const {
+      id,
       title,
       resourceUrl,      
       disabled,
       json,
       lastValidated,
     } = attrs;
-    
+
     const {
       headers: prevHeaders = {},
     } = json;
@@ -174,10 +188,10 @@ class Feed extends guid(BaseModel) {
         lastValidated: timeStart,
         status: response.status,
         statusText: response.statusText,
-      });      
-      Object.assign(attrs.json, {
-        headers,
-        fetchDuration: Date.now() - timeStart,
+        json: Object.assign(attrs.json, {
+          headers,
+          fetchDuration: Date.now() - timeStart,
+        })
       });
 
       if (response.status !== 200) {
@@ -189,15 +203,15 @@ class Feed extends guid(BaseModel) {
         const { meta, items } = await parseFeedStream(
           { stream: response.body, resourceUrl },
           context
-        );
-        
+        );        
+
         Object.assign(attrs, {
           lastParsed: timeStart,
+          json: Object.assign(attrs.json, {
+            meta,
+            parseDuration: Date.now() - timeStart,
+          })
         });      
-        Object.assign(attrs.json, {
-          meta,
-          parseDuration: Date.now() - timeStart,
-        });
 
         const FeedItem = require("./FeedItem");
         for (let item of items) {
@@ -211,12 +225,13 @@ class Feed extends guid(BaseModel) {
       
       clearTimeout(abortTimeout);
 
-      this.set({
+      Object.assign(attrs, {
         lastValidated: timeStart,
         lastError: err,
-        duration: Date.now() - timeStart,
-      });
-      await this.save();      
+        json: Object.assign(attrs.json, {
+          duration: Date.now() - timeStart,
+        })
+      });      
     }
     
     await this.query().where({ id }).update(attrs);
@@ -225,51 +240,6 @@ class Feed extends guid(BaseModel) {
 }
 
 module.exports = Feed;
-
-/*
-module.exports = BaseModel;
-
-module.exports = ({
-  context: {
-    config: {
-      API_BASE_URL
-    }
-  },
-  models,
-}) => models.BaseModel.extend({
-  uuid: true,
-  tableName: "Feeds",
-  tableFields: [
-    "id",
-    "updated_at",
-    "created_at",
-    "disabled",
-    "resourceUrl",
-    "title",
-    "subtitle",
-    "link",
-    "status",
-    "statusText",
-    "lastError",
-    "lastValidated",
-    "lastParsed",
-  ],
-  
-  virtuals: {
-    hrefs () {
-      return {
-        self: `${API_BASE_URL}/feeds/${this.get("id")}`,
-        items: `${API_BASE_URL}/feeds/${this.get("id")}/items`,
-      };
-    },
-  },
-  
-  items () {
-    return this.hasMany(models.FeedItem, "feed_id");
-  },
-}, {
-});
-*/
 
 const parseOpmlStream = ({ stream }, { log }) =>
   new Promise((resolve, reject) => {
