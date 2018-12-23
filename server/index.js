@@ -38,16 +38,21 @@ module.exports = (options, context) => {
     res.json(feeds);
   });
 
-  apiRouter.route("/feeds/:uuid").get(async (req, res) => {
-    const { uuid } = req.params;
-    const feed = await Feed.query().where("id", uuid).first();
+  apiRouter.route("/feeds/:id").get(async (req, res) => {
+    const { id } = req.params;
+    const feed = await Feed
+      .query()
+      .where({ id })
+      .first();
     res.json(feed);
   });
 
-  apiRouter.route("/feeds/:uuid/items").get(async (req, res) => {
-    const { uuid } = req.params;
-    const feed = await Feed.query().where("id", uuid).first();
-    const items = await feed.$relatedQuery("items");
+  apiRouter.route("/feeds/:feed_id/items").get(async (req, res) => {
+    const { feed_id } = req.params;
+    const items = await FeedItem
+      .query()
+      .where({ feed_id })
+      .eager("feed");
     res.json(items);
   });
 
@@ -60,9 +65,14 @@ module.exports = (options, context) => {
     res.json(items);
   });
 
-  apiRouter.route("/items/:uuid").get(async (req, res) => {
-    const { uuid } = req.params;
-    res.json(await FeedItem.where("id", uuid).fetch());
+  apiRouter.route("/items/:id").get(async (req, res) => {
+    const { id } = req.params;
+    const item = await FeedItem
+      .query()
+      .where({ id })
+      .eager("feed")
+      .first();
+    res.json(item);
   });
 
   apiRouter.route("/items/:uuid/html").get(async (req, res) => {

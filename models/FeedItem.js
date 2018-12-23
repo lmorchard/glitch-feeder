@@ -19,7 +19,7 @@ class FeedItem extends guid(BaseModel) {
         modelClass: Feed,
         join: {
           from: "FeedItems.feed_id",
-          to: "Feeds.feed_id",
+          to: "Feeds.id",
         }
       }
     }
