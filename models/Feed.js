@@ -18,7 +18,6 @@ class Feed extends guid(BaseModel) {
   }
   
   static get relationMappings() {
-    const FeedItem = require("./FeedItem");
     return {
       items: {
         relation: Model.HasManyRelation,
@@ -37,8 +36,8 @@ class Feed extends guid(BaseModel) {
 
   hrefs () {
     return {
-      self: `${API_BASE_URL}/feeds/${this.get("id")}`,
-      items: `${API_BASE_URL}/feeds/${this.get("id")}/items`,
+      self: `${API_BASE_URL}/feeds/${this.id}`,
+      items: `${API_BASE_URL}/feeds/${this.id}/items`,
     };
   };
   
@@ -101,7 +100,7 @@ class Feed extends guid(BaseModel) {
     log.debug("Enqueueing %s feeds to poll", feedIds.length);
     const pollById = async id => {
       const feed = await this.query().where({ id }).first();
-      feed.pollResource(context, options)
+      await feed.pollResource(context, options);
     };
     const jobs = feedIds.map(({ id }) => () => pollById(id))
     return fetchQueue.addAll(jobs);
@@ -116,11 +115,11 @@ class Feed extends guid(BaseModel) {
       maxage = 30 * 60 * 1000,
     } = options;
     
-    const attrs = Object.values({}, {
+    const attrs = Object.assign({}, {
       disabled: false,
       json: {},
       lastValidated: 0,
-    }, this.toJSON());
+    }, stripNullValues(this.toJSON()));
     
     const {
       id,

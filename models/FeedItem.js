@@ -33,21 +33,21 @@ class FeedItem extends guid(BaseModel) {
 
   hrefs () {
     return {
-      self: `${API_BASE_URL}/items/${this.get("id")}`,
-      html: `${API_BASE_URL}/items/${this.get("id")}/html`,
-      feed: `${API_BASE_URL}/feeds/${this.get("feed_id")}`,
+      self: `${API_BASE_URL}/items/${this.id}`,
+      html: `${API_BASE_URL}/items/${this.id}/html`,
+      feed: `${API_BASE_URL}/feeds/${this.feed_id}`,
     };
   }
   
   // TODO: move html & text virtuals into parsing?
   html () {
     // TODO: do some HTML sanitizing here
-    return this.get("description") || this.get("summary");
+    return this.description || this.summary;
   }
   
   text () {
     try {
-      const source = this.get("summary") || this.get("description");
+      const source = this.summary || this.description;
       if (!source) {
         return null;
       }
@@ -63,39 +63,22 @@ class FeedItem extends guid(BaseModel) {
     let item;
     try {
       item = await this.query().insert(attrs);    
-      log.verbose("Imported entry '%s'", feed.title, resourceUrl);
+      log.verbose("Imported entry '%s'", guid);
     } catch (e) {
       // HACK: Only try an update on an insert failed on constraint
       if (e.code !== "SQLITE_CONSTRAINT") { throw e; }
-      await this.query().where({ resourceUrl }).patch(attrs);
-      feed = await this.query().where({ resourceUrl }).first();
-      log.verbose("Updated feed '%s' (%s)", feed.title, resourceUrl);
+      await this.query().where({ guid }).patch(attrs);
+      item = await this.query().where({ guid }).first();
+      log.verbose("Updated entry '%s'", guid);
     }
-    return feed;
+    return item;
   }
 
-  async importItem (feed, item, context, options) {
-  }
-}
-
-module.exports = FeedItem;
-
-/*
-
-module.exports = ({
-  context: {
-    config: {
-      API_BASE_URL
-    }
-  },
-  models,
-}) => models.BaseModel.extend({
-}, {
-  async updateItem (feed, item, context, options = {}) {
+  static async importItem (feed, item, context, options = {}) {
     const { log } = context;
     
     const {
-      id: feedId,
+      id: feed_id,
       title: feedTitle,
       data: feedData = {},
     } = stripNullValues(feed.toJSON());
@@ -120,13 +103,14 @@ module.exports = ({
 
       log.debug("Updating item %s - %s", feedTitle, title, guid);
 
-      return this.forge({
-        feed_id: feedId,
-        guid,
-      }).createOrUpdate(item);
+      return this.insertOrUpdate(
+        Object.assign({ feed_id }, item),
+        { log }
+      );
     } catch (err) {
       log.error("Feed item update failed %s", err);
     }
   }  
-});
-*/
+}
+
+module.exports = FeedItem;
