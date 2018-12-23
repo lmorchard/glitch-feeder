@@ -39,6 +39,7 @@ module.exports = (options, context) => {
     const out = {};
     for (let { folder } of folders) {
       out[folder] = {
+        id: folder,
         feeds: `${API_BASE_URL}/feeds?folder=${folder}`,
         items: `${API_BASE_URL}/items?folder=${folder}`,
       };
@@ -72,12 +73,12 @@ module.exports = (options, context) => {
     const { folder } = req.query;
     const where = {};
     if (folder) {
-      where["Feeds.folder"] = folder;
+      where["folder"] = folder;
     } 
     const items = await FeedItem
       .query()
       .where(where)
-      .joinRelation("Feeds.feed")
+      .joinRelation("feed")
       .eager("feed")
       .orderBy("date", "DESC")
       .limit(100, 0);

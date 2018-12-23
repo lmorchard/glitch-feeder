@@ -53,6 +53,9 @@ export async function init(appEl) {
 
   const apiRoot = await fetchJson("/api");
   
+  const apiFolders = await fetchJson(apiRoot.hrefs.folders);  
+  store.dispatch(actions.loadFolders(apiFolders));
+
   const apiFeeds = await fetchJson(apiRoot.hrefs.feeds);  
   store.dispatch(actions.loadFeeds(apiFeeds));
 
@@ -71,6 +74,13 @@ const appTemplate = (props) => {
   
   return html`
     <nav class="feeds">
+      <ul>
+        ${repeat(
+          Object.values(feeds),
+          feed => feed.id,
+          feedTemplate,
+        )}
+      </ul>
       <ul>
         ${repeat(
           Object.values(feeds),

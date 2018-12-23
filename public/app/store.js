@@ -6,13 +6,14 @@ export const defaultState = {
   ui: {
     currentFeed: null,
   },
-  feeds: {
-  },
-  items: {
-  }
+  folders: {},
+  feeds: {},
+  items: {},
 };
 
 export const selectors = {
+  folders: state => state.folders,
+  getFolder: state => id => state.folders[id],
   feeds: state => state.feeds,
   getFeed: state => id => state.feeds[id],
   items: state => state.items,
@@ -23,6 +24,7 @@ export const selectors = {
 export const actions = createActions(
   {},
   "setCurrentFeed",
+  "loadFolders",
   "loadFeeds",
   "loadItems",
 );
@@ -32,6 +34,15 @@ export const reducers = {
     [actions.setCurrentFeed]: (state, { payload: feed }) =>
       Object.assign({}, state, { currentFeed: feed }),
   }, defaultState.ui),
+  folders: handleActions({
+    [actions.loadFolders]: (state, { payload: folders = [] }) => {
+      const newState = {};
+      for (let [name, folder] of Object.entries(folders)) {
+        newState[folder.id] = folder;
+      }
+      return newState;
+    }
+  }, defaultState.folders),
   feeds: handleActions({
     [actions.loadFeeds]: (state, { payload: feeds = [] }) => {
       const newState = {};
