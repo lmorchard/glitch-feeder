@@ -3,7 +3,22 @@ const guid = require("objection-guid")();
 const { DbErrors, UniqueViolationError } = require('objection-db-errors');
 const { mapToObject } = require("../lib/common");
 
+const { defineNonEnumerableProperty } = require('objectionmodelUtils');
+
 class BaseModel extends DbErrors(Model) {
+  static appConfig() {
+    if (arguments.length) {
+      Object.defineProperty(this, '$$appConfig', {
+        enumerable: false,
+        writable: true,
+        configurable: true,
+        arguments[0]
+      });
+    } else {
+      return this.$$knex;
+    }
+  }
+  
   static get jsonAttributes() {
     return ["json"];
   }

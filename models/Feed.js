@@ -48,6 +48,7 @@ class Feed extends guid(BaseModel) {
   
   static async importOpmlStream (stream, context) {
     const { log } = context;
+    console.log("WANG", this.$$knex);
     const { meta, items } = await parseOpmlStream({ stream }, context);
     let count = 0;
     for (let item of items) {
