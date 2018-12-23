@@ -53,25 +53,28 @@ class Feed extends guid(BaseModel) {
       ...json
     } = item;
     
-    log.verbose("Imported feed '%s' (%s)", title || text, resourceUrl);
-    
-    const attrs = {
+    return Feed.insertOrUpdate({
       title: text || title,
       subtitle,
       link,
       resourceUrl,
       json
-    };
-    
+    }, { log });
+  }
+
+  static async insertOrUpdate(attrs, { log }) {
+    const { resourceUrl } = attrs;
     let feed;
     try {
-      feed = await this.query().insert(attrs);
+      feed = await this.query().insert(attrs);    
+      log.verbose("Imported feed '%s' (%s)", feed.title, resourceUrl);
     } catch (e) {
-      feed = await this.query().where({ resourceUrl }).patchAndFetch(attrs);
+      // HACK: Only try an update on a
+      if (e.code !== "SQLITE_CONSTRAINT") { throw e; }
+      await this.query().where({ resourceUrl }).patch(attrs);
+      feed = await this.query().where({ resourceUrl }).first();
+      log.verbose("Updated feed '%s' (%s)", feed.title, resourceUrl);
     }
-    
-    console.log("FEED", feed);
-    
     return feed;
   }
    
