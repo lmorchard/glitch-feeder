@@ -1,7 +1,7 @@
 const program = require("commander");
 const winston = require("winston");
 const packageJson = require("../package.json");
-// const setupModels = require("../models");
+const { setupModels } = require("../models");
 const setupConfig = require("../lib/config");
 
 function main (argv) {
@@ -40,12 +40,6 @@ const init = fn => (...args) => (async () => {
     log.error(error);
   }
 })();
-
-async function setupModels({ config }) {
-  const models = require("../models");
-  models.BaseModel.config(config);
-  return models;
-}
 
 async function setupLogging({ config, command }) {
   let logLevel = command.parent.logLevel || "info";
