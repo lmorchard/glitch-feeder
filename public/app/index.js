@@ -52,6 +52,7 @@ export async function init(appEl) {
     click: async (ev) => {
       if (ev.target.classList.contains("folder")) {
         const id = ev.target.id;
+        store.dispatch(actions.setCurrentFeed(null));
         if (id === "ALL") {
           store.dispatch(actions.loadFeeds(await fetchJson(apiRoot.hrefs.feeds)));
           store.dispatch(actions.loadItems(await fetchJson(apiRoot.hrefs.items)));
@@ -168,9 +169,9 @@ const itemTemplate = ({
     `}
   </li>
 `;
-/*
-    ${(summary || description) && 
-      html`<iframe frameBorder="0" src=${hrefs.html}></iframe>`}
 
+/*
+      ${(summary || description) && 
+        html`<iframe frameBorder="0" src=${hrefs.html}></iframe>`}
 */
 export default { init };
