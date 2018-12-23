@@ -30,6 +30,7 @@ const init = fn => (...args) => (async () => {
   const log = await setupLogging({ config, command });   
   // const models = await setupModels({ config, log });
   const models = require("../models");
+  models.config(config);
   
   const exit = (code = 0) => {
     models.knex.destroy(() => process.exit(code));
