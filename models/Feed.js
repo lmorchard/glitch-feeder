@@ -205,6 +205,7 @@ class Feed extends guid(BaseModel) {
 
         log.verbose("Parsed %s items for feed %s", items.length, title);
       }
+      log.verbose("I LIKE PIE");
     } catch (err) {
       log.error("Feed poll failed for %s - %s", title, err, err.stack);
       
@@ -216,11 +217,16 @@ class Feed extends guid(BaseModel) {
         json: Object.assign(attrs.json, {
           duration: Date.now() - timeStart,
         })
-      });      
+      });
     }
 
-    console.log("AWAIT THE SAVE OF FEED");
-    await this.query().where({ id }).update(attrs);
+    try {
+      log.verbose("UPDATE OF FEED AWAIT", id, attrs);
+      const result = await this.patch(attrs);
+      log.verbose("UPDATE OF FEED DONE", result, id, attrs);
+    } catch (err) {
+      log.error("Feed update failed for %s - %s", title, err, err.stack);
+    }
   }
   
 }
