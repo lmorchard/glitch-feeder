@@ -103,14 +103,19 @@ class Feed extends guid(BaseModel) {
       maxage = 30 * 60 * 1000,
     } = options;
     
-    const attrs = Object.values({}, 
+    const attrs = Object.values({}, {
+      disabled: false,
+      json: {},
+      lastValidated: 0,
+    }, this.toJSON());
+    
     const {
       title,
       resourceUrl,      
-      disabled = false,
-      json = {},
-      lastValidated = 0,
-    } = stripNullValues(this.toJSON());
+      disabled,
+      json,
+      lastValidated,
+    } = attrs;
     
     const {
       headers: prevHeaders = {},
@@ -137,8 +142,6 @@ class Feed extends guid(BaseModel) {
       () => controller.abort(),
       parseInt(timeout)
     );
-    
-    const newAttrs = 
     
     try {
       const fetchOptions = {
@@ -167,10 +170,12 @@ class Feed extends guid(BaseModel) {
       log.verbose("Fetched feed (%s %s) %s",
                   response.status, response.statusText, title);
 
-      this.set({
+      Object.assign(attrs, {
         lastValidated: timeStart,
         status: response.status,
         statusText: response.statusText,
+      });      
+      Object.assign(attrs.json, {
         headers,
         fetchDuration: Date.now() - timeStart,
       });
@@ -181,23 +186,26 @@ class Feed extends guid(BaseModel) {
         log.verbose("Skipping parse for feed (%s %s) %s",
                     response.status, response.statusText, title);
       } else {
-      const { meta, items } = await parseFeedStream(
-        { stream: response.body, resourceUrl },
-        context
-      );
-      
-      this.set({
-        lastParsed: timeStart,
-        meta,
-        parseDuration: Date.now() - timeStart,
-      });
-      await this.save();
-      
-      for (let item of items) {
-        await models.FeedItem.updateItem(this, item, context, options);
+        const { meta, items } = await parseFeedStream(
+          { stream: response.body, resourceUrl },
+          context
+        );
+        
+        Object.assign(attrs, {
+          lastParsed: timeStart,
+        });      
+        Object.assign(attrs.json, {
+          meta,
+          parseDuration: Date.now() - timeStart,
+        });
+
+        const FeedItem = require("./FeedItem");
+        for (let item of items) {
+          await FeedItem.importItem(this, item, context, options);
+        }
+
+        log.verbose("Parsed %s items for feed %s", items.length, title);
       }
-      
-      log.verbose("Parsed %s items for feed %s", items.length, title);
     } catch (err) {
       log.error("Feed poll failed for %s - %s", title, err, err.stack);
       
@@ -210,7 +218,8 @@ class Feed extends guid(BaseModel) {
       });
       await this.save();      
     }
-    */
+    
+    await this.query().where({ id }).update(attrs);
   }
   
 }
