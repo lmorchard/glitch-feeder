@@ -62,9 +62,15 @@ class Feed extends guid(BaseModel) {
     }
     
     console.log(folders);
-    for (let folder of Object.values(folders)) {
-      
-    }
+    const importChildren = ({ opmlParentId = 0, parentId = null }) => {
+      const children = Object
+        .values(folders)
+        .filter(folder => folder["#parentid"] == opmlParentId);
+      for (let { title, ["#parentid"]: opmlParentId } of children) {
+        const folder = FeedFolder.import({
+      }
+    };
+    importChildren();
 
     let count = 0;
     for (let feed of feeds) {
@@ -86,7 +92,7 @@ class Feed extends guid(BaseModel) {
       folder = "",
       ...json
     } = item;
-    const feed = await Feed.insertOrUpdate({
+    const feed = await this.insertOrUpdate({
       title: text || title,
       subtitle,
       link,

@@ -25,21 +25,18 @@ class FeedFolder extends guid(BaseModel) {
     return [ "title", "parentId" ];
   }
   
-  static async importFeed (item, context) {
+  static async import (item, context) {
     const { log } = context;
     const {
-      text: title = "",
+      title = "",
+      parentId = null,
     } = item;
-    const feed = await Feed.insertOrUpdate({
-      title: text || title,
-      subtitle,
-      link,
-      resourceUrl,
-      folder,
-      json
+    const folder = await this.insertOrUpdate({
+      title,
+      parentId,
     }, context);
-    log.verbose("Imported feed %s (%s)", feed.title, feed.resourceUrl);
-    return feed;
+    log.verbose("Imported folder %s (%s)", folder.title, folder.parentId);
+    return folder;
   }
 }
 
