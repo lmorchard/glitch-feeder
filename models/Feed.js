@@ -56,9 +56,16 @@ class Feed extends guid(BaseModel) {
       log.debug("ITEM", item);
       if (item["#type"] === "feed") {
         feeds.push(item);
+      } else {
+        folders[item["#id"]] = item;
       }
     }
     
+    console.log(folders);
+    for (let folder of Object.values(folders)) {
+      
+    }
+
     let count = 0;
     for (let feed of feeds) {
       // await this.importFeed(feed, context);
