@@ -5,8 +5,14 @@ const commonFields = t => {
 };
 
 exports.up = knex => knex.schema
+  .createTable("FeedFolders", t => {
+    commonFields(t);
+    t.string("parentId").references("FeedFolders.id");
+    t.string("title");
+  })
   .createTable("Feeds", t => {
     commonFields(t);
+    t.string("folderId").references("FeedFolder.id");
     t.boolean("disabled");
     t.string("resourceUrl").index().unique();
     t.string("title");
@@ -20,7 +26,7 @@ exports.up = knex => knex.schema
   })
   .createTable("FeedItems", t => {
     commonFields(t);
-    t.string("feed_id").references("Feeds.id");
+    t.string("feedId").references("Feeds.id");
     t.string("guid").index().unique();
     t.string("title");
     t.string("link");
