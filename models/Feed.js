@@ -48,14 +48,17 @@ class Feed extends guid(BaseModel) {
   static async importOpmlStream (stream, context) {
     const { log } = context;
     const { meta, items } = await parseOpmlStream({ stream }, context);
+    
+    const foldersById = {};
+    
+    
     let count = 0;
     for (let item of items) {
-      if (item["#type"] !== "feed") {
-        log.debug("ITEM", item);
-        continue;
+      log.debug("ITEM", item);
+      if (item["#type"] === "feed") {
+        // await this.importFeed(item, context);
+        count++;
       }
-      // await this.importFeed(item, context);
-      count++;
     }
     return count;
   }
