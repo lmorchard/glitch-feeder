@@ -35,10 +35,13 @@ class FeedFolder extends guid(BaseModel) {
       for (let { text: title, ["#id"]: opmlId } of children) {
         console.log("CHILD", title, opmlId);
         try {
-          const folder = await this.importFolder({ title, parentId }, context);
-          console.log("HONK HONK HONK");
+          const dbfolder = await this.insertOrUpdate({
+            title,
+            parentId,
+          }, context);
+          console.log("HONK HONK HONK", dbfolder);
         } catch (err) {
-          console.error(err);
+          console.log(err);
         }
         console.log("EAT PIE");
         /*
@@ -54,22 +57,6 @@ class FeedFolder extends guid(BaseModel) {
     };
     await importChildren(0, null);
     return folders;
-  }
-  
-  static async importFolder (item, context) {
-    console.log("asdfasdfasdf");
-    const { log } = context;
-    const {
-      title = "",
-      parentId = null,
-    } = item;
-    log.debug("FOLDER ITEM", item);
-    const folder = await this.insertOrUpdate({
-      title,
-      parentId,
-    }, context);
-    log.verbose("Imported folder %s (%s)", folder.title, folder.parentId);
-    return folder;
   }
 }
 
