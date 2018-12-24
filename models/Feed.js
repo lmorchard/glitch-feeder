@@ -17,13 +17,22 @@ class Feed extends guid(BaseModel) {
   
   static get relationMappings() {
     const FeedItem = require("./FeedItem");
+    const FeedFolder = require("./FeedFolder");
     return {
+      folder: {
+        relation: Model.BelongsToOneRelation,
+        modelClass: Feed,
+        join: {
+          from: "Feeds.folderId",
+          to: "FeedFolders.id",
+        }
+      },
       items: {
         relation: Model.HasManyRelation,
         modelClass: FeedItem,
         join: {
           from: "Feeds.id",
-          to: "FeedItems.feed_id",
+          to: "FeedItems.feedId",
         }
       }
     }
@@ -49,7 +58,7 @@ class Feed extends guid(BaseModel) {
     const { log } = context;
     const { meta, items } = await parseOpmlStream({ stream }, context);
     
-    const folders = {};
+    const opmlFolders = {};
     const feeds = [];
 
     for (let item of items) {
@@ -57,20 +66,12 @@ class Feed extends guid(BaseModel) {
       if (item["#type"] === "feed") {
         feeds.push(item);
       } else {
-        folders[item["#id"]] = item;
+        opmlFolders[item["#id"]] = item;
       }
     }
-    
-    console.log(folders);
-    const importChildren = ({ opmlParentId = 0, parentId = null }) => {
-      const children = Object
-        .values(folders)
-        .filter(folder => folder["#parentid"] == opmlParentId);
-      for (let { title, ["#parentid"]: opmlParentId } of children) {
-        const folder = FeedFolder.import({
-      }
-    };
-    importChildren();
+
+    const FeedFolder = require("./FeedFolder");
+    const folders = FeedFolder.importOpmlFolders(opmlFolders, context);
 
     let count = 0;
     for (let feed of feeds) {
