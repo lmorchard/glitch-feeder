@@ -26,20 +26,38 @@ class FeedFolder extends guid(BaseModel) {
   }
 
   static async importOpmlFolders (opmlFolders, context) {
-    console.log(opmlfolders);
-    const importChildren = async (opmlParentId = 0, parentId = null) => {
+    const folders = {};
+    const importChildren = async (opmlParentId, parentId) => {
       const children = Object
-        .values(folders)
+        .values(opmlFolders)
         .filter(folder => folder["#parentid"] == opmlParentId);
-      for (let { title, ["#id"]: opmlId } of children) {
-        const folder = await FeedFolder.importFolder({ title, parentId }, context);
-        await importChildren(opmlId, folder.id);
+      console.log("IMPORT CHILDREN", opmlParentId, parentId, children.length);
+      for (let { text: title, ["#id"]: opmlId } of children) {
+        console.log("CHILD", title, opmlId);
+        try {
+          const folder = await this.importFolder({ title, parentId }, context);
+          console.log("HONK HONK HONK");
+        } catch (err) {
+          console.error(err);
+        }
+        console.log("EAT PIE");
+        /*
+        try {
+          console.log("HONK HONK", folder);
+          await importChildren(opmlId, folder.id);
+          folders[opmlId] = folder;
+        } catch (err) {
+          console.error(err);
+        }
+        */
       }
     };
-    await importChildren();
+    await importChildren(0, null);
+    return folders;
   }
   
   static async importFolder (item, context) {
+    console.log("asdfasdfasdf");
     const { log } = context;
     const {
       title = "",
