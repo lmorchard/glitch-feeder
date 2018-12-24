@@ -18,13 +18,13 @@ class FeedItem extends guid(BaseModel) {
         relation: Model.BelongsToOneRelation,
         modelClass: Feed,
         join: {
-          from: "FeedItems.feedId",
+          from: "FeedItems.feed_id",
           to: "Feeds.id",
         }
       }
     }
   }
-
+    
   static get uniqueAttributes() {
     return [ "guid" ];
   }
@@ -38,7 +38,7 @@ class FeedItem extends guid(BaseModel) {
     return {
       self: `${API_BASE_URL}/items/${this.id}`,
       html: `${API_BASE_URL}/items/${this.id}/html`,
-      feed: `${API_BASE_URL}/feeds/${this.feedId}`,
+      feed: `${API_BASE_URL}/feeds/${this.feed_id}`,
     };
   }
   
@@ -65,7 +65,7 @@ class FeedItem extends guid(BaseModel) {
     const { log } = context;
     
     const {
-      id: feedId,
+      id: feed_id,
       title: feedTitle,
       data: feedData = {},
     } = stripNullValues(feed.toJSON());
@@ -91,7 +91,7 @@ class FeedItem extends guid(BaseModel) {
           .digest("hex");
 
     return this.insertOrUpdate({
-      feedId,
+      feed_id,
       guid,
       title,
       link,

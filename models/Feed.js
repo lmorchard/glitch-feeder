@@ -17,22 +17,13 @@ class Feed extends guid(BaseModel) {
   
   static get relationMappings() {
     const FeedItem = require("./FeedItem");
-    const FeedFolder = require("./FeedFolder");
     return {
-      folder: {
-        relation: Model.BelongsToOneRelation,
-        modelClass: Feed,
-        join: {
-          from: "Feeds.folderId",
-          to: "FeedFolders.id",
-        }
-      },
       items: {
         relation: Model.HasManyRelation,
         modelClass: FeedItem,
         join: {
           from: "Feeds.id",
-          to: "FeedItems.feedId",
+          to: "FeedItems.feed_id",
         }
       }
     }
@@ -57,28 +48,12 @@ class Feed extends guid(BaseModel) {
   static async importOpmlStream (stream, context) {
     const { log } = context;
     const { meta, items } = await parseOpmlStream({ stream }, context);
-    
-    const opmlFolders = {};
-    const feeds = [];
-
-    for (let item of items) {
-      log.debug("ITEM", item);
-      if (item["#type"] === "feed") {
-        feeds.push(item);
-      } else {
-        opmlFolders[item["#id"]] = item;
-      }
-    }
-
-    const FeedFolder = require("./FeedFolder");
-    const folders = FeedFolder.importOpmlFolders(opmlFolders, context);
-
     let count = 0;
-    for (let feed of feeds) {
-      // await this.importFeed(feed, context);
+    for (let item of items) {
+      if (item["#type"] !== "feed") { continue; }
+      await this.importFeed(item, context);
       count++;
     }
-    
     return count;
   }
 
@@ -93,7 +68,7 @@ class Feed extends guid(BaseModel) {
       folder = "",
       ...json
     } = item;
-    const feed = await this.insertOrUpdate({
+    const feed = await Feed.insertOrUpdate({
       title: text || title,
       subtitle,
       link,

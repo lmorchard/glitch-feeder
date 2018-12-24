@@ -63,9 +63,9 @@ module.exports = (options, context) => {
     res.json(feed);
   });
 
-  apiRouter.route("/feeds/:feedId/items").get(async (req, res) => {
-    const { feedId } = req.params;
-    const items = await FeedItem.query().where({ feedId }).eager("feed");
+  apiRouter.route("/feeds/:feed_id/items").get(async (req, res) => {
+    const { feed_id } = req.params;
+    const items = await FeedItem.query().where({ feed_id }).eager("feed");
     res.json(items);
   });
 
