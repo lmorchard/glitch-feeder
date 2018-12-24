@@ -24,7 +24,7 @@ class FeedItem extends guid(BaseModel) {
       }
     }
   }
-    
+
   static get uniqueAttributes() {
     return [ "guid" ];
   }
