@@ -34,7 +34,6 @@ class BaseModel extends DbErrors(Model) {
       name => attrs[name]
     );
     let model;
-    console.log("WHAT THE FUCK", attrs);
     try {
       model = await this.query().insert(attrs);    
       log.debug("Inserted model", uniqueAttrs);
@@ -45,7 +44,6 @@ class BaseModel extends DbErrors(Model) {
         model = await this.query().where(uniqueAttrs).first();
         log.debug("Updated model", uniqueAttrs);
       } else {
-        log.error("Failed insertOrUpdate", err);
         throw err; 
       }
     }
