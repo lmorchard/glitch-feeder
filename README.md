@@ -6,6 +6,7 @@ Someday, this wants to grow up to be a simple remixable feed reader.
 ## TODO
 
 - Reader UI
+- Reader state in URL to bookmark / refresh at last folder & item view
 - Feed subscription CRUD, import / export
 - Remote feed subscription bookmarklet
 - Start / pause / stop feed polls from the web UI with queue monitoring via websocket

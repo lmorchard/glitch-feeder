@@ -20,7 +20,9 @@ const template = ({
   flex-direction: row;
   align-content: stretch;
   align-items: stretch;
-  margin: 1em 0.5em;
+  margin: 0;
+  padding: 0.5em;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.25);
 }
 
 .feeditem .details {
@@ -32,6 +34,7 @@ const template = ({
   flex-grow: 1;
   text-align: right;
   opacity: 0.2;
+  font-size: 0.75em;
 }
 
 .feeditem .feedtitle {
@@ -46,7 +49,7 @@ const template = ({
 }
 
 .feeditem .text {
-  opacity: 0.4;
+  opacity: 0.6;
 }
 </style>
 
@@ -54,7 +57,9 @@ const template = ({
   <div class="details">
     <a href=${link} class="title">${title}</a>
     ${text && html`
-      <span class="text">${text.length < 160 ? text : text.substr(0, 160) + "[...]"}</span>
+      <span class="text">
+        ${text.length < 320 ? text : text.substr(0, 320) + "[...]"}
+      </span>
     `}
   </div>
   <div class="date">${date}</div>
@@ -78,7 +83,16 @@ const template = ({
 
 class FeedItem extends BaseElement {
   static get observedAttributes() {
-    return ["feedTitle", "feedLink", "date", "title", "description", "text", "html"];
+    return [
+      "feedTitle", 
+      "feedLink", 
+      "date", 
+      "title", 
+      "link", 
+      "description", 
+      "text", 
+      "html"
+    ];
   }
   
   get template() {
