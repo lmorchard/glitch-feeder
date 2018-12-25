@@ -3,12 +3,10 @@ export class BaseElement extends HTMLElement {
     super();
     this.state = {};
     this.attachShadow({ mode: 'open' });
-    this.shadowRoot.appendChild(this.template().content.cloneNode(true));    
     this.bindEventHandlers();
   }
 
   template() {
-    return document.createElement("template");
   }
   
   render() {

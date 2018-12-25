@@ -1,9 +1,8 @@
 import { BaseElement } from "./base.js";
+import {render, html} from "https://unpkg.com/lit-html@0.14.0/lit-html.js";
 import { addEventListeners } from "../utils.js";
-09
-const template = document.createElement("template");
 
-template.innerHTML = `
+const template = ({ }) => html`
 <style>
 :host {
   --border-width: 1em;
