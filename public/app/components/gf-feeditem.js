@@ -20,17 +20,19 @@ const template = ({
   flex-direction: row;
   align-content: stretch;
   align-items: stretch;
-  margin: 0.5em 0.125em;
+  margin: 1em 0.5em;
   font-size: 0.75em;
 }
 
 .feeditem .details {
   flex-grow: 2;
+  padding-right: 0.25em;
 }
 
 .feeditem .date {
   flex-grow: 1;
   text-align: right;
+  opacity: 0.3;
 }
 
 .feeditem .feedtitle {
@@ -45,7 +47,7 @@ const template = ({
 }
 
 .feeditem .text {
-  opacity: 0.7;
+  opacity: 0.4;
 }
 </style>
 

@@ -87,6 +87,33 @@ const renderApp = (appEl, props) =>
 const appTemplate = (props) => {
   const { folders, feeds, items, currentFeed } = props;
   
+  const itemsByFeed = {};
+  for (let item of items) {
+    if (!itemsByFeed[item.feed.id]) {
+      itemsByFeed = {
+        feed: item.feed,
+        items: [],
+      };
+    }
+    itemsByFeed[item.feed.id].items.push(item);
+  }
+  
+  const _cmp = (key, a, b) =>
+    (a[key] < b[key]) ? -1 : ((a[key] > b[key]) ? 1 : 0);
+  const cmp = key => (a, b) => _cmp(key, a, b);
+  const rcmp = key => (b, a) = _cmp(key, a, b);
+  
+  const rcmp = key => (a, b) =>
+    (a[key] < b[key]) ? -1 : ((a[key] > b[key]) ? 1 : 0);
+  
+  const sortedFeeds = Object
+    .values(itemsByFeed)
+    .sort(cmp("updated_at"))
+    .map(feed => {
+      feed.items.sort(cmp("pubdate"));
+      return feed;
+    });
+  
   return html`
     <nav class="folders">
       <ul>
