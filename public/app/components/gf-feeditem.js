@@ -1,8 +1,10 @@
 import { BaseElement } from "./base.js";
-import {render, html} from "https://unpkg.com/lit-html@0.14.0/lit-html.js";
+import { render, html } from "https://unpkg.com/lit-html@0.14.0/lit-html.js";
 import { addEventListeners } from "../utils.js";
 
-const template = ({ }) => html`
+const template = ({
+  id, date, feedTitle, feedLink, title, link, description
+}) => html`
 <style>
 :host {
   --border-width: 1em;
@@ -15,6 +17,16 @@ const template = ({ }) => html`
 .feeditem {
   display: flex;
   flex-direction: row;
+  align-content: stretch;
+  align-items: stretch;
+}
+
+.feeditem .details {
+  flex-grow: 2;
+}
+
+.feeditem .date {
+  flex-grow: 1;
 }
 
 .feeditem .feedtitle {
@@ -29,39 +41,36 @@ const template = ({ }) => html`
 
 <div class="feeditem">
   <div class="details">
-    <a href="" class="feedtitle"></a>
-    <a class="title"></a>
-    <span class="description"></span>
+    <a href=${feedLink} class="feedtitle">${feedTitle}</a>
+    <a href=${link} class="title"></a>
+    <span class="description">${description}</span>
   </div>
-  <div class="date"></div>
+  <div class="date">${date}</div>
 </div>
 `;
 
+/*
+  <li class="item">
+    <a id=${id} class="item" href=${link}>${pubdate || date}</a>:
+    <a href=${feedLink}>${feedTitle}</a> - 
+    <a href=${link}>${title}</a>
+    ${text && html`
+      <p class="summary">
+        ${text.length < 320 ? text : text.substr(0, 320) + "[...]"}
+      </p>
+    `}
+  </li>
+      ${(summary || description) && 
+        html`<iframe frameBorder="0" src=${hrefs.html}></iframe>`}
+*/
+
 class FeedItem extends BaseElement {
   static get observedAttributes() {
-    return ["id", "date", "feedTitle", "feedLink", "description"];
-  }
-
-  constructor() {
-    super();
-    this.state = {
-      card: null
-    };
-  }
-  
-  set card(card) {
-    this.state.card = card;
-    this.render();
+    return ["feedTitle", "feedLink", "date", "title", "description"];
   }
   
   template() {
     return template;
-  }
-
-  render() {
-    this.$(".content").innerHTML = `
-      <pre>${JSON.stringify(this.state.card, null, "  ")}</pre>
-    `;
   }
 }
 

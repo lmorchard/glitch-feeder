@@ -109,13 +109,13 @@ const appTemplate = (props) => {
     </nav>
     <section class="items">
       <header>${currentFeed && currentFeedTemplate(currentFeed)}</header>
-      <ul>
+      <div>
         ${repeat(
           Object.values(items),
           item => item.id,
           itemTemplate,
         )}
-      </ul>
+      </div>
     </section>
   `;
 };
@@ -158,20 +158,15 @@ const itemTemplate = ({
     link: feedLink,
   } = {},
 }) => html`
-  <li class="item">
-    <a id=${id} class="item" href=${link}>${pubdate || date}</a>:
-    <a href=${feedLink}>${feedTitle}</a> - 
-    <a href=${link}>${title}</a>
-    ${text && html`
-      <p class="summary">
-        ${text.length < 320 ? text : text.substr(0, 320) + "[...]"}
-      </p>
-    `}
-  </li>
+  <gf-feeditem
+    feedTitle=${feedTitle}
+    feedLink=${feedLink} 
+    date=${date}
+    title=${title}
+    description=${description}
+    text=${text}
+    html=${hrefs.html}
+  />
 `;
 
-/*
-      ${(summary || description) && 
-        html`<iframe frameBorder="0" src=${hrefs.html}></iframe>`}
-*/
 export default { init };

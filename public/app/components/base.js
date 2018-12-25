@@ -1,3 +1,5 @@
+import { render, html } from "https://unpkg.com/lit-html@0.14.0/lit-html.js";
+
 export class BaseElement extends HTMLElement {
   constructor() {
     super();
@@ -7,9 +9,11 @@ export class BaseElement extends HTMLElement {
   }
 
   template() {
+    return () => html`<div></div>`;  
   }
   
   render() {
+    render(this.template(this.props), this.shadowRoot);
   }
   
   $(selector) {
