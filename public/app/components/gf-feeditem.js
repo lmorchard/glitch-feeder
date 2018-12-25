@@ -5,17 +5,24 @@ const template = document.createElement("template");
 
 template.innerHTML = `
 <style>
-  :host {
-    --border-width: 1em;
-    --border-height: 1em;
-    --border-overlap: 1.5;
-    --content-margin: 0.5em;
-    --content-background-color: rgba(255, 255, 255, 0.7);
-  }
+:host {
+  --border-width: 1em;
+  --border-height: 1em;
+  --border-overlap: 1.5;
+  --content-margin: 0.5em;
+  --content-background-color: rgba(255, 255, 255, 0.7);
+}
 
-  .feeditem {
-    display: flex;
-  }
+.feeditem {
+  display: flex;
+  flex-direction: row;
+}
+
+.feeditem .feedtitle {
+}
+
+.feeditem .title {
+}
 </style>
 
 <div class="feeditem">
