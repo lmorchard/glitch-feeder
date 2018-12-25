@@ -127,7 +127,7 @@ const appTemplate = (props) => {
           <span>(${feed.updated_at})</span>
         </h2>
         <div>
-          ${items.sort(rcmp("pubdate")).map(itemTemplate)}
+          ${items.sort(rcmp("pubdate")).slice(0, 25).map(itemTemplate)}
         </div>
       `)}
     </section>

@@ -6,11 +6,11 @@
   },
   "restart": {
     "exclude": [
+      "^public/"
     ],
     "include": [
       "^server/",
       "^models/",
-      "^public/",
       "^lib/",
       "^\\.env$",
       "^package\\.json$"

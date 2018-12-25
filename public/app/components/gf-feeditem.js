@@ -33,7 +33,7 @@ const template = ({
 .feeditem .date {
   flex-grow: 1;
   text-align: right;
-  opacity: 0.2;
+  opacity: 0.3;
   font-size: 0.75em;
 }
 
