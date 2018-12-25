@@ -1,6 +1,6 @@
 import { BaseElement } from "./base.js";
 import { addEventListeners } from "../utils.js";
-
+09
 const template = document.createElement("template");
 
 template.innerHTML = `
@@ -23,10 +23,18 @@ template.innerHTML = `
 
 .feeditem .title {
 }
+
+.feeditem .description {
+}
 </style>
 
 <div class="feeditem">
-  <div class="content">/div>
+  <div class="details">
+    <a href="" class="feedtitle"></a>
+    <a class="title"></a>
+    <span class="description"></span>
+  </div>
+  <div class="date"></div>
 </div>
 `;
 
