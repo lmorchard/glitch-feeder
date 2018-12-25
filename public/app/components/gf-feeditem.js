@@ -3,7 +3,7 @@ import { render, html } from "https://unpkg.com/lit-html@0.14.0/lit-html.js";
 import { addEventListeners } from "../utils.js";
 
 const template = ({
-  id, date, feedTitle, feedLink, title, link, description
+  id, date, feedTitle, feedLink, title, link, description, text, htmlSrc
 }) => html`
 <style>
 :host {
@@ -12,6 +12,7 @@ const template = ({
   --border-overlap: 1.5;
   --content-margin: 0.5em;
   --content-background-color: rgba(255, 255, 255, 0.7);
+  width: 100%;
 }
 
 .feeditem {
@@ -19,6 +20,8 @@ const template = ({
   flex-direction: row;
   align-content: stretch;
   align-items: stretch;
+  margin: 0.5em 0.125em;
+  font-size: 0.75em;
 }
 
 .feeditem .details {
@@ -27,23 +30,32 @@ const template = ({
 
 .feeditem .date {
   flex-grow: 1;
+  text-align: right;
 }
 
 .feeditem .feedtitle {
 }
 
 .feeditem .title {
+  font-weight: bold;
 }
 
-.feeditem .description {
+.feeditem .text:before {
+  content: " - ";
+}
+
+.feeditem .text {
+  opacity: 0.7;
 }
 </style>
 
 <div class="feeditem">
   <div class="details">
     <a href=${feedLink} class="feedtitle">${feedTitle}</a>
-    <a href=${link} class="title"></a>
-    <span class="description">${description}</span>
+    <a href=${link} class="title">${title}</a>
+    ${text && html`
+      <span class="text">${text.length < 160 ? text : text.substr(0, 160) + "[...]"}</span>
+    `}
   </div>
   <div class="date">${date}</div>
 </div>
@@ -56,7 +68,7 @@ const template = ({
     <a href=${link}>${title}</a>
     ${text && html`
       <p class="summary">
-        ${text.length < 320 ? text : text.substr(0, 320) + "[...]"}
+        
       </p>
     `}
   </li>
@@ -66,10 +78,10 @@ const template = ({
 
 class FeedItem extends BaseElement {
   static get observedAttributes() {
-    return ["feedTitle", "feedLink", "date", "title", "description"];
+    return ["feedTitle", "feedLink", "date", "title", "description", "text", "html"];
   }
   
-  template() {
+  get template() {
     return template;
   }
 }

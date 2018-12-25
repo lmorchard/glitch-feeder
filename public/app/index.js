@@ -164,8 +164,8 @@ const itemTemplate = ({
     date=${date}
     title=${title}
     description=${description}
-    text=${text}
-    html=${hrefs.html}
+    text=${text || ""}
+    htmlSrc=${hrefs.html}
   />
 `;
 

@@ -9,7 +9,7 @@ export class BaseElement extends HTMLElement {
   }
 
   template() {
-    return () => html`<div></div>`;  
+    return html`<div></div>`;  
   }
   
   render() {
