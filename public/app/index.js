@@ -88,12 +88,9 @@ const appTemplate = (props) => {
   const { folders, feeds, items, currentFeed } = props;
   
   const itemsByFeed = {};
-  for (let item of items) {
+  for (let item of Object.values(items)) {
     if (!itemsByFeed[item.feed.id]) {
-      itemsByFeed = {
-        feed: item.feed,
-        items: [],
-      };
+      itemsByFeed[item.feed.id] = { feed: item.feed, items: [] };
     }
     itemsByFeed[item.feed.id].items.push(item);
   }
@@ -101,18 +98,7 @@ const appTemplate = (props) => {
   const _cmp = (key, a, b) =>
     (a[key] < b[key]) ? -1 : ((a[key] > b[key]) ? 1 : 0);
   const cmp = key => (a, b) => _cmp(key, a, b);
-  const rcmp = key => (b, a) = _cmp(key, a, b);
-  
-  const rcmp = key => (a, b) =>
-    (a[key] < b[key]) ? -1 : ((a[key] > b[key]) ? 1 : 0);
-  
-  const sortedFeeds = Object
-    .values(itemsByFeed)
-    .sort(cmp("updated_at"))
-    .map(feed => {
-      feed.items.sort(cmp("pubdate"));
-      return feed;
-    });
+  const rcmp = key => (a, b) => _cmp(key, b, a);
   
   return html`
     <nav class="folders">
@@ -135,14 +121,15 @@ const appTemplate = (props) => {
       </ul>
     </nav>
     <section class="items">
-      <header>${currentFeed && currentFeedTemplate(currentFeed)}</header>
-      <div>
-        ${repeat(
-          Object.values(items),
-          item => item.id,
-          itemTemplate,
-        )}
-      </div>
+      ${Object.values(itemsByFeed).sort(rcmp("updated_at")).map(({ feed, items }) => html`
+        <h2>
+          <a href=${feed.link} class="feedtitle">${feed.title}</a>
+          <span>(${feed.updated_at})</span>
+        </h2>
+        <div>
+          ${items.sort(rcmp("pubdate")).map(itemTemplate)}
+        </div>
+      `)}
     </section>
   `;
 };
@@ -190,6 +177,7 @@ const itemTemplate = ({
     feedLink=${feedLink} 
     date=${date}
     title=${title}
+    link=${link}
     description=${description}
     text=${text || ""}
     htmlSrc=${hrefs.html}

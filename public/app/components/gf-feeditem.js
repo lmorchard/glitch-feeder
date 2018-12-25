@@ -21,7 +21,6 @@ const template = ({
   align-content: stretch;
   align-items: stretch;
   margin: 1em 0.5em;
-  font-size: 0.75em;
 }
 
 .feeditem .details {
@@ -32,7 +31,7 @@ const template = ({
 .feeditem .date {
   flex-grow: 1;
   text-align: right;
-  opacity: 0.3;
+  opacity: 0.2;
 }
 
 .feeditem .feedtitle {
@@ -53,7 +52,6 @@ const template = ({
 
 <div class="feeditem">
   <div class="details">
-    <a href=${feedLink} class="feedtitle">${feedTitle}</a>
     <a href=${link} class="title">${title}</a>
     ${text && html`
       <span class="text">${text.length < 160 ? text : text.substr(0, 160) + "[...]"}</span>
