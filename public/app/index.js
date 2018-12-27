@@ -2,6 +2,8 @@ import { h, render, rerender } from "https://unpkg.com/preact@8.4.2/dist/preact.
 import { addEventListeners, mapToObject, indexBy } from "./utils.js";
 import { createAppStore, actions, selectors } from "./store.js";
 
+let apiRoot;
+
 const fetchJson = (url, options = {}) =>
   fetch(url, options).then(response => response.json());
   
@@ -16,11 +18,14 @@ export async function init(appEl) {
   const store = createAppStore();
 
   const renderApp = () =>
-    render(h(App, store.getState()), appEl, appEl.lastElementChild);
+    render(h(App, {
+      state: store.getState(),
+      dispatch: store.dispatch
+    }), appEl, appEl.lastElementChild);
   store.subscribe(renderApp);
   renderApp();
 
-  const apiRoot = await fetchJson("/api");
+  apiRoot = await fetchJson("/api");
   
   const apiFolders = await fetchJson(apiRoot.hrefs.folders);  
   store.dispatch(actions.loadFolders(apiFolders));
@@ -64,16 +69,19 @@ export async function init(appEl) {
 }
 
 const App = state => {
-  const props = mapToObject(
-    [
-      "folders",
-      "feeds",
-      "items",
-      "currentFeed",
-    ],
-    name => selectors[name](state)
+  const props = Object.assign(
+    {
+    },
+    mapToObject(
+      [
+        "folders",
+        "feeds",
+        "items",
+        "currentFeed",
+      ],
+      name => selectors[name](state)
+    )
   );
-  const { folders } = props;
   return h("main", { className: "app" },
     h(FeedsList, props),
     h(ItemsList, props),
@@ -98,6 +106,9 @@ const FeedsList = ({ folders, feeds }) => {
           h("li", { className: "folder" },
             h("span", { className: "foldertitle" }, folder),
             h("ul", { className: "feeds" },
+              h("li", { className: "feed" },
+                h("span", { className: "feedtitle" }, "ALL")
+              ),
               feeds.map(feed =>
                 h("li", { className: "feed" },
                   h("span", { className: "feedtitle" }, feed.title)
