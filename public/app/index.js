@@ -69,12 +69,19 @@ const App = state => {
     name => selectors[name](state)
   );
   const { folders } = props;
-  return h("main", null,
-    h("h1", null, "Hello world"),
-    h("nav", { class: "feeds" }),
-    h("section", { class: "items" }),
+  return h("main", { className: "app" },
+    h(FeedsList, props),
+    h(ItemsList, props),
   );
 };
+
+const FeedsList = ({ folders, feeds }) => {
+  return h("nav", { className: "feeds" }
+  );
+};
+
+const ItemsList = ({ items }) =>
+  h("section", { className: "items" });
 
 /*
 const appTemplate = (props) => {
