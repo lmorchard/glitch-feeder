@@ -4,6 +4,13 @@ import { createAppStore, actions, selectors } from "./store.js";
 
 const fetchJson = (url, options = {}) =>
   fetch(url, options).then(response => response.json());
+  
+const _cmp = (key, a, b) =>
+  (a[key] < b[key]) ? -1 : ((a[key] > b[key]) ? 1 : 0);
+
+const cmp = key => (a, b) => _cmp(key, a, b);
+
+const rcmp = key => (a, b) => _cmp(key, b, a);
 
 export async function init(appEl) {
   const store = createAppStore();
@@ -99,10 +106,30 @@ const FeedsList = ({ folders, feeds }) => {
   );
 };
 
-const ItemsList = ({ items }) =>
-  h("section", { className: "itemslist" },
-    "ITEMS GO HERE"
+const ItemsList = ({ items }) => {
+    
+  const itemsByFeed = {};
+  for (let item of Object.values(items)) {
+    if (!itemsByFeed[item.feed.id]) {
+      itemsByFeed[item.feed.id] = { feed: item.feed, items: [] };
+    }
+    itemsByFeed[item.feed.id].items.push(item);
+  }
+  
+  return h("section", { className: "itemslist" },
+    h("ul", { className: "feeds" },
+      Object.entries(itemsByFeed).map(({ feed, items }) =>
+        h("li", { className: "feed" },
+          h("span", { className: "feedtitle" }, feed.title),
+          h("ul", { className: "items" },
+            items.map(item =>
+              h("li", { className: "item" }, item.title))
+          )
+        )
+      )
+    )
   );
+};
 
 /*
 const appTemplate = (props) => {
