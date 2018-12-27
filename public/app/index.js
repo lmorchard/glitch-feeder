@@ -69,10 +69,11 @@ const App = state => {
     name => selectors[name](state)
   );
   const { folders } = props;
-  return h("p", null,
-    "Hello world - ",
-    folders && Object.values(folders).map(({ id }) => `${id}`).join(" - ")
-   );
+  return h("main", null,
+    h("h1", null, "Hello world"),
+    h("nav", { class: "feeds" }),
+    h("section", { class: "items" }),
+  );
 };
 
 /*
