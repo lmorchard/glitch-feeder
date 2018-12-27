@@ -6,12 +6,16 @@ export const defaultState = {
   ui: {
     currentFeed: null,
   },
+  api: {
+    root: null,
+  },
   folders: {},
   feeds: {},
   items: {},
 };
 
 export const selectors = {
+  apiRoot: state => state.api.root,
   folders: state => state.folders,
   getFolder: state => id => state.folders[id],
   feeds: state => state.feeds,
@@ -23,6 +27,7 @@ export const selectors = {
 
 export const actions = createActions(
   {},
+  "setApiRoot",
   "setCurrentFeed",
   "loadFolders",
   "loadFeeds",
@@ -34,6 +39,12 @@ export const reducers = {
     [actions.setCurrentFeed]: (state, { payload: feed }) =>
       Object.assign({}, state, { currentFeed: feed }),
   }, defaultState.ui),
+  
+  api: handleActions({
+    [actions.setApiRoot]: (state, { payload: root }) =>
+      Object.assign({}, state, { root }),
+  }, defaultState.api),
+  
   folders: handleActions({
     [actions.loadFolders]: (state, { payload: folders = [] }) => {
       const newState = {};
@@ -43,6 +54,7 @@ export const reducers = {
       return newState;
     }
   }, defaultState.folders),
+  
   feeds: handleActions({
     [actions.loadFeeds]: (state, { payload: feeds = [] }) => {
       const newState = {};
@@ -52,6 +64,7 @@ export const reducers = {
       return newState;
     }
   }, defaultState.feeds),
+  
   items: handleActions({
     [actions.loadItems]: (state, { payload: items = [] }) => {
       const newState = {};

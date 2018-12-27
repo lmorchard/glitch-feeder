@@ -2,8 +2,6 @@ import { h, render, rerender } from "https://unpkg.com/preact@8.4.2/dist/preact.
 import { addEventListeners, mapToObject, indexBy } from "./utils.js";
 import { createAppStore, actions, selectors } from "./store.js";
 
-let apiRoot;
-
 const fetchJson = (url, options = {}) =>
   fetch(url, options).then(response => response.json());
   
@@ -25,11 +23,9 @@ export async function init(appEl) {
   store.subscribe(renderApp);
   renderApp();
 
-  apiRoot = await fetchJson("/api");
+  const apiRoot = await fetchJson("/api");
+  store.dispatch(actions.setApiRoot(apiRoot));
   
-  const apiFolders = await fetchJson(apiRoot.hrefs.folders);  
-  store.dispatch(actions.loadFolders(apiFolders));
-
   const apiFeeds = await fetchJson(apiRoot.hrefs.feeds);  
   store.dispatch(actions.loadFeeds(apiFeeds));
 
@@ -47,10 +43,6 @@ export async function init(appEl) {
           store.dispatch(actions.loadFeeds(await fetchJson(apiRoot.hrefs.feeds)));
           store.dispatch(actions.loadItems(await fetchJson(apiRoot.hrefs.items)));
         } else {
-          const state = store.getState();
-          const folder = selectors.getFolder(state)(id);
-          store.dispatch(actions.loadFeeds(await fetchJson(folder.feeds)));
-          store.dispatch(actions.loadItems(await fetchJson(folder.items)));
         }
       }
       
@@ -69,18 +61,21 @@ export async function init(appEl) {
 }
 
 const App = state => {
-  const props = Object.assign(
-    {
-    },
+  const selectorProps =
     mapToObject(
       [
+        "apiRoot",
         "folders",
         "feeds",
         "items",
         "currentFeed",
       ],
       name => selectors[name](state)
-    )
+    );
+  const props = Object.assign(
+    {
+    },
+    selectorProps,
   );
   return h("main", { className: "app" },
     h(FeedsList, props),
@@ -88,12 +83,19 @@ const App = state => {
   );
 };
 
-const loadAllFeeds = () => {
+const handleAllFeedsClick = () => {
   store.dispatch(actions.loadFeeds(await fetchJson(apiRoot.hrefs.feeds)));
   store.dispatch(actions.loadItems(await fetchJson(apiRoot.hrefs.items)));
 };
 
-const FeedsList = ({ folders, feeds }) => {
+const handleFolderClick = () => {
+  const state = store.getState();
+  const folder = selectors.getFolder(state)(id);
+  store.dispatch(actions.loadFeeds(await fetchJson(folder.feeds)));
+  store.dispatch(actions.loadItems(await fetchJson(folder.items)));
+};
+
+const FeedsList = ({ feeds }) => {
   const feedsByFolders = indexBy(
     Object.values(feeds),
     feed => feed.folder
