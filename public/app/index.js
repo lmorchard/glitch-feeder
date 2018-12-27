@@ -88,8 +88,9 @@ const FeedsList = ({ folders, feeds }) => {
           h("span", null, folder),
           h("ul", { className: "feeds" },
             feeds.map(feed =>
-            h("li", { className: "feed" },
-            
+              h("li", { className: "feed" },
+                h("span", null, feed.title)
+              )
             )
           )
         )
@@ -99,7 +100,7 @@ const FeedsList = ({ folders, feeds }) => {
 };
 
 const ItemsList = ({ items }) =>
-  h("section", { className: "items" },
+  h("section", { className: "itemslist" },
     "ITEMS GO HERE"
   );
 
