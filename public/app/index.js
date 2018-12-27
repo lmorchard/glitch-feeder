@@ -1,8 +1,5 @@
-import {render, html} from "https://unpkg.com/lit-html@0.14.0/lit-html.js";
-import {repeat} from "https://unpkg.com/lit-html@0.14.0/directives/repeat.js";
-import preact from "https://cdn.jsdelivr.net/npm/preact/dist/preact.mjs";
-
-import { $, $$, addEventListeners, mapToObject } from "./utils.js";
+import { h, render } from "https://cdn.jsdelivr.net/npm/preact/dist/preact.mjs";
+import { addEventListeners, mapToObject } from "./utils.js";
 import { createAppStore, actions, selectors } from "./store.js";
 import "./components/index.js";
 
@@ -11,6 +8,7 @@ export async function init(appEl) {
 
   const render = () => {
     const state = store.getState();
+    render(h(App), appEl);
     renderApp(appEl, mapToObject(
       [
         "folders",
