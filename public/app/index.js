@@ -1,5 +1,5 @@
 import { h, render, rerender } from "https://unpkg.com/preact@8.4.2/dist/preact.mjs?module";
-import { addEventListeners, mapToObject } from "./utils.js";
+import { addEventListeners, mapToObject, indexBy } from "./utils.js";
 import { createAppStore, actions, selectors } from "./store.js";
 
 const fetchJson = (url, options = {}) =>
@@ -13,7 +13,6 @@ export async function init(appEl) {
   store.subscribe(renderApp);
   renderApp();
 
-  /*
   const apiRoot = await fetchJson("/api");
   
   const apiFolders = await fetchJson(apiRoot.hrefs.folders);  
@@ -25,6 +24,7 @@ export async function init(appEl) {
   const apiItems = await fetchJson(apiRoot.hrefs.items);  
   store.dispatch(actions.loadItems(apiItems));
 
+  /*
   addEventListeners(appEl, {
     click: async (ev) => {
       console.log("CLICKY CLICK");
@@ -76,12 +76,32 @@ const App = state => {
 };
 
 const FeedsList = ({ folders, feeds }) => {
-  return h("nav", { className: "feeds" }
+  const feedsByFolders = indexBy(
+    Object.values(feeds),
+    feed => feed.folder
+  );
+  
+  return h("nav", { className: "feedslist" },
+    h("ul", { className: "folders" },
+      Object.entries(feedsByFolders).map(([ folder, feeds ]) =>
+        h("li", { className: "folder" },
+          h("span", null, folder),
+          h("ul", { className: "feeds" },
+            feeds.map(feed =>
+            h("li", { className: "feed" },
+            
+            )
+          )
+        )
+      )
+    )
   );
 };
 
 const ItemsList = ({ items }) =>
-  h("section", { className: "items" });
+  h("section", { className: "items" },
+    "ITEMS GO HERE"
+  );
 
 /*
 const appTemplate = (props) => {

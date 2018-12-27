@@ -1,132 +1,31 @@
-/* styles */
-/* called by your view template */
-
-* {
-  box-sizing: border-box;
-}
-
 body {
   font-size: 14px;
   font-family: "Benton Sans", "Helvetica Neue", helvetica, arial, sans-serif;
-  margin: 2em;
-}
-
-h1 {
-  font-style: italic;
-  color: #373fff;
-  margin: 0 0 0.5em 0;
+  margin: 0;
   padding: 0;
 }
 
-.bold {
-  font-weight: bold;
-}
-
-p {
-  max-width: 600px;
-}
-
-form {
-  margin-bottom: 25px;
-  padding: 15px;
-  background-color: cyan;
-  display: inline-block;
-  width: 100%;
-  max-width: 340px;
-  border-radius: 3px;
-}
-
-input {
-  display: block;
-  margin-bottom: 10px;
-  padding: 5px;
-  width: 100%;
-  border: 1px solid lightgrey;
-  border-radius: 3px;
-  font-size: 16px;
-}
-
-button {
-  font-size: 16px;
-  border-radius: 3px;
-  background-color: lightgrey;
-  border: 1px solid grey;
-  box-shadow: 2px 2px teal;
-  cursor: pointer;
-}
-
-button:hover {
-  background-color: yellow;
-}
-
-button:active {
-  box-shadow: none;
-}
-
-li {
-  margin-bottom: 5px;
-}
-
-footer {
-  margin-top: 50px;
-  padding-top: 25px;
-  border-top: 1px solid lightgrey;
-}
-
-.folders { }
-.folders ul { list-style-type: none; margin: 0 0 1em; padding: 0; }
-.folders ul li { display: inline; padding: 0.25em 1em; cursor: pointer }
-.folders ul li:hover { background-color: #ddd; }
-
-.feeds { padding: 0; width: 25%; float: left; height: 700px; overflow: auto }
-.feeds ul { list-style-type: none; margin: 0; padding: 0;}
-.feeds ul li { padding: 0.25em; margin: 0;}
-.feeds ul li:hover { background-color: #ddd; }
-.feed { cursor: pointer }
-.items { padding: 0.25em; width: 75%; float: right; height: 700px; overflow: auto }
-.items header h1 { margin: 0 0 0.5em 0; padding: 0 }
-.items ul { list-style-type: none; margin: 0; padding: 0;}
-.item { margin-bottom: 1em; }
-.item iframe {
-  display: block;
-  width: 100%;
-  min-height: 1em;
-}
-footer { clear: both; }
-
-.feeditem {
+main.app {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
   display: flex;
   flex-direction: row;
-  align-content: stretch;
-  align-items: stretch;
-  margin: 0;
-  padding: 0.5em;
-  border-bottom: 1px solid rgba(0, 0, 0, 0.25);
+  height: 100%;
+  border: 1px solid #000;
+  /* background: rgba(0, 128, 0, 0.2); */
 }
 
-.feeditem .details {
-  flex-grow: 2;
-  padding-right: 0.25em;
+main.app nav.feeds {
+  flex: 0;
+  border: 1px solid #000;
+  background-color: rgba(0, 128, 0, 0.4);
 }
 
-.feeditem .date {
-  flex-grow: 1;
-  text-align: right;
-  opacity: 0.3;
-  font-size: 0.75em;
-}
-
-.feeditem .feedtitle {
-}
-
-.feeditem .title {
-  font-weight: bold;
-}
-
-.feeditem .text:before {
-  content: " - ";
-}
-
-.feeditem .text {
-  opacity: 0.6;
+main.app section.items {
+  flex: 2;
+  border: 1px solid #000;
+  background-color: rgba(0, 0, 255, 0.4);
 }
