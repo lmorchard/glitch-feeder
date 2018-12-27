@@ -18,6 +18,7 @@ main.app {
 main.app header {
   flex: 0;
   padding: 0.25em;
+  min-height: 40px;
 }
 
 main.app header h1 {
@@ -43,7 +44,7 @@ main.app .foldersAndItems {
 
 main.app nav.feedslist {
   flex: 0;
-  flex-basis: 25%;
+  flex-basis: 20em;
 }
 
 main.app nav.feedslist ul.folders {
@@ -159,4 +160,8 @@ main.app section.itemslist .feeds .feed .item {
 
 .feeditem .text {
   opacity: 0.6;
+}
+
+.feeditem .date {
+  width: 12em;
 }

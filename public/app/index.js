@@ -143,6 +143,9 @@ const FeedsList = ({
   );
 };
 
+const FeedsList = ({ feeds }) => (
+);
+
 const ItemsList = ({ items }) => {
   const itemsByFeed = {};
   for (let item of Object.values(items)) {
