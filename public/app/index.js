@@ -1,5 +1,4 @@
 import { h, render, rerender } from "https://unpkg.com/preact@8.4.2/dist/preact.mjs?module";
-import { Provider, connect } from "https://unpkg.com/preact-redux@2.0.3/dist/preact-redux.esm.js?module";
 import { addEventListeners, mapToObject } from "./utils.js";
 import { createAppStore, actions, selectors } from "./store.js";
 import "./components/index.js";
@@ -10,22 +9,12 @@ const fetchJson = (url, options = {}) =>
 export async function init(appEl) {
   const store = createAppStore();
   
-  const Main = () => (
-    h(Provider, { store }, h(Child))
-  );
+  const App = props =>
+    h("p", null, "Hello world", );
 
-  const Child = connect(
-    state => state
-  )( ({ text, setText }) => (
-    h("input", { value: text, onInput: e => setText(e.target.value) })
-  ) );
-
-  render(h(Main), appEl);
-
-  /*
   const renderApp = () => {
     const state = store.getState();
-    rerender(h(App, mapToObject(
+    render(h(App, mapToObject(
       [
         "folders",
         "feeds",
@@ -33,12 +22,11 @@ export async function init(appEl) {
         "currentFeed",
       ],
       name => selectors[name](state)
-    )), appEl);
+    )), appEl, appEl.lastElementChild);
   };
 
   store.subscribe(renderApp);
   renderApp();
-  */
 
   const apiRoot = await fetchJson("/api");
   
