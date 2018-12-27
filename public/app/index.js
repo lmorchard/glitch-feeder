@@ -2,16 +2,6 @@ import { h, render, rerender } from "https://unpkg.com/preact@8.4.2/dist/preact.
 import { addEventListeners, mapToObject, indexBy } from "./utils.js";
 import { createAppStore, actions, selectors } from "./store.js";
 
-const fetchJson = (url, options = {}) =>
-  fetch(url, options).then(response => response.json());
-  
-const _cmp = (key, a, b) =>
-  (a[key] < b[key]) ? -1 : ((a[key] > b[key]) ? 1 : 0);
-
-const cmp = key => (a, b) => _cmp(key, a, b);
-
-const rcmp = key => (a, b) => _cmp(key, b, a);
-
 export async function init(appEl) {
   const store = createAppStore();
 
@@ -24,6 +14,8 @@ export async function init(appEl) {
   renderApp();
 
   const apiRoot = await fetchJson("/api");
+  store.dispatch(actions.setApiRoot(apiRoot));
+  
   const [
     apiFeeds,
     apiFolders,
@@ -34,15 +26,27 @@ export async function init(appEl) {
     fetchJson(apiRoot.hrefs.items),
   ]);
 
-  store.dispatch(actions.setApiRoot(apiRoot));
   store.dispatch(actions.loadFeeds(apiFeeds));
   store.dispatch(actions.loadFolders(apiFolders));
   store.dispatch(actions.loadItems(apiItems));
+  
+  store.dispatch(actions.setAppLoading(false));
 }
+
+const fetchJson = (url, options = {}) =>
+  fetch(url, options).then(response => response.json());
+  
+const _cmp = (key, a, b) =>
+  (a[key] < b[key]) ? -1 : ((a[key] > b[key]) ? 1 : 0);
+
+const cmp = key => (a, b) => _cmp(key, a, b);
+
+const rcmp = key => (a, b) => _cmp(key, b, a);
 
 const App = ({ state, dispatch }) => {
   const selectorProps = mapToObject(
     [
+      "isAppLoading",
       "apiRoot",
       "folders",
       "getFolder",
@@ -65,14 +69,20 @@ const App = ({ state, dispatch }) => {
   );
   
   return h("main", { className: "app" },
-    !selectorProps.apiRoot
-      ? h("div", { className: "loading" }, "Loading...")
+    selectorProps.isAppLoading
+      ? h(LoadingMessage)
       : [
         h(FeedsList, props),
         h(ItemsList, props),
       ]
   );
 };
+
+const LoadingMessage = () => (
+  h("div", { className: "loading" },
+    h("p", null, "Loading...")
+  )
+);
 
 const handleAllFeedsClick = ({ state, dispatch }) => async () => {
   const apiRoot = selectors.apiRoot(state);
@@ -106,6 +116,7 @@ const FeedsList = ({
   );
   
   return (
+    h("section", { className: "foldersAndItems" },
     h("nav", { className: "feedslist" },
       h("ul", { className: "folders" },
         h("li", { className: "folder" },

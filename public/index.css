@@ -15,6 +15,16 @@ main.app {
   flex-direction: row;
 }
 
+main.app .loading {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  align-content: center;
+  text-align: center;
+  font-size: 2em;
+}
+
 main.app nav.feedslist {
   flex: 0;
   flex-basis: 25%;

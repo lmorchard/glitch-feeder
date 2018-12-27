@@ -4,6 +4,7 @@ const { createStore, combineReducers, compose } = Redux;
 
 export const defaultState = {
   ui: {
+    appLoading: true,
     currentFeed: null,
   },
   api: {
@@ -15,6 +16,7 @@ export const defaultState = {
 };
 
 export const selectors = {
+  isAppLoading: state => state.ui.appLoading,
   apiRoot: state => state.api.root,
   folders: state => state.folders,
   getFolder: state => id => state.folders[id],
@@ -37,7 +39,8 @@ export const actions = createActions(
 
 export const reducers = {
   ui: handleActions({
-    [actions.setAppLoading]: (state, { payload: loading = 
+    [actions.setAppLoading]: (state, { payload: appLoading = false }) =>
+      Object.assign({}, state, { appLoading }),
     [actions.setCurrentFeed]: (state, { payload: feed }) =>
       Object.assign({}, state, { currentFeed: feed }),
   }, defaultState.ui),
