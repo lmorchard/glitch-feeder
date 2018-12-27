@@ -27,6 +27,7 @@ export const selectors = {
 
 export const actions = createActions(
   {},
+  "setAppLoading",
   "setApiRoot",
   "setCurrentFeed",
   "loadFolders",
@@ -36,6 +37,7 @@ export const actions = createActions(
 
 export const reducers = {
   ui: handleActions({
+    [actions.setAppLoading]: (state, { payload: loading = 
     [actions.setCurrentFeed]: (state, { payload: feed }) =>
       Object.assign({}, state, { currentFeed: feed }),
   }, defaultState.ui),

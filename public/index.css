@@ -114,7 +114,7 @@ main.app section.itemslist .feeds .feed .item {
 }
 
 .feeditem .date {
-  flex-grow: 1;
+  flex-grow: 0;
   text-align: right;
   opacity: 0.3;
   font-size: 0.75em;

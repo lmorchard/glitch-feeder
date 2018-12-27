@@ -24,15 +24,19 @@ export async function init(appEl) {
   renderApp();
 
   const apiRoot = await fetchJson("/api");
-  store.dispatch(actions.setApiRoot(apiRoot));
-  
-  const apiFeeds = await fetchJson(apiRoot.hrefs.feeds);  
-  store.dispatch(actions.loadFeeds(apiFeeds));
-  
-  const apiFolders = await fetchJson(apiRoot.hrefs.folders);  
-  store.dispatch(actions.loadFolders(apiFolders));
+  const [
+    apiFeeds,
+    apiFolders,
+    apiItems,
+  ] = await Promise.all([
+    fetchJson(apiRoot.hrefs.feeds),    
+    fetchJson(apiRoot.hrefs.folders),  
+    fetchJson(apiRoot.hrefs.items),
+  ]);
 
-  const apiItems = await fetchJson(apiRoot.hrefs.items);  
+  store.dispatch(actions.setApiRoot(apiRoot));
+  store.dispatch(actions.loadFeeds(apiFeeds));
+  store.dispatch(actions.loadFolders(apiFolders));
   store.dispatch(actions.loadItems(apiItems));
 }
 
@@ -61,8 +65,12 @@ const App = ({ state, dispatch }) => {
   );
   
   return h("main", { className: "app" },
-    h(FeedsList, props),
-    h(ItemsList, props),
+    !selectorProps.apiRoot
+      ? h("div", { className: "loading" }, "Loading...")
+      : [
+        h(FeedsList, props),
+        h(ItemsList, props),
+      ]
   );
 };
 
@@ -159,7 +167,7 @@ const Item = ({
         text.length < 320 ? text : text.substr(0, 320) + "[...]")
     ),
     h("div", { className: "date" },
-      h("a", { href: link }, date.replace("T", " "))
+      h("a", { className: "datelink", href: link }, date.replace("T", " "))
     )
   )
 );
