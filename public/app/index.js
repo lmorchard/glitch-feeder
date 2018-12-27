@@ -28,6 +28,9 @@ export async function init(appEl) {
   
   const apiFeeds = await fetchJson(apiRoot.hrefs.feeds);  
   store.dispatch(actions.loadFeeds(apiFeeds));
+  
+  const apiFolders = await fetchJson(apiRoot.hrefs.folders);  
+  store.dispatch(actions.loadFolders(apiFolders));
 
   const apiItems = await fetchJson(apiRoot.hrefs.items);  
   store.dispatch(actions.loadItems(apiItems));
@@ -72,7 +75,6 @@ const handleAllFeedsClick = ({ state, dispatch }) => async () => {
 const handleFolderClick = ({ state, dispatch }) => async (ev) => {
   const id = ev.target.id;
   const folder = selectors.getFolder(state)(id);
-  dispatch(actions.loadFeeds(await fetchJson(folder.feeds)));
   dispatch(actions.loadItems(await fetchJson(folder.items)));
 };
 
@@ -80,8 +82,8 @@ const handleFeedClick = ({ state, dispatch }) => async (ev) => {
   const id = ev.target.id;
   const feed = selectors.getFeed(state)(id);
   dispatch(actions.setCurrentFeed(feed));
-  const apiItems = await fetchJson(feed.hrefs.items);
-  dispatch(actions.loadItems(apiItems));
+  const items = await fetchJson(feed.hrefs.items);
+  dispatch(actions.loadItems(items));
 };
 
 const FeedsList = ({
@@ -98,13 +100,16 @@ const FeedsList = ({
   return (
     h("nav", { className: "feedslist" },
       h("ul", { className: "folders" },
+        h("li", { className: "folder" },
+          h("span", { className: "foldertitle", onClick: handleAllFeedsClick }, "ALL")
+        ),
         Object.entries(feedsByFolders).map(([ folder, feeds ]) =>
           h("li", { className: "folder" },
-            h("span", { className: "foldertitle", onClick: handleFolderClick }, folder),
+            h("span", { id: folder, className: "foldertitle", onClick: handleFolderClick }, folder),
             h("ul", { className: "feeds" },
               feeds.map(feed =>
                 h("li", { className: "feed" },
-                  h("span", { className: "feedtitle", onClick: handleFeedClick }, feed.title)
+                  h("span", { id: feed.id, className: "feedtitle", onClick: handleFeedClick }, feed.title)
                 )
               )
             )

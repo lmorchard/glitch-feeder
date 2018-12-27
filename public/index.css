@@ -34,8 +34,14 @@ main.app nav.feedslist ul.folders .folder {
 
 main.app nav.feedslist ul.folders .folder .foldertitle {
   display: block;
-  margin: 1em;
+  margin: 0 0 0.5em 0;
+  padding: 0.5em;
   cursor: pointer;
+  font-weight: bold;
+}
+
+main.app nav.feedslist ul.folders .folder .foldertitle:hover {
+  background-color: rgba(0, 0, 0, 0.2);
 }
 
 main.app nav.feedslist ul.folders .folder .feeds {
@@ -44,13 +50,14 @@ main.app nav.feedslist ul.folders .folder .feeds {
   list-style-type: none;
 }
 
-main.app nav.feedslist ul.folders .folder .feeds .feed {
-}
-
 main.app nav.feedslist ul.folders .folder .feeds .feed .feedtitle {
   display: block;
-  margin: 0.5em 0.5em;
+  padding: 0.5em 0.5em;
   cursor: pointer;
+}
+
+main.app nav.feedslist ul.folders .folder .feeds .feed .feedtitle:hover {
+  background-color: rgba(0, 0, 0, 0.2);
 }
 
 main.app section.itemslist {
@@ -66,12 +73,8 @@ main.app section.itemslist .feeds {
   overflow-y: auto;
 }
 
-main.app section.itemslist .feeds .feed {
-}
-
 main.app section.itemslist .feeds .feed .feedtitle {
   display: block;
-  font-weight: bold;
   margin: 0.5em 0;
   cursor: pointer;
 }
@@ -85,7 +88,6 @@ main.app section.itemslist .feeds .feed .items {
 main.app section.itemslist .feeds .feed .item {
   margin: 0.5em 0;
 }
-
 
 .feeditem {
   display: flex;
