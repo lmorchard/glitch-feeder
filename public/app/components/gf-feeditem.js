@@ -71,7 +71,7 @@ const template = ({
     <a id=${id} class="item" href=${link}>${pubdate || date}</a>:
     <a href=${feedLink}>${feedTitle}</a> - 
     <a href=${link}>${title}</a>
-    ${text && html`
+    ${text && html` 
       <p class="summary">
         
       </p>

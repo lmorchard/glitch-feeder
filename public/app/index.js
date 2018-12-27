@@ -130,4 +130,45 @@ const ItemsList = ({ items }) => {
   );
 };
 
+const Item = ({
+  title,
+  link,
+  summary,
+  text,
+  date,
+}) => h("li", { className: "item" },
+  h("div", { className: "details" },
+    h("a", { className: "itemtitle", href: link }, title},
+    text && h("div", { classN ame: "itemtext" },
+  ),
+  h("div", { className: "date" }, date)
+  /*        
+  <div class="feeditem">
+    <div class="details">
+      <a href=${link} class="title">${title}</a>
+      ${text && html`
+        <span class="text">
+          ${text.length < 320 ? text : text.substr(0, 320) + "[...]"}
+        </span>
+      `}
+    </div>
+    <div class="date">${date}</div>
+  </div>
+  `;
+
+  <li class="item">
+    <a id=${id} class="item" href=${link}>${pubdate || date}</a>:
+    <a href=${feedLink}>${feedTitle}</a> - 
+    <a href=${link}>${title}</a>
+    ${text && html`
+      <p class="summary">
+        
+      </p>
+    `}
+  </li>
+      ${(summary || description) && 
+        html`<iframe frameBorder="0" src=${hrefs.html}></iframe>`}
+  */
+);
+
 export default { init };
