@@ -1,4 +1,5 @@
-import { h, render } from "https://cdn.jsdelivr.net/npm/preact/dist/preact.mjs";
+import { h, render, rerender } from "https://unpkg.com/preact@8.4.2/dist/preact.mjs?module";
+import { Provider, connect } from "https://unpkg.com/preact-redux@2.0.3/dist/preact-redux.esm.js?module";
 import { addEventListeners, mapToObject } from "./utils.js";
 import { createAppStore, actions, selectors } from "./store.js";
 import "./components/index.js";
@@ -6,10 +7,9 @@ import "./components/index.js";
 export async function init(appEl) {
   const store = createAppStore();
 
-  const render = () => {
+  const renderApp = () => {
     const state = store.getState();
-    render(h(App), appEl);
-    renderApp(appEl, mapToObject(
+    rerender(h(App, mapToObject(
       [
         "folders",
         "feeds",
@@ -17,24 +17,11 @@ export async function init(appEl) {
         "currentFeed",
       ],
       name => selectors[name](state)
-    ));
-    
-    // HACK: This belongs in a component, like a lot other things here
-    const iframes = $(appEl, "iframe");
-    for (let iframe of iframes) {
-      (() => {
-        iframe.onload = () => {
-          //iframe.width  = 
-          //  iframe.contentWindow.document.body.scrollWidth;
-          iframe.height = 
-            iframe.contentWindow.document.body.scrollHeight + 10;
-        };
-      })(iframe);
-    }
+    )), appEl);
   };
 
-  store.subscribe(render);
-  render();
+  store.subscribe(renderApp);
+  renderApp();
 
   const apiRoot = await fetchJson("/api");
   
@@ -47,6 +34,7 @@ export async function init(appEl) {
   const apiItems = await fetchJson(apiRoot.hrefs.items);  
   store.dispatch(actions.loadItems(apiItems));
 
+  /*
   addEventListeners(appEl, {
     click: async (ev) => {
       if (ev.target.classList.contains("folder")) {
@@ -75,14 +63,17 @@ export async function init(appEl) {
       }
     },
   });
+  */
 }
+
+const App = (props) =>
+  h("section", null,
+    h("p", null, "Hello world"));
 
 const fetchJson = (url, options = {}) =>
   fetch(url, options).then(response => response.json());
 
-const renderApp = (appEl, props) =>
-  render(appTemplate(props), appEl);
-
+/*
 const appTemplate = (props) => {
   const { folders, feeds, items, currentFeed } = props;
   
@@ -182,5 +173,5 @@ const itemTemplate = ({
     htmlSrc=${hrefs.html}
   />
 `;
-
+*/
 export default { init };
