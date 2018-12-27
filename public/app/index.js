@@ -154,11 +154,13 @@ const Item = ({
 }) => (
   h("li", { className: "feeditem" },
     h("div", { className: "details" },
-      h("a", { className: "itle", href: link }, title),
+      h("a", { className: "title", href: link }, title),
       text && h("span", { className: "text" },
         text.length < 320 ? text : text.substr(0, 320) + "[...]")
     ),
-    h("div", { className: "date" }, date.replace("T", " "))
+    h("div", { className: "date" },
+      h("a", { href: link }, date.replace("T", " "))
+    )
   )
 );
 
