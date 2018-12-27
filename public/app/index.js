@@ -31,71 +31,65 @@ export async function init(appEl) {
 
   const apiItems = await fetchJson(apiRoot.hrefs.items);  
   store.dispatch(actions.loadItems(apiItems));
-
-  addEventListeners(appEl, {
-    click: async (ev) => {
-      console.log("CLICKY CLICK");
-      
-      if (ev.target.classList.contains("folder")) {
-        const id = ev.target.id;
-        store.dispatch(actions.setCurrentFeed(null));
-        if (id === "ALL") {
-          store.dispatch(actions.loadFeeds(await fetchJson(apiRoot.hrefs.feeds)));
-          store.dispatch(actions.loadItems(await fetchJson(apiRoot.hrefs.items)));
-        } else {
-        }
-      }
-      
-      if (ev.target.classList.contains("feed")) {
-        const id = ev.target.id;
-        const state = store.getState();
-
-        const feed = selectors.getFeed(state)(id);
-        store.dispatch(actions.setCurrentFeed(feed));
-        
-        const apiItems = await fetchJson(feed.hrefs.items);
-        store.dispatch(actions.loadItems(apiItems));
-      }
-    },
-  });
 }
 
-const App = state => {
-  const selectorProps =
-    mapToObject(
-      [
-        "apiRoot",
-        "folders",
-        "feeds",
-        "items",
-        "currentFeed",
-      ],
-      name => selectors[name](state)
-    );
-  const props = Object.assign(
-    {
-    },
-    selectorProps,
+const App = ({ state, dispatch }) => {
+  const selectorProps = mapToObject(
+    [
+      "apiRoot",
+      "folders",
+      "getFolder",
+      "feeds",
+      "items",
+      "currentFeed",
+    ],
+    name => selectors[name](state)
   );
+  
+  const handlerProps = {
+    handleAllFeedsClick: handleAllFeedsClick({ state, dispatch }),
+    handleFolderClick: handleFolderClick({ state, dispatch }),
+    handleFeedClick: handleFeedClick({ state, dispatch }),
+  };
+
+  const props = Object.assign(
+    selectorProps,
+    handlerProps,
+  );
+  
   return h("main", { className: "app" },
     h(FeedsList, props),
     h(ItemsList, props),
   );
 };
 
-const handleAllFeedsClick = () => {
-  store.dispatch(actions.loadFeeds(await fetchJson(apiRoot.hrefs.feeds)));
-  store.dispatch(actions.loadItems(await fetchJson(apiRoot.hrefs.items)));
+const handleAllFeedsClick = ({ state, dispatch }) => async () => {
+  const apiRoot = selectors.apiRoot(state);
+  dispatch(actions.loadFeeds(await fetchJson(apiRoot.hrefs.feeds)));
+  dispatch(actions.loadItems(await fetchJson(apiRoot.hrefs.items)));
 };
 
-const handleFolderClick = () => {
-  const state = store.getState();
+const handleFolderClick = ({ state, dispatch }) => async (ev) => {
+  const id = ev.target.id;
   const folder = selectors.getFolder(state)(id);
-  store.dispatch(actions.loadFeeds(await fetchJson(folder.feeds)));
-  store.dispatch(actions.loadItems(await fetchJson(folder.items)));
+  dispatch(actions.loadFeeds(await fetchJson(folder.feeds)));
+  dispatch(actions.loadItems(await fetchJson(folder.items)));
 };
 
-const FeedsList = ({ feeds }) => {
+const handleFeedClick = ({ state, dispatch }) => async (ev) => {
+  const id = ev.target.id;
+  const feed = selectors.getFeed(state)(id);
+  dispatch(actions.setCurrentFeed(feed));
+  const apiItems = await fetchJson(feed.hrefs.items);
+  dispatch(actions.loadItems(apiItems));
+};
+
+const FeedsList = ({
+  feeds,
+  handleAllFeedsClick,
+  handleFolderClick,
+  handleFeedClick 
+}) => {
   const feedsByFolders = indexBy(
     Object.values(feeds),
     feed => feed.folder
@@ -106,14 +100,11 @@ const FeedsList = ({ feeds }) => {
       h("ul", { className: "folders" },
         Object.entries(feedsByFolders).map(([ folder, feeds ]) =>
           h("li", { className: "folder" },
-            h("span", { className: "foldertitle" }, folder),
+            h("span", { className: "foldertitle", onClick: handleFolderClick }, folder),
             h("ul", { className: "feeds" },
-              h("li", { className: "feed" },
-                h("span", { className: "feedtitle" }, "ALL")
-              ),
               feeds.map(feed =>
                 h("li", { className: "feed" },
-                  h("span", { className: "feedtitle" }, feed.title)
+                  h("span", { className: "feedtitle", onClick: handleFeedClick }, feed.title)
                 )
               )
             )

@@ -35,6 +35,7 @@ main.app nav.feedslist ul.folders .folder {
 main.app nav.feedslist ul.folders .folder .foldertitle {
   display: block;
   margin: 1em;
+  cursor: pointer;
 }
 
 main.app nav.feedslist ul.folders .folder .feeds {
@@ -49,6 +50,7 @@ main.app nav.feedslist ul.folders .folder .feeds .feed {
 main.app nav.feedslist ul.folders .folder .feeds .feed .feedtitle {
   display: block;
   margin: 0.5em 0.5em;
+  cursor: pointer;
 }
 
 main.app section.itemslist {
@@ -71,6 +73,7 @@ main.app section.itemslist .feeds .feed .feedtitle {
   display: block;
   font-weight: bold;
   margin: 0.5em 0;
+  cursor: pointer;
 }
 
 main.app section.itemslist .feeds .feed .items {
