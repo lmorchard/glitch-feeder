@@ -68,17 +68,15 @@ const App = ({ state, dispatch }) => {
   );
   
   return h("main", { className: "app" },
+    h("header", { className: "topnav" },
+      h("h1", null, "Glitch Feeder"),
+    ),
     selectorProps.isAppLoading
       ? h(LoadingMessage)
-      : [
-          h("header", { className: "topnav" },
-            h("h1", null, "Glitch Feeder"),
-          ),
-          h("section", { className: "foldersAndItems" },
-            h(FoldersList, props),
-            h(ItemsList, props),
-          )
-      ]
+      : h("section", { className: "foldersAndItems" },
+          h(FoldersList, props),
+          h(ItemsList, props),
+        )
   );
 };
 
