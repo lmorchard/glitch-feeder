@@ -4,9 +4,25 @@ import { addEventListeners, mapToObject } from "./utils.js";
 import { createAppStore, actions, selectors } from "./store.js";
 import "./components/index.js";
 
+const fetchJson = (url, options = {}) =>
+  fetch(url, options).then(response => response.json());
+
 export async function init(appEl) {
   const store = createAppStore();
+  
+  const Main = () => (
+    h(Provider, { store }, h(Child))
+  );
 
+  const Child = connect(
+    state => state
+  )( ({ text, setText }) => (
+    h("input", { value: text, onInput: e => setText(e.target.value) })
+  ) );
+
+  render(h(Main), appEl);
+
+  /*
   const renderApp = () => {
     const state = store.getState();
     rerender(h(App, mapToObject(
@@ -22,6 +38,7 @@ export async function init(appEl) {
 
   store.subscribe(renderApp);
   renderApp();
+  */
 
   const apiRoot = await fetchJson("/api");
   
@@ -65,13 +82,6 @@ export async function init(appEl) {
   });
   */
 }
-
-const App = (props) =>
-  h("section", null,
-    h("p", null, "Hello world"));
-
-const fetchJson = (url, options = {}) =>
-  fetch(url, options).then(response => response.json());
 
 /*
 const appTemplate = (props) => {
