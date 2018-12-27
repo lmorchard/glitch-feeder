@@ -92,11 +92,11 @@ const FeedsList = ({ folders, feeds }) => {
     h("ul", { className: "folders" },
       Object.entries(feedsByFolders).map(([ folder, feeds ]) =>
         h("li", { className: "folder" },
-          h("span", null, folder),
+          h("span", { className: "foldertitle" }, folder),
           h("ul", { className: "feeds" },
             feeds.map(feed =>
               h("li", { className: "feed" },
-                h("span", null, feed.title)
+                h("span", { className: "feedtitle" }, feed.title)
               )
             )
           )
@@ -107,7 +107,6 @@ const FeedsList = ({ folders, feeds }) => {
 };
 
 const ItemsList = ({ items }) => {
-    
   const itemsByFeed = {};
   for (let item of Object.values(items)) {
     if (!itemsByFeed[item.feed.id]) {
@@ -118,7 +117,7 @@ const ItemsList = ({ items }) => {
   
   return h("section", { className: "itemslist" },
     h("ul", { className: "feeds" },
-      Object.entries(itemsByFeed).map(({ feed, items }) =>
+      Object.values(itemsByFeed).map(({ feed, items }) =>
         h("li", { className: "feed" },
           h("span", { className: "feedtitle" }, feed.title),
           h("ul", { className: "items" },
@@ -131,105 +130,4 @@ const ItemsList = ({ items }) => {
   );
 };
 
-/*
-const appTemplate = (props) => {
-  const { folders, feeds, items, currentFeed } = props;
-  
-  const itemsByFeed = {};
-  for (let item of Object.values(items)) {
-    if (!itemsByFeed[item.feed.id]) {
-      itemsByFeed[item.feed.id] = { feed: item.feed, items: [] };
-    }
-    itemsByFeed[item.feed.id].items.push(item);
-  }
-  
-  const _cmp = (key, a, b) =>
-    (a[key] < b[key]) ? -1 : ((a[key] > b[key]) ? 1 : 0);
-  const cmp = key => (a, b) => _cmp(key, a, b);
-  const rcmp = key => (a, b) => _cmp(key, b, a);
-  
-  return html`
-    <nav class="folders">
-      <ul>
-        <li class="folder" id="ALL">ALL</li>
-        ${repeat(
-          Object.values(folders),
-          folder => folder.id,
-          folderTemplate,
-        )}
-      </ul>
-    </nav>
-    <nav class="feeds">
-      <ul>
-        ${repeat(
-          Object.values(feeds),
-          feed => feed.id,
-          feedTemplate,
-        )}
-      </ul>
-    </nav>
-    <section class="items">
-      ${Object.values(itemsByFeed).sort(rcmp("updated_at")).map(({ feed, items }) => html`
-        <h2>
-          <a href=${feed.link} class="feedtitle">${feed.title}</a>
-          <span>(${feed.updated_at})</span>
-        </h2>
-        <div>
-          ${items.sort(rcmp("pubdate")).map(itemTemplate)}
-        </div>
-      `)}
-    </section>
-  `;
-};
-
-const folderTemplate = ({
-  id,
-}) => html`
-  <li class="folder" id=${id}>${id}</li>
-`;
-
-const feedTemplate = ({
-  id,
-  title,
-  link,
-}) => html`
-  <li class="feed" id=${id}>${title}</li>
-`;
-
-const currentFeedTemplate = ({
-  id,
-  title,
-  link,
-}) => html`
-  <h1><a href=${link}>${title}</a></h1>
-`;
-
-const itemTemplate = ({
-  id,
-  updated_at,
-  date,
-  pubdate,
-  title,
-  link,
-  summary,
-  description,
-  text,
-  hrefs,
-  feed: {
-    title: feedTitle,
-    link: feedLink,
-  } = {},
-}) => html`
-  <gf-feeditem
-    feedTitle=${feedTitle}
-    feedLink=${feedLink} 
-    date=${date}
-    title=${title}
-    link=${link}
-    description=${description}
-    text=${text || ""}
-    htmlSrc=${hrefs.html}
-  />
-`;
-*/
 export default { init };
