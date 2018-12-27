@@ -31,7 +31,6 @@ export async function init(appEl) {
   const apiItems = await fetchJson(apiRoot.hrefs.items);  
   store.dispatch(actions.loadItems(apiItems));
 
-  /*
   addEventListeners(appEl, {
     click: async (ev) => {
       console.log("CLICKY CLICK");
@@ -62,7 +61,6 @@ export async function init(appEl) {
       }
     },
   });
-  */
 }
 
 const App = state => {
@@ -82,21 +80,28 @@ const App = state => {
   );
 };
 
+const loadAllFeeds = () => {
+  store.dispatch(actions.loadFeeds(await fetchJson(apiRoot.hrefs.feeds)));
+  store.dispatch(actions.loadItems(await fetchJson(apiRoot.hrefs.items)));
+};
+
 const FeedsList = ({ folders, feeds }) => {
   const feedsByFolders = indexBy(
     Object.values(feeds),
     feed => feed.folder
   );
   
-  return h("nav", { className: "feedslist" },
-    h("ul", { className: "folders" },
-      Object.entries(feedsByFolders).map(([ folder, feeds ]) =>
-        h("li", { className: "folder" },
-          h("span", { className: "foldertitle" }, folder),
-          h("ul", { className: "feeds" },
-            feeds.map(feed =>
-              h("li", { className: "feed" },
-                h("span", { className: "feedtitle" }, feed.title)
+  return (
+    h("nav", { className: "feedslist" },
+      h("ul", { className: "folders" },
+        Object.entries(feedsByFolders).map(([ folder, feeds ]) =>
+          h("li", { className: "folder" },
+            h("span", { className: "foldertitle" }, folder),
+            h("ul", { className: "feeds" },
+              feeds.map(feed =>
+                h("li", { className: "feed" },
+                  h("span", { className: "feedtitle" }, feed.title)
+                )
               )
             )
           )
@@ -115,13 +120,15 @@ const ItemsList = ({ items }) => {
     itemsByFeed[item.feed.id].items.push(item);
   }
   
-  return h("section", { className: "itemslist" },
-    h("ul", { className: "feeds" },
-      Object.values(itemsByFeed).map(({ feed, items }) =>
-        h("li", { className: "feed" },
-          h("span", { className: "feedtitle" }, feed.title),
-          h("ul", { className: "items" },
-            items.map(item => h(Item, item))
+  return (
+    h("section", { className: "itemslist" },
+      h("ul", { className: "feeds" },
+        Object.values(itemsByFeed).map(({ feed, items }) =>
+          h("li", { className: "feed" },
+            h("span", { className: "feedtitle" }, feed.title),
+            h("ul", { className: "items" },
+              items.map(item => h(Item, item))
+            )
           )
         )
       )
@@ -135,17 +142,15 @@ const Item = ({
   summary,
   text,
   date,
-}) => h("li", { className: "feeditem" },
-  h("div", { className: "details" },
-    h("a", { className: "itemtitle", href: link }, title),
-    text && h("div", { className: "itemtext" },
-      text.length < 320 ? text : text.substr(0, 320) + "[...]")
-  ),
-  h("div", { className: "date" }, date)
-  /*        
-      ${(summary || description) && 
-        html`<iframe frameBorder="0" src=${hrefs.html}></iframe>`}
-  */
+}) => (
+  h("li", { className: "feeditem" },
+    h("div", { className: "details" },
+      h("a", { className: "itle", href: link }, title),
+      text && h("span", { className: "text" },
+        text.length < 320 ? text : text.substr(0, 320) + "[...]")
+    ),
+    h("div", { className: "date" }, date.replace("T", " "))
+  )
 );
 
 export default { init };
