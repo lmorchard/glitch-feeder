@@ -1,33 +1,19 @@
 import { h, render, rerender } from "https://unpkg.com/preact@8.4.2/dist/preact.mjs?module";
 import { addEventListeners, mapToObject } from "./utils.js";
 import { createAppStore, actions, selectors } from "./store.js";
-import "./components/index.js";
 
 const fetchJson = (url, options = {}) =>
   fetch(url, options).then(response => response.json());
 
 export async function init(appEl) {
   const store = createAppStore();
-  
-  const App = props =>
-    h("p", null, "Hello world", );
 
-  const renderApp = () => {
-    const state = store.getState();
-    render(h(App, mapToObject(
-      [
-        "folders",
-        "feeds",
-        "items",
-        "currentFeed",
-      ],
-      name => selectors[name](state)
-    )), appEl, appEl.lastElementChild);
-  };
-
+  const renderApp = () =>
+    render(h(App, store.getState()), appEl, appEl.lastElementChild);
   store.subscribe(renderApp);
   renderApp();
 
+  /*
   const apiRoot = await fetchJson("/api");
   
   const apiFolders = await fetchJson(apiRoot.hrefs.folders);  
@@ -39,9 +25,10 @@ export async function init(appEl) {
   const apiItems = await fetchJson(apiRoot.hrefs.items);  
   store.dispatch(actions.loadItems(apiItems));
 
-  /*
   addEventListeners(appEl, {
     click: async (ev) => {
+      console.log("CLICKY CLICK");
+      
       if (ev.target.classList.contains("folder")) {
         const id = ev.target.id;
         store.dispatch(actions.setCurrentFeed(null));
@@ -70,6 +57,23 @@ export async function init(appEl) {
   });
   */
 }
+
+const App = state => {
+  const props = mapToObject(
+    [
+      "folders",
+      "feeds",
+      "items",
+      "currentFeed",
+    ],
+    name => selectors[name](state)
+  );
+  const { folders } = props;
+  return h("p", null,
+    "Hello world - ",
+    folders && Object.values(folders).map(({ id }) => `${id}`).join(" - ")
+   );
+};
 
 /*
 const appTemplate = (props) => {
