@@ -12,7 +12,17 @@ main.app {
   left: 0;
   right: 0;
   display: flex;
-  flex-direction: row;
+  flex-direction: column;
+}
+
+main.app header {
+  flex: 0;
+  padding: 0.25em;
+}
+
+main.app header h1 {
+  margin: 0;
+  padding: 0;
 }
 
 main.app .loading {
@@ -23,6 +33,12 @@ main.app .loading {
   align-content: center;
   text-align: center;
   font-size: 2em;
+}
+
+main.app .foldersAndItems {
+  display: flex;
+  flex-direction: row;
+  overflow-y: auto;
 }
 
 main.app nav.feedslist {

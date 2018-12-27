@@ -72,8 +72,13 @@ const App = ({ state, dispatch }) => {
     selectorProps.isAppLoading
       ? h(LoadingMessage)
       : [
-        h(FeedsList, props),
-        h(ItemsList, props),
+          h("header", { className: "topnav" },
+            h("h1", null, "Glitch Feeder"),
+          ),
+          h("section", { className: "foldersAndItems" },
+            h(FeedsList, props),
+            h(ItemsList, props),
+          )
       ]
   );
 };
@@ -116,7 +121,6 @@ const FeedsList = ({
   );
   
   return (
-    h("section", { className: "foldersAndItems" },
     h("nav", { className: "feedslist" },
       h("ul", { className: "folders" },
         h("li", { className: "folder" },
