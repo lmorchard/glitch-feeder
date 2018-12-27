@@ -6,7 +6,7 @@ export const addEventListeners = (el, listeners) => {
   for (name in listeners) {
     el.addEventListener(name, listeners[name]);
   }
-}
+};
 
 export const mapToObject = (list, mapFn) => {
   const out = [];
@@ -14,7 +14,7 @@ export const mapToObject = (list, mapFn) => {
     out[item] = mapFn(item);
   }
   return out;
-}
+};
 
 export const indexBy = (list, fn) => {
   const out = {};
@@ -24,4 +24,14 @@ export const indexBy = (list, fn) => {
     out[key].push(item);
   }
   return out;
-}
+};
+
+export const fetchJson = (url, options = {}) =>
+  fetch(url, options).then(response => response.json());
+  
+const _cmp = (key, a, b) =>
+  (a[key] < b[key]) ? -1 : ((a[key] > b[key]) ? 1 : 0);
+
+export const cmp = key => (a, b) => _cmp(key, a, b);
+
+export const rcmp = key => (a, b) => _cmp(key, b, a);

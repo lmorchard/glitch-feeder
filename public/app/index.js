@@ -1,6 +1,15 @@
-import { h, render, rerender } from "https://unpkg.com/preact@8.4.2/dist/preact.mjs?module";
-import { addEventListeners, mapToObject, indexBy } from "./utils.js";
-import { createAppStore, actions, selectors } from "./store.js";
+import { h, render } from "https://unpkg.com/preact@8.4.2/dist/preact.mjs?module";
+import { 
+  createAppStore, actions, selectors 
+} from "./store.js";
+import {
+  addEventListeners, 
+  mapToObject, 
+  indexBy, 
+  fetchJson, 
+  cmp, 
+  rcmp 
+} from "./utils.js";
 
 export async function init(appEl) {
   const store = createAppStore();
@@ -10,7 +19,7 @@ export async function init(appEl) {
       state: store.getState(),
       dispatch: store.dispatch
     }), appEl, appEl.lastElementChild);
-  store.subscribe(renderApp);
+  store.subscribe(renderApp); // TODO: Work out how to use preact-redux
   renderApp();
 
   const apiRoot = await fetchJson("/api");
@@ -32,16 +41,6 @@ export async function init(appEl) {
   
   store.dispatch(actions.setAppLoading(false));
 }
-
-const fetchJson = (url, options = {}) =>
-  fetch(url, options).then(response => response.json());
-  
-const _cmp = (key, a, b) =>
-  (a[key] < b[key]) ? -1 : ((a[key] > b[key]) ? 1 : 0);
-
-const cmp = key => (a, b) => _cmp(key, a, b);
-
-const rcmp = key => (a, b) => _cmp(key, b, a);
 
 const App = ({ state, dispatch }) => {
   const selectorProps = mapToObject(
@@ -76,7 +75,7 @@ const App = ({ state, dispatch }) => {
             h("h1", null, "Glitch Feeder"),
           ),
           h("section", { className: "foldersAndItems" },
-            h(FeedsList, props),
+            h(FoldersList, props),
             h(ItemsList, props),
           )
       ]
@@ -109,7 +108,7 @@ const handleFeedClick = ({ state, dispatch }) => async (ev) => {
   dispatch(actions.loadItems(items));
 };
 
-const FeedsList = ({
+const FoldersList = ({
   feeds,
   handleAllFeedsClick,
   handleFolderClick,
@@ -119,22 +118,25 @@ const FeedsList = ({
     Object.values(feeds),
     feed => feed.folder
   );
-  
   return (
     h("nav", { className: "feedslist" },
       h("ul", { className: "folders" },
         h("li", { className: "folder" },
-          h("span", { className: "foldertitle", onClick: handleAllFeedsClick }, "ALL")
+          h("span", {
+            className: "foldertitle",
+            onClick: handleAllFeedsClick
+          }, "ALL")
         ),
         Object.entries(feedsByFolders).map(([ folder, feeds ]) =>
           h("li", { className: "folder" },
-            h("span", { id: folder, className: "foldertitle", onClick: handleFolderClick }, folder),
+            h("span", {
+              id: folder,
+              className: "foldertitle",
+              onClick: handleFolderClick
+            }, folder),
             h("ul", { className: "feeds" },
               feeds.map(feed =>
-                h("li", { className: "feed" },
-                  h("span", { id: feed.id, className: "feedtitle", onClick: handleFeedClick }, feed.title)
-                )
-              )
+              h(FeedItem, { feed, handleFeedClick })),
             )
           )
         )
@@ -143,7 +145,14 @@ const FeedsList = ({
   );
 };
 
-const FeedsList = ({ feeds }) => (
+const FeedItem = ({ feed, handleFeedClick }) => (
+  h("li", { className: "feed" },
+    h("span", {
+      id: feed.id,
+      className: "feedtitle",
+      onClick: handleFeedClick
+    }, feed.title)
+  )
 );
 
 const ItemsList = ({ items }) => {
