@@ -82,3 +82,41 @@ main.app section.itemslist .feeds .feed .items {
 main.app section.itemslist .feeds .feed .item {
   margin: 0.5em 0;
 }
+
+
+.feeditem {
+  display: flex;
+  flex-direction: row;
+  align-content: stretch;
+  align-items: stretch;
+  margin: 0;
+  padding: 0.5em;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.25);
+}
+
+.feeditem .details {
+  flex-grow: 2;
+  padding-right: 0.25em;
+}
+
+.feeditem .date {
+  flex-grow: 1;
+  text-align: right;
+  opacity: 0.3;
+  font-size: 0.75em;
+}
+
+.feeditem .feedtitle {
+}
+
+.feeditem .title {
+  font-weight: bold;
+}
+
+.feeditem .text:before {
+  content: " - ";
+}
+
+.feeditem .text {
+  opacity: 0.6;
+}
