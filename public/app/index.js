@@ -184,6 +184,8 @@ const Item = ({
   summary,
   text,
   date,
+  pubdate,
+  created_at,
 }) => (
   h("li", { className: "feeditem" },
     h("div", { className: "details" },
@@ -192,7 +194,8 @@ const Item = ({
         text.length < 320 ? text : text.substr(0, 320) + "[...]")
     ),
     h("div", { className: "date" },
-      h("a", { className: "datelink", href: link }, date.replace("T", " "))
+      h("a", { className: "datelink", href: link }, 
+        (date || pubdate || created_at).replace("T", " "))
     )
   )
 );
