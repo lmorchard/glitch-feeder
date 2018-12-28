@@ -74,14 +74,15 @@ module.exports = (options, context) => {
     const where = {};
     if (folder) {
       where["folder"] = folder;
-    } 
+    }
     const items = await FeedItem
       .query()
       .where(where)
+      .whereRaw("coalesce(FeedItems.date, FeedItems.pubdate, FeedItems.created_at)")
+      .orderByRaw("coalesce(FeedItems.date, FeedItems.pubdate, FeedItems.created_at) DESC")
       .joinRelation("feed")
       .eager("feed")
-      .orderBy("date", "DESC")
-      .limit(100, 0);
+      .limit(250, 0);
     res.json(items);
   });
 

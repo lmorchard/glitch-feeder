@@ -76,8 +76,8 @@ class FeedItem extends guid(BaseModel) {
       description = "",
       summary = "",
       author = "",          
-      date = new Date(),
-      pubdate = new Date(),
+      date = null,
+      pubdate = null,
       ...json
     } = stripNullValues(item);
 
