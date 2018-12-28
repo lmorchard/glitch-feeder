@@ -61,9 +61,19 @@ class FeedItem extends guid(BaseModel) {
     }
   }
 
+  // TODO: flag in return value whether item exists / updated / new
   static async importItem (feed, item, context, options = {}) {
     const { log } = context;
     const { force = false } = options;
+
+    // Skip insert/update if there's an existing item and no force option
+    const guid = itemGuid(item);
+    const existingItem = force
+      ? await FeedItem.query().where({ guid }).first()
+      : null;
+    if (existingItem) {
+      return existingItem;
+    }
     
     const {
       id: feed_id,
@@ -82,33 +92,26 @@ class FeedItem extends guid(BaseModel) {
       ...json
     } = stripNullValues(item);
 
-    // Some items don't have a guid, so let's use a hash of the 
-    // title & link as a rough fallback
-    const guid = item.guid ||
-        crypto
-          .createHash("md5")
-          .update(title)
-          .update(link)
-          .digest("hex");
-
-    const existingItem = force
-      ? await FeedItem.query().where({ guid }).first()
-      : null;
-    if (existingItem && !force) {
-      return existingItem;
-    } else {
-      return this.insertOrUpdate({
-        feed_id,
-        guid,
-        title,
-        link,
-        summary,
-        date: date ? date.toISOString() : "",
-        pubdate: pubdate ? pubdate.toISOString() : "",
-        json
-      }, { log });
-    }
+    return this.insertOrUpdate({
+      feed_id,
+      guid,
+      title,
+      link,
+      summary,
+      date: date ? date.toISOString() : "",
+      pubdate: pubdate ? pubdate.toISOString() : "",
+      json
+    }, { log });
   }  
 }
+
+// Some items don't have a guid, so let's use a hash of the 
+// title & link as a rough fallback
+const itemGuid = ({ guid, title = "", link = "" }) =>
+  guid || crypto
+    .createHash("md5")
+    .update(title)
+    .update(link)
+    .digest("hex");
 
 module.exports = FeedItem;
