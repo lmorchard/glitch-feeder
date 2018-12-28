@@ -63,6 +63,7 @@ class FeedItem extends guid(BaseModel) {
 
   static async importItem (feed, item, context, options = {}) {
     const { log } = context;
+    const { force = false } = options;
     
     const {
       id: feed_id,
@@ -90,16 +91,23 @@ class FeedItem extends guid(BaseModel) {
           .update(link)
           .digest("hex");
 
-    return this.insertOrUpdate({
-      feed_id,
-      guid,
-      title,
-      link,
-      summary,
-      date: date ? date.toISOString() : "",
-      pubdate: pubdate ? pubdate.toISOString() : "",
-      json
-    }, { log });
+    const existingItem = force
+      ? await FeedItem.query().where({ guid }).first()
+      : null;
+    if (existingItem && !force) {
+      return existingItem;
+    } else {
+      return this.insertOrUpdate({
+        feed_id,
+        guid,
+        title,
+        link,
+        summary,
+        date: date ? date.toISOString() : "",
+        pubdate: pubdate ? pubdate.toISOString() : "",
+        json
+      }, { log });
+    }
   }  
 }
 
