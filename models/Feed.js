@@ -154,12 +154,14 @@ class Feed extends guid(BaseModel) {
       };
 
       // Set up some headers for conditional GET so we can see
-      // some of those sweet 304 Not Modified responses 
-      if (prevHeaders.etag) {
-        fetchOptions.headers["If-None-Match"] = prevHeaders.etag;
-      }
-      if (prevHeaders["last-modified"]) {
-        fetchOptions.headers["If-Modified-Match"] = prevHeaders["last-modified"];
+      // some of those sweet 304 Not Modified responses
+      if (!force) {
+        if (prevHeaders.etag) {
+          fetchOptions.headers["If-None-Match"] = prevHeaders.etag;
+        }
+        if (prevHeaders["last-modified"]) {
+          fetchOptions.headers["If-Modified-Match"] = prevHeaders["last-modified"];
+        }
       }
 
       // Finally, fire off the GET request for the feed resource.

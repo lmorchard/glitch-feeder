@@ -78,10 +78,14 @@ module.exports = (options, context) => {
     const items = await FeedItem
       .query()
       .where(where)
-      .whereRaw("coalesce(FeedItems.date, FeedItems.pubdate, FeedItems.created_at)")
-      .orderByRaw("coalesce(FeedItems.date, FeedItems.pubdate, FeedItems.created_at) DESC")
+      .whereRaw(`
+        datetime(coalesce(FeedItems.date, FeedItems.pubdate, FeedItems.created_at))
+        >
+        datetime("now", "-2 days")
+      `)
       .joinRelation("feed")
       .eager("feed")
+      .orderByRaw("coalesce(FeedItems.date, FeedItems.pubdate, FeedItems.created_at) DESC")
       .limit(250, 0);
     res.json(items);
   });
