@@ -208,11 +208,11 @@ class Feed extends guid(BaseModel) {
         
         const existingGuids = new Set(
           await FeedItem
-            .query().where({ feed_id : this.id }).select("id").pluck("id")
+            .query().where({ feed_id : this.id }).select("guid").pluck("guid")
         );
         const newGuids = new Set();
         const seenGuids = new Set();
-        
+
         for (let rawItem of items) {
           const { isNew, item } =
             await FeedItem.importItem(this, rawItem, context, options);
@@ -221,10 +221,15 @@ class Feed extends guid(BaseModel) {
         }
 
         const defunctGuids = Array.from(existingGuids.values())
-            .filter(item => !seenGuids.has(item));
+            .filter(guid => !seenGuids.has(guid));
         
-        log.verbose("Parsed %s items (%s / %s / %s / %s) for feed %s",
-                    items.length, newGuids.size, seenGuids.size, defunctGuids.length, existingGuids.size, title);
+        await FeedItem.query()
+          .update({ defunct: true })
+          .whereIn("guid", defunctGuids);
+        
+        log.verbose("Parsed %s items (%s new / %s seen / %s defunct / %s existing) for feed %s",
+          items.length, newGuids.size, seenGuids.size,
+          defunctGuids.length, existingGuids.size, title);
       }
     } catch (err) {
       log.error("Feed poll failed for %s - %s", title, err, err.stack);

@@ -96,7 +96,7 @@ class FeedItem extends guid(BaseModel) {
 
     return {
       isNew: !existingItem,
-      item: this.insertOrUpdate({
+      item: await this.insertOrUpdate({
         defunct: false,
         feed_id,
         guid,
