@@ -86,6 +86,12 @@ const LoadingMessage = () => (
   )
 );
 
+const handleNewFeedsClick = ({ state, dispatch }) => async () => {  
+  const apiRoot = selectors.apiRoot(state);
+  dispatch(actions.loadFeeds(await fetchJson(apiRoot.hrefs.feeds)));
+  dispatch(actions.loadItems(await fetchJson(apiRoot.hrefs.items + "?new=1")));
+};
+
 const handleAllFeedsClick = ({ state, dispatch }) => async () => {
   const apiRoot = selectors.apiRoot(state);
   dispatch(actions.loadFeeds(await fetchJson(apiRoot.hrefs.feeds)));
@@ -120,6 +126,16 @@ const FoldersList = ({
     h("nav", { className: "feedslist" },
       h("ul", { className: "folders" },
         h("li", { className: "folder" },
+          h("span", {
+            className: "foldertitle",
+            onClick: () => {
+              try {
+                handleNewFeedsClick()
+              } catch (e) {
+                console.log("GRR", e);
+              }
+            }
+          }, "NEW"),
           h("span", {
             className: "foldertitle",
             onClick: handleAllFeedsClick

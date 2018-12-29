@@ -70,29 +70,21 @@ module.exports = (options, context) => {
   });
 
   apiRouter.route("/items").get(async (req, res) => {
-    const { folder } = req.query;
+    const { folder, new: useNew } = req.query;
     const where = {};
     if (folder) {
       where["folder"] = folder;
     }
+    if (!!useNew) {
+      where["new"] = true;
+    }
     const items = await FeedItem
       .query()
       .where(where)
-      .whereRaw(`
-        datetime(
-          coalesce(FeedItems.date, FeedItems.pubdate, FeedItems.created_at)
-        )
-        >
-        datetime("now", "-3 days")
-      `)
+      .whereRaw(`datetime(FeedItems.date) > datetime("now", "-3 days")`)
       .joinRelation("feed")
       .eager("feed")
-      .orderByRaw(`
-        datetime(
-          coalesce(FeedItems.date, FeedItems.pubdate, FeedItems.created_at)
-        )
-        DESC
-      `)
+      .orderBy("date", "DESC")
       .limit(250, 0);
     res.json(items);
   });
