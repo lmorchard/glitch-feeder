@@ -1,9 +1,9 @@
 exports.up = knex => knex.schema
   .table("FeedItems", t => {
-    t.boolean("defunct");
+    t.boolean("new");
   });
 
 exports.down = knex => knex.schema
   .table("FeedItems", t => {
-    t.dropColumn("defunct");
+    t.dropColumn("new");
   });

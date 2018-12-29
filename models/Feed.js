@@ -207,8 +207,10 @@ class Feed extends guid(BaseModel) {
         const FeedItem = require("./FeedItem");
         
         const existingGuids = new Set(
-          await FeedItem
-            .query().where({ feed_id : this.id }).select("guid").pluck("guid")
+          await FeedItem.query()
+            .where({ feed_id: this.id })
+            .select("guid")
+            .pluck("guid")
         );
         const newGuids = new Set();
         const seenGuids = new Set();
@@ -222,10 +224,20 @@ class Feed extends guid(BaseModel) {
 
         const defunctGuids = Array.from(existingGuids.values())
             .filter(guid => !seenGuids.has(guid));
-        
+
+        // Update defunct and new flags for this feed's items
         await FeedItem.query()
           .update({ defunct: true })
           .whereIn("guid", defunctGuids);
+        
+        await FeedItem.query()
+          .update({ new: true })
+          .whereIn("guid", Array.from(newGuids));
+        
+        await FeedItem.query()
+          .update({ new: false })
+          .where({ feed_id: this.id })
+          .whereNotIn("guid", Array.from(newGuids));
         
         log.verbose("Parsed %s items (%s new / %s seen / %s defunct / %s existing) for feed %s",
           items.length, newGuids.size, seenGuids.size,
