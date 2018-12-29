@@ -106,7 +106,7 @@ class FeedItem extends guid(BaseModel) {
 // Relevant date for an item has a bit of variance, so let's 
 // work with some fallbacks
 const itemDate = ({ date, pubdate }, { created_at } = {}) =>
-  date || pubdate || created_at || new Date();
+  new Date(date || pubdate || created_at || Date.now());
 
 // Some items don't have a guid, so let's use a hash of the 
 // title & link as a rough fallback
