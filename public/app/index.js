@@ -56,11 +56,10 @@ const App = ({ state, dispatch }) => {
     name => selectors[name](state)
   );
   
-  const handlerProps = {
-    handleAllFeedsClick: handleAllFeedsClick({ state, dispatch }),
-    handleFolderClick: handleFolderClick({ state, dispatch }),
-    handleFeedClick: handleFeedClick({ state, dispatch }),
-  };
+  const handlerProps = mapToObject(
+    Object.keys(handlers),
+    name => handlers[name]({ state, dispatch })
+  );
 
   const props = Object.assign(
     selectorProps,
@@ -86,34 +85,34 @@ const LoadingMessage = () => (
   )
 );
 
-const handleNewFeedsClick = ({ state, dispatch }) => async () => {  
-  const apiRoot = selectors.apiRoot(state);
-  dispatch(actions.loadFeeds(await fetchJson(apiRoot.hrefs.feeds)));
-  dispatch(actions.loadItems(await fetchJson(apiRoot.hrefs.items + "?new=1")));
-};
-
-const handleAllFeedsClick = ({ state, dispatch }) => async () => {
-  const apiRoot = selectors.apiRoot(state);
-  dispatch(actions.loadFeeds(await fetchJson(apiRoot.hrefs.feeds)));
-  dispatch(actions.loadItems(await fetchJson(apiRoot.hrefs.items)));
-};
-
-const handleFolderClick = ({ state, dispatch }) => async (ev) => {
-  const id = ev.target.id;
-  const folder = selectors.getFolder(state)(id);
-  dispatch(actions.loadItems(await fetchJson(folder.items)));
-};
-
-const handleFeedClick = ({ state, dispatch }) => async (ev) => {
-  const id = ev.target.id;
-  const feed = selectors.getFeed(state)(id);
-  dispatch(actions.setCurrentFeed(feed));
-  const items = await fetchJson(feed.hrefs.items);
-  dispatch(actions.loadItems(items));
+const handlers = {
+  handleNewFeedsClick: ({ state, dispatch }) => async () => {  
+    const apiRoot = selectors.apiRoot(state);
+    dispatch(actions.loadFeeds(await fetchJson(apiRoot.hrefs.feeds)));
+    dispatch(actions.loadItems(await fetchJson(apiRoot.hrefs.items + "?new=1")));
+  },
+  handleAllFeedsClick: ({ state, dispatch }) => async () => {
+    const apiRoot = selectors.apiRoot(state);
+    dispatch(actions.loadFeeds(await fetchJson(apiRoot.hrefs.feeds)));
+    dispatch(actions.loadItems(await fetchJson(apiRoot.hrefs.items)));
+  },
+  handleFolderClick: ({ state, dispatch }) => async (ev) => {
+    const id = ev.target.id;
+    const folder = selectors.getFolder(state)(id);
+    dispatch(actions.loadItems(await fetchJson(folder.items)));
+  },
+  handleFeedClick: ({ state, dispatch }) => async (ev) => {
+    const id = ev.target.id;
+    const feed = selectors.getFeed(state)(id);
+    dispatch(actions.setCurrentFeed(feed));
+    const items = await fetchJson(feed.hrefs.items);
+    dispatch(actions.loadItems(items));
+  }
 };
 
 const FoldersList = ({
   feeds,
+  handleNewFeedsClick,
   handleAllFeedsClick,
   handleFolderClick,
   handleFeedClick 
@@ -128,13 +127,7 @@ const FoldersList = ({
         h("li", { className: "folder" },
           h("span", {
             className: "foldertitle",
-            onClick: () => {
-              try {
-                handleNewFeedsClick()
-              } catch (e) {
-                console.log("GRR", e);
-              }
-            }
+            onClick: handleNewFeedsClick
           }, "NEW"),
           h("span", {
             className: "foldertitle",
