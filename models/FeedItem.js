@@ -68,10 +68,8 @@ class FeedItem extends guid(BaseModel) {
 
     // Skip insert/update if there's an existing item and no force option
     const guid = itemGuid(item);
-    const existingItem = force
-      ? await FeedItem.query().where({ guid }).first()
-      : null;
-    if (existingItem) {
+    const existingItem = await FeedItem.query().where({ guid }).first();
+    if (!force && existingItem) {
       return existingItem;
     }
     
