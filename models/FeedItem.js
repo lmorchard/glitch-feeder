@@ -66,12 +66,15 @@ class FeedItem extends guid(BaseModel) {
     const { log } = context;
     const { force = false } = options;
 
-    // Skip insert/update if there's an existing item and no force option
     const guid = itemGuid(item);
     const existingItem = await FeedItem.query().where({ guid }).first();
     if (!force && existingItem) {
+      // Skip insert/update if there's an existing item and no force option
+      // TODO: mind a max-age here?
       return existingItem;
     }
+    
+    const date = itemDate(item, existingItem);
     
     const {
       id: feed_id,
@@ -85,8 +88,6 @@ class FeedItem extends guid(BaseModel) {
       description = "",
       summary = "",
       author = "",          
-      date = null,
-      pubdate = null,
       ...json
     } = stripNullValues(item);
 
@@ -96,12 +97,16 @@ class FeedItem extends guid(BaseModel) {
       title,
       link,
       summary,
-      date: date ? date.toISOString() : "",
-      pubdate: pubdate ? pubdate.toISOString() : "",
+      date: date.toISOString(),
       json
     }, { log });
-  }  
+  }
 }
+
+// Relevant date for an item has a bit of variance, so let's 
+// work with some fallbacks
+const itemDate = ({ date, pubdate }, { created_at } = {}) =>
+  date || pubdate || created_at || new Date();
 
 // Some items don't have a guid, so let's use a hash of the 
 // title & link as a rough fallback
