@@ -194,7 +194,7 @@ class Feed extends guid(BaseModel) {
         const { meta, items } = await parseFeedStream(
           { stream: response.body, resourceUrl },
           context
-        );        
+        );
 
         Object.assign(attrs, {
           lastParsed: timeStart,
@@ -205,8 +205,13 @@ class Feed extends guid(BaseModel) {
         });      
 
         const FeedItem = require("./FeedItem");
-        for (let item of items) {
-          await FeedItem.importItem(this, item, context, options);
+        const existingGuids =
+          FeedItem.query().where({ feed_id : this.id }).select("id").pluck("id");
+        const seenGuids = new Set();
+        for (let rawItem of items) {
+          const { isNew, item } =
+            await FeedItem.importItem(this, rawItem, context, options);
+          seenGuids.add(item.guid);
         }
 
         log.verbose("Parsed %s items for feed %s", items.length, title);

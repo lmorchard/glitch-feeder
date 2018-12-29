@@ -71,7 +71,10 @@ class FeedItem extends guid(BaseModel) {
     if (!force && existingItem) {
       // Skip insert/update if there's an existing item and no force option
       // TODO: mind a max-age here?
-      return existingItem;
+      return {
+        isNew: false,
+        item: existingItem
+      };
     }
     
     const date = itemDate(item, existingItem);
@@ -91,15 +94,18 @@ class FeedItem extends guid(BaseModel) {
       ...json
     } = stripNullValues(item);
 
-    return this.insertOrUpdate({
-      feed_id,
-      guid,
-      title,
-      link,
-      summary,
-      date: date.toISOString(),
-      json
-    }, { log });
+    return {
+      isNew: !existingItem,
+      item: this.insertOrUpdate({
+        feed_id,
+        guid,
+        title,
+        link,
+        summary,
+        date: date.toISOString(),
+        json
+      }, { log })
+    };
   }
 }
 
