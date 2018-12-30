@@ -33,28 +33,15 @@ module.exports = (options, context) => {
   const apiRouter = express.Router();
 
   apiRouter.route("/folders").get(async (req, res) => {
-    const feeds = await Feed.query();
-    const folders = {};
-    for (let feed of feeds) {
-      const folderId = feed.folder || "uncategorized";
-      if (!folders[folderId]) {
-        folders[folderId] = {
-          id: folderId,
-          href: `${API_BASE_URL}/feeds/?folder=${folderId}`,
-          feeds: []
-        };
-      }
-      const { id, title, hrefs, lastNewItem } = feed.toJSON();
-      folders[folderId].feeds.push({ id, title, hrefs, lastNewItem });
-    }
-    res.json(folders);
+    let result = Feed.queryFolders();
+    res.json(await result);
   });
 
   apiRouter.route("/feeds").get(async (req, res) => {
     const {
       folder = null,
-      limit = 5,
-      itemsLimit = 10,
+      limit = null,
+      itemsLimit = 0,
       before = null,
     } = req.query;
     let result = Feed.queryWithParams({

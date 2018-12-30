@@ -48,9 +48,8 @@ class Feed extends guid(BaseModel) {
   static queryWithParams ({
     id = null,
     folder = null,
-    limit = 5,
-    includeItems = false,
-    itemsLimit = 10,
+    limit = null,
+    itemsLimit = 0,
     before = null
   }) {    
     let result = Feed.query();
@@ -72,7 +71,7 @@ class Feed extends guid(BaseModel) {
         .orderBy("updated_at", "DESC");
     }
     
-    if (includeItems) {
+    if (itemsLimit > 0) {
       result = result
         // Naive eager used here so itemsLimit applies per-feed
         // rather than for all items between feeds
@@ -87,6 +86,31 @@ class Feed extends guid(BaseModel) {
     }
 
     return result;
+  }
+  
+  static async queryFolders({
+  }) {
+    const { API_BASE_URL } = this.config();
+    
+    const feeds = await this.query()
+        .orderBy("lastNewItem", "DESC")
+        .orderBy("updated_at", "DESC");
+    
+    const folders = {};
+    for (let feed of feeds) {
+      const folderId = feed.folder || "uncategorized";
+      if (!folders[folderId]) {
+        folders[folderId] = {
+          id: folderId,
+          href: `${API_BASE_URL}/feeds/?folder=${folderId}`,
+          feeds: []
+        };
+      }
+      const { id, title, hrefs, lastNewItem } = feed.toJSON();
+      folders[folderId].feeds.push({ id, title, hrefs, lastNewItem });
+    }
+    
+    return folders;
   }
   
   static async importOpmlStream (stream, context) {
