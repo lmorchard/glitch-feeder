@@ -82,15 +82,10 @@ const LoadingMessage = () => (
 );
 
 const handlers = {
-  handleNewFeedsClick: ({ state, dispatch }) => async () => {  
-    const apiRoot = selectors.apiRoot(state);
-    dispatch(actions.loadFeeds(await fetchJson(apiRoot.hrefs.feeds)));
-    dispatch(actions.loadItems(await fetchJson(apiRoot.hrefs.items + "?new=1")));
-  },
   handleAllFeedsClick: ({ state, dispatch }) => async () => {
     const apiRoot = selectors.apiRoot(state);
-    dispatch(actions.loadFeeds(await fetchJson(apiRoot.hrefs.feeds)));
-    dispatch(actions.loadItems(await fetchJson(apiRoot.hrefs.items)));
+    const feeds = await fetchJson(apiRoot.hrefs.feeds + "?limit=5&itemsLimit=10"); 
+    dispatch(actions.loadFeeds(feeds));
   },
   handleFolderClick: ({ state, dispatch }) => folder => async (ev) => {
     const feeds = await fetchJson(folder.href + "&limit=10&itemsLimit=10");
@@ -114,15 +109,9 @@ const FoldersList = ({
       h("ul", { className: "folders" },
         h("li", { className: "folder" },
           h("span", {
-            className: "foldertitle",
-            onClick: handleNewFeedsClick
-          }, "NEW"),
-        ),
-        h("li", { className: "folder" },
-          h("span", {
-            className: "foldertitle",
+            className: "foldertitle all",
             onClick: handleAllFeedsClick
-          }, "ALL")
+          }, "All feeds")
         ),
         Object.values(folders).map(folder =>
           h("li", { className: "folder" },
