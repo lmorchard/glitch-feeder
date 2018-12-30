@@ -36,16 +36,17 @@ module.exports = (options, context) => {
     const feeds = await Feed.query();
     const folders = {};
     for (let feed of feeds) {
-      const folder = feed.folder || "
-    }
-    const folders = indexBy(
-      feeds,
-      feed => feed.folder,
-      feed => {
-        const { id, title, hrefs, lastNewItem } = feed.toJSON();
-        return ({ id, title, hrefs, lastNewItem });
+      const folderId = feed.folder || "uncategorized";
+      if (!folders[folderId]) {
+        folders[folderId] = {
+          id: folderId,
+          href: `${API_BASE_URL}/feeds/?folder=${folderId}`,
+          feeds: []
+        };
       }
-    );
+      const { id, title, hrefs, lastNewItem } = feed.toJSON();
+      folders[folderId].feeds.push({ id, title, hrefs, lastNewItem });
+    }
     res.json(folders);
   });
 

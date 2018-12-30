@@ -49,7 +49,7 @@ class Feed extends guid(BaseModel) {
     id = null,
     folder = null,
     limit = 5,
-    includeItems = true,
+    includeItems = false,
     itemsLimit = 10,
     before = null
   }) {    
