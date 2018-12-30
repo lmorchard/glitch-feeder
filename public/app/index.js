@@ -29,7 +29,7 @@ export async function init(appEl) {
     apiFeeds,
     apiFolders,
   ] = await Promise.all([
-    fetchJson(apiRoot.hrefs.feeds + "?limit=5&itemsLimit=10"),    
+    fetchJson(apiRoot.hrefs.feeds + "?limit=15&itemsLimit=10&itemsNew=true"),    
     fetchJson(apiRoot.hrefs.folders),  
   ]);
 
@@ -40,46 +40,19 @@ export async function init(appEl) {
 }
 
 const App = ({ state, dispatch }) => {
-  const selectorProps = mapToObject(
-    [
-      "isAppLoading",
-      "apiRoot",
-      "folders",
-      "getFolder",
-      "feeds",
-      "currentFeed",
-    ],
-    name => selectors[name](state)
-  );
-  
-  const handlerProps = mapToObject(
-    Object.keys(handlers),
-    name => handlers[name]({ state, dispatch })
-  );
-
   const props = Object.assign(
-    selectorProps,
-    handlerProps,
-  );
-  
-  return h("main", { className: "app" },
-    h("header", { className: "topnav" },
-      h("h1", null, "Glitch Feeder"),
+    {},
+    mapToObject(
+      Object.keys(selectors),
+      name => selectors[name](state)
     ),
-    selectorProps.isAppLoading
-      ? h(LoadingMessage)
-      : h("section", { className: "foldersAndItems" },
-          h(FoldersList, props),
-          h(ItemsList, props),
-        )
-  );
+    mapToObject(
+      Object.keys(handlers),
+      name => handlers[name]({ state, dispatch })
+    ),
+  );  
+  return AppLayout(props);
 };
-
-const LoadingMessage = () => (
-  h("div", { className: "loading" },
-    h("p", null, "Loading...")
-  )
-);
 
 const handlers = {
   handleAllFeedsClick: ({ state, dispatch }) => async () => {
@@ -96,6 +69,26 @@ const handlers = {
     dispatch(actions.loadFeeds([ result ]));
   }
 };
+
+const AppLayout = props => (
+  h("main", { className: "app" },
+    h("header", { className: "topnav" },
+      h("h1", null, "Glitch Feeder"),
+    ),
+    props.isAppLoading
+      ? h(LoadingMessage)
+      : h("section", { className: "foldersAndItems" },
+          h(FoldersList, props),
+          h(ItemsList, props),
+        )
+  )
+);
+
+const LoadingMessage = () => (
+  h("div", { className: "loading" },
+    h("p", null, "Loading...")
+  )
+);
 
 const FoldersList = ({
   folders,

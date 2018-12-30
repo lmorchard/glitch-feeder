@@ -43,12 +43,14 @@ module.exports = (options, context) => {
       limit = null,
       itemsLimit = 0,
       before = null,
+      itemsNew = false,
     } = req.query;
     let result = Feed.queryWithParams({
       folder,
       limit,
       itemsLimit,
       before,
+      itemsNew: !!itemsNew,
     });
     res.json(await result);
   });

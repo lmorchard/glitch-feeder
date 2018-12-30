@@ -50,6 +50,7 @@ class Feed extends guid(BaseModel) {
     folder = null,
     limit = null,
     itemsLimit = 0,
+    itemsNew = false,
     before = null
   } = {}) {    
     let result = Feed.query();
@@ -82,6 +83,9 @@ class Feed extends guid(BaseModel) {
             .orderBy("date", "DESC")
             .orderBy("id", "DESC")
             .limit(itemsLimit);
+          if (itemsNew) {
+            builder.where("new", true);
+          }
         });
     }
 
