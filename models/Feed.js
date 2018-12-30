@@ -215,16 +215,19 @@ class Feed extends guid(BaseModel) {
         const newGuids = new Set();
         const seenGuids = new Set();
 
-        let 
+        let newestDate = null;
         for (let rawItem of items) {
           const { isNew, item } =
             await FeedItem.importItem(this, rawItem, context, options);
           seenGuids.add(item.guid);
           if (isNew) { newGuids.add(item.guid); }
+          if (newestDate === null || item.date > newestDate) {
+            newestDate = item.date;
+          }
         }
 
         if (newGuids.size > 0) {
-          attrs.lastNewItem = (new Date()).toISOString();
+          attrs.lastNewItem = newestDate || (new Date()).toISOString();
         }
 
         const defunctGuids = Array.from(existingGuids.values())
