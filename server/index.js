@@ -47,25 +47,6 @@ module.exports = (options, context) => {
     res.json(out);
   });
   
-  apiRouter.route("/latest").get(async (req, res) => {
-    const results = await Feed
-      .query()
-      .eagerAlgorithm(Feed.NaiveEagerAlgorithm)
-      .eager("items")
-      .modifyEager("items", builder => {
-        builder
-          .orderBy("date", "DESC")
-          .orderBy("id", "DESC")
-          .limit(15)
-        ;
-      })
-      .orderBy("lastNewItem", "DESC")
-      .orderBy("updated_at", "DESC")
-      .limit(10)
-    ;
-    res.json(results);
-  });
-  
   apiRouter.route("/feeds").get(async (req, res) => {
     const {
       folder = null,
@@ -87,19 +68,26 @@ module.exports = (options, context) => {
       .orderBy("updated_at", "DESC")
       .limit(limit);
     
+    if (before) {
+      result = result.where("lastNewItem", "<", before);
+    }
+    
     if (folder) {
       result = result.where("folder", folder);
     }
-      
+
     res.json(await result);
   });
 
   apiRouter.route("/feeds/:id").get(async (req, res) => {
     const {
       id,
-      itemsLimit = 10,
     } = req.params;
     
+    const {
+      itemsLimit = 10,
+    } = req.query;
+        
     let result = Feed.query()
       .findById(id)
       .eager("items")
