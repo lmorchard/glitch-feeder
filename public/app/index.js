@@ -7,7 +7,7 @@ import {
   mapToObject, 
   indexBy, 
   fetchJson, 
-  cmp, 
+  cmp,
   rcmp 
 } from "./utils.js";
 

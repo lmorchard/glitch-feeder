@@ -51,7 +51,7 @@ class Feed extends guid(BaseModel) {
     limit = null,
     itemsLimit = 0,
     before = null
-  }) {    
+  } = {}) {    
     let result = Feed.query();
     
     if (id) {
@@ -88,13 +88,12 @@ class Feed extends guid(BaseModel) {
     return result;
   }
   
-  static async queryFolders({
-  }) {
-    const { API_BASE_URL } = this.config();
+  static async queryFolders({} = {}) {
+    const { API_BASE_URL } = Feed.config();
     
     const feeds = await this.query()
-        .orderBy("lastNewItem", "DESC")
-        .orderBy("updated_at", "DESC");
+      .orderBy("lastNewItem", "DESC")
+      .orderBy("updated_at", "DESC");
     
     const folders = {};
     for (let feed of feeds) {
