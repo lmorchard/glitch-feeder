@@ -6,10 +6,7 @@ const PQueue = require("p-queue");
 module.exports = (options, context) => {
   const { config, models, log } = context;
   const { knex, Feed, FeedItem } = models;
-  const {
-    API_BASE_PATH,
-    API_BASE_URL,
-  } = config;
+  const { API_BASE_PATH, API_BASE_URL } = config;
 
   const fetchQueue = new PQueue({ concurrency: 8 });
 
@@ -28,13 +25,16 @@ module.exports = (options, context) => {
         folders: `${API_BASE_URL}/folders`,
         feeds: `${API_BASE_URL}/feeds`,
         items: `${API_BASE_URL}/items`,
-      }
+      },
     });
   });
 
   const apiRouter = express.Router();
-  
+
   apiRouter.route("/folders").get(async (req, res) => {
+    const allFeeds = Feed.queryWithParams({
+      includeItems: false
+    });
     const folders = await knex("Feeds").distinct("folder");
     const out = {};
     for (let { folder } of folders) {
@@ -46,34 +46,30 @@ module.exports = (options, context) => {
     }
     res.json(out);
   });
-  
+
   apiRouter.route("/feeds").get(async (req, res) => {
     const {
       folder = null,
       limit = 5,
       itemsLimit = 10,
-      before = null
+      before = null,
     } = req.query;
-    
     let result = Feed.queryWithParams({
       folder,
       limit,
       itemsLimit,
       before,
     });
-
     res.json(await result);
   });
 
   apiRouter.route("/feeds/:id").get(async (req, res) => {
     const { id } = req.params;
     const { itemsLimit = 10 } = req.query;
-    let result = Feed.queryWithParams({ id, itemsLimit,
-    });
-
+    let result = Feed.queryWithParams({ id, itemsLimit });
     res.json(await result);
   });
-  
+
   apiRouter.route("/feeds/:feedId/items").get(async (req, res) => {
     const { feedId } = req.params;
     const { limit = 10, before = null } = req.query;
@@ -82,15 +78,22 @@ module.exports = (options, context) => {
   });
 
   apiRouter.route("/items").get(async (req, res) => {
-    const { folder = null, new: useNew, limit = 100, before = null } = req.query;
-    const result = FeedItem.queryWithParams({ useNew, folder, limit, before }) 
+    const {
+      folder = null,
+      new: useNew = false,
+      limit = 100,
+      before = null,
+    } = req.query;
+    const result = FeedItem.queryWithParams({ useNew, folder, limit, before });
     res.json(await result);
   });
 
   apiRouter.route("/items/:id").get(async (req, res) => {
     const { id } = req.params;
-    const item = await FeedItem.query().findById(id).eager("feed");
-    res.json(item);
+    const item = FeedItem.query()
+      .findById(id)
+      .eager("feed");
+    res.json(await item);
   });
 
   apiRouter.route("/items/:id/html").get(async (req, res) => {
@@ -98,7 +101,7 @@ module.exports = (options, context) => {
     const item = await FeedItem.query().findById(id);
     res.send(item.html());
   });
-  
+
   app.use(API_BASE_PATH, apiRouter);
 
   var listener = app.listen(process.env.PORT, function() {

@@ -1,7 +1,5 @@
 dependencies:
   abort-controller: 2.0.0
-  bookshelf: 0.14.2
-  bookshelf-uuid: 1.0.0
   cheerio: 0.22.0
   commander: 2.19.0
   express: 4.16.4
@@ -24,6 +22,7 @@ devDependencies:
   eslint-plugin-node: 8.0.0
   eslint-plugin-promise: 4.0.1
   eslint-plugin-standard: 4.0.0
+  prettier: 1.15.3
 packages:
   /@babel/code-frame/7.0.0:
     dependencies:
@@ -289,28 +288,6 @@ packages:
       node: '>= 0.8'
     resolution:
       integrity: sha1-WykhmP/dVTs6DyDe0FkrlWlVyLQ=
-  /bookshelf-uuid/1.0.0:
-    dependencies:
-      lodash.merge: 4.6.1
-      lodash.result: 4.5.2
-      uuid: 2.0.3
-    dev: false
-    resolution:
-      integrity: sha1-rBvpjvAK1GUCOgTFEZLqkJTapsA=
-  /bookshelf/0.14.2:
-    dependencies:
-      bluebird: 3.5.3
-      colorette: 1.0.7
-      create-error: 0.3.1
-      inflection: 1.12.0
-      lodash: 4.17.11
-    dev: false
-    engines:
-      node: '>=4'
-    peerDependencies:
-      knex: '>=0.6.10 <0.15.0'
-    resolution:
-      integrity: sha512-qKwThIbrkkyaubZR5Y+vXusregxr+dU4yACTRbBsy4sW+66UkpPnK62DB3VAN9tDklak1kcqti1FsvzHNV5w/Q==
   /boolbase/1.0.0:
     dev: false
     resolution:
@@ -493,10 +470,6 @@ packages:
     dev: false
     resolution:
       integrity: sha512-jCpd5+s0s0t7p3pHQKpnJ0TpQKKdleP71LWcA0aqiljpiuAkOSUFN/dyH8ZwF0hRmFlrIuRhufds1QyEP9EB+w==
-  /colorette/1.0.7:
-    dev: false
-    resolution:
-      integrity: sha512-KeK4klsvAgdODAjFPm6QLzvStizJqlxMBtVo4KQMCgk5tt/tf9rAzxmxLHNRynJg3tJjkKGKbHx3j4HLox27Lw==
   /colornames/1.1.1:
     dev: false
     resolution:
@@ -579,10 +552,6 @@ packages:
     dev: false
     resolution:
       integrity: sha1-tf1UIgqivFq1eqtxQMlAdUUDwac=
-  /create-error/0.3.1:
-    dev: false
-    resolution:
-      integrity: sha1-aYECRaYp5lRDK/BDdzYAA6U1GiM=
   /cross-spawn/6.0.5:
     dependencies:
       nice-try: 1.0.5
@@ -1556,12 +1525,6 @@ packages:
       node: '>=0.8.19'
     resolution:
       integrity: sha1-khi5srkoojixPcT7a21XbyMUU+o=
-  /inflection/1.12.0:
-    dev: false
-    engines:
-      '0': node >= 0.4.0
-    resolution:
-      integrity: sha1-ogCTVlbW9fa8TcdQLhrstwMihBY=
   /inflight/1.0.6:
     dependencies:
       once: 1.4.0
@@ -2028,10 +1991,6 @@ packages:
     dev: false
     resolution:
       integrity: sha1-gNZJLcFHCGS79YNTO2UfQqn1JBU=
-  /lodash.result/4.5.2:
-    dev: false
-    resolution:
-      integrity: sha1-y0Wyf7kU6qjY7m8M57KHC4fLcKo=
   /lodash.some/4.6.0:
     dev: false
     resolution:
@@ -2644,6 +2603,13 @@ packages:
       node: '>= 0.8.0'
     resolution:
       integrity: sha1-IZMqVJ9eUv/ZqCf1cOBL5iqX2lQ=
+  /prettier/1.15.3:
+    dev: true
+    engines:
+      node: '>=4'
+    hasBin: true
+    resolution:
+      integrity: sha512-gAU9AGAPMaKb3NNSUUuhhFAS7SCO4ALTN4nRIn6PJ075Qd28Yn2Ig2ahEJWdJwJmlEBTUfC7mMUSFy8MwsOCfg==
   /process-nextick-args/2.0.0:
     dev: false
     resolution:
@@ -3445,10 +3411,6 @@ packages:
       node: '>= 0.4.0'
     resolution:
       integrity: sha1-n5VxD1CiZ5R7LMwSR0HBAoQn5xM=
-  /uuid/2.0.3:
-    dev: false
-    resolution:
-      integrity: sha1-Z+LoY3lyFVMN/zGOW/nc6/1Hsho=
   /uuid/3.3.2:
     dev: false
     hasBin: true
@@ -3552,8 +3514,6 @@ shrinkwrapMinorVersion: 9
 shrinkwrapVersion: 3
 specifiers:
   abort-controller: ^2.0.0
-  bookshelf: ^0.14.2
-  bookshelf-uuid: ^1.0.0
   cheerio: ^0.22.0
   commander: ^2.19.0
   eslint: ^5.10.0
@@ -3572,6 +3532,7 @@ specifiers:
   objection-guid: ^3.0.2
   opmlparser: ^0.8.0
   p-queue: ^3.0.0
+  prettier: ^1.15.3
   sanitize-html: ^1.20.0
   sqlite3: ^4.0.4
   winston: ^3.1.0

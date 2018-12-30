@@ -49,6 +49,7 @@ class Feed extends guid(BaseModel) {
     id = null,
     folder = null,
     limit = 5,
+    includeItems = true,
     itemsLimit = 10,
     before = null
   }) {    
@@ -68,18 +69,20 @@ class Feed extends guid(BaseModel) {
         .orderBy("updated_at", "DESC")
         .limit(limit);
     }
-
-    result = result
-      // Naive eager used here so itemsLimit applies per-feed
-      // rather than for all items between feeds
-      .eagerAlgorithm(Feed.NaiveEagerAlgorithm)
-      .eager("items")
-      .modifyEager("items", builder => {
-        builder
-          .orderBy("date", "DESC")
-          .orderBy("id", "DESC")
-          .limit(itemsLimit);
-      });
+    
+    if (includeItems) {
+      result = result
+        // Naive eager used here so itemsLimit applies per-feed
+        // rather than for all items between feeds
+        .eagerAlgorithm(Feed.NaiveEagerAlgorithm)
+        .eager("items")
+        .modifyEager("items", builder => {
+          builder
+            .orderBy("date", "DESC")
+            .orderBy("id", "DESC")
+            .limit(itemsLimit);
+        });
+    }
 
     return result;
   }

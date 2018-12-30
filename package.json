@@ -15,24 +15,22 @@
     "poll": "./bin/feeder -v poll-feeds"
   },
   "dependencies": {
-    "bookshelf": "^0.14.2",
-    "bookshelf-uuid": "^1.0.0",
+    "abort-controller": "^2.0.0",
+    "cheerio": "^0.22.0",
     "commander": "^2.19.0",
     "express": "^4.16.4",
+    "express-async-errors": "^3.1.1",
+    "feedparser": "^2.2.9",
     "knex": "^0.16.3",
     "node-fetch": "^2.3.0",
+    "objection": "^1.4.0",
+    "objection-db-errors": "^1.0.0",
+    "objection-guid": "^3.0.2",
     "opmlparser": "^0.8.0",
     "p-queue": "^3.0.0",
-    "sqlite3": "^4.0.4",
-    "winston": "^3.1.0",
-    "abort-controller": "^2.0.0",
-    "feedparser": "^2.2.9",
-    "express-async-errors": "^3.1.1",
     "sanitize-html": "^1.20.0",
-    "cheerio": "^0.22.0",
-    "objection": "^1.4.0",
-    "objection-guid": "^3.0.2",
-    "objection-db-errors": "^1.0.0"
+    "sqlite3": "^4.0.4",
+    "winston": "^3.1.0"
   },
   "engines": {
     "node": "8.x"
@@ -52,6 +50,15 @@
     "eslint-plugin-import": "^2.14.0",
     "eslint-plugin-node": "^8.0.0",
     "eslint-plugin-promise": "^4.0.1",
-    "eslint-plugin-standard": "^4.0.0"
+    "eslint-plugin-standard": "^4.0.0",
+    "prettier": "^1.15.3"
+  },
+  "prettier": {
+    "trailingComma": "es5",
+    "tabWidth": 2,
+    "semi": true,
+    "singleQuote": false,
+    "bracketSpacing": true,
+    "arrowParens": "avoid"
   }
 }
