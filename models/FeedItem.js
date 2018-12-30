@@ -61,6 +61,38 @@ class FeedItem extends guid(BaseModel) {
     }
   }
 
+  static queryWithParams ({
+    useNew = false,
+    folder = false,
+    feedId = null,
+    before = null,
+    limit = 10,
+  }) {
+    let result = FeedItem
+      .query()
+      .eager("feed")
+      .orderBy("date", "DESC")
+      .orderBy("id", "DESC")
+      .limit(limit);
+
+    if (before) {
+      result = result.where("date", "<", before);
+    }
+    if (feedId) {
+      result = result.where({ feed_id: feedId });
+    }
+    if (useNew) {
+      result = result.where({ new: true });
+    }
+    if (folder) {
+      result = result
+        .joinRelation("feed")
+        .where("feed.folder", folder);
+    }
+
+    return result;
+  }
+
   // TODO: flag in return value whether item exists / updated / new
   static async importItem (feed, item, context, options = {}) {
     const { log } = context;

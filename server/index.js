@@ -81,48 +81,18 @@ module.exports = (options, context) => {
     const feed = await Feed.query().findById(id);
     res.json(feed);
   });
-
-  const itemsQuery = ({
-    useNew = false,
-    folder = false,
-    feedId = null,
-    before = null,
-    limit = 10,
-  }) => {
-    let result = FeedItem
-      .query()
-      .eager("feed")
-      .orderBy("date", "DESC")
-      .orderBy("id", "DESC")
-      .limit(limit);
-
-    if (before) {
-      result = result.where("date", "<", before);
-    }
-    if (feedId) {
-      result = result.where({ feed_id: feedId });
-    }
-    if (useNew) {
-      result = result.where({ new: true });
-    }
-    if (folder) {
-      result = result
-        .joinRelation("feed")
-        .where("feed.folder", folder);
-    }
-
-    return result;
-  };
   
   apiRouter.route("/feeds/:feedId/items").get(async (req, res) => {
     const { feedId } = req.params;
     const { limit = 10, before = null } = req.query;
-    res.json(await itemsQuery({ limit, before, feedId }));
+    const result = FeedItem.queryWithParams({ limit, before, feedId });
+    res.json(await result);
   });
 
   apiRouter.route("/items").get(async (req, res) => {
     const { folder = null, new: useNew, limit = 100, before = null } = req.query;
-    res.json(await itemsQuery({ useNew, folder, limit, before }));
+    const result = FeedItem.queryWithParams({ useNew, folder, limit, before }) 
+    res.json(await result);
   });
 
   apiRouter.route("/items/:id").get(async (req, res) => {
