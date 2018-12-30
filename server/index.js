@@ -48,8 +48,9 @@ module.exports = (options, context) => {
   });
   
   apiRouter.route("/latest").get(async (req, res) => {
-    const feeds = await Feed
+    const results = await Feed
       .query()
+      .eagerAlgorithm(Feed.NaiveEagerAlgorithm)
       .eager("items")
       .modifyEager("items", builder => {
         builder
@@ -61,7 +62,7 @@ module.exports = (options, context) => {
       .orderBy("updated_at", "DESC")
       .limit(10)
     ;
-    res.json(feeds);
+    res.json(results);
   });
   
   apiRouter.route("/feeds").get(async (req, res) => {

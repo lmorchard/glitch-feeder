@@ -12,23 +12,6 @@ async function command (options, context) {
   const { models, log, exit } = context;
   const { knex, Feed } = models;
 
-  const result = await Feed
-    .query()
-    .eager("items")
-    .modifyEager("items", builder => {
-      builder
-        .orderBy("date", "DESC")
-        .limit(15)
-      ;
-    })
-    .orderBy("lastNewItem", "DESC")
-    .orderBy("updated_at", "DESC")
-    .limit(10)
-  ;
-  console.log(result);
-  return exit();
-
-  
   const fetchQueue = new PQueue({ concurrency: 8 });
 
   const timeStart = Date.now();
