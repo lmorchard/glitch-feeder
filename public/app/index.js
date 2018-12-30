@@ -28,16 +28,13 @@ export async function init(appEl) {
   const [
     apiFeeds,
     apiFolders,
-    apiItems,
   ] = await Promise.all([
     fetchJson(apiRoot.hrefs.feeds),    
-    fetchJson(apiRoot.hrefs.folders),  
-    fetchJson(apiRoot.hrefs.items),
+    fetchJson(apiRoot.hrefs.folders + "?limit=5&itemsLimit=10"),  
   ]);
 
   store.dispatch(actions.loadFeeds(apiFeeds));
   store.dispatch(actions.loadFolders(apiFolders));
-  store.dispatch(actions.loadItems(apiItems));
   
   store.dispatch(actions.setAppLoading(false));
 }
@@ -111,16 +108,12 @@ const handlers = {
 };
 
 const FoldersList = ({
-  feeds,
+  folders,
   handleNewFeedsClick,
   handleAllFeedsClick,
   handleFolderClick,
   handleFeedClick 
 }) => {
-  const feedsByFolders = indexBy(
-    Object.values(feeds),
-    feed => feed.folder
-  );
   return (
     h("nav", { className: "feedslist" },
       h("ul", { className: "folders" },
@@ -134,7 +127,7 @@ const FoldersList = ({
             onClick: handleAllFeedsClick
           }, "ALL")
         ),
-        Object.entries(feedsByFolders).map(([ folder, feeds ]) =>
+        Object.entries(folders).map(([ folder, { feeds } ]) =>
           h("li", { className: "folder" },
             h("span", {
               id: folder,
@@ -162,21 +155,13 @@ const FeedItem = ({ feed, handleFeedClick }) => (
   )
 );
 
-const ItemsList = ({ items }) => {
-  const itemsByFeed = {};
-  for (let item of Object.values(items)) {
-    if (!itemsByFeed[item.feed.id]) {
-      itemsByFeed[item.feed.id] = { feed: item.feed, items: [] };
-    }
-    itemsByFeed[item.feed.id].items.push(item);
-  }
-  
+const ItemsList = ({ feeds }) => {
   return (
     h("section", { className: "itemslist" },
       h("ul", { className: "feeds" },
-        Object.values(itemsByFeed).map(({ feed, items }) =>
+        feeds.map(({ title, items }) =>
           h("li", { className: "feed" },
-            h("span", { className: "feedtitle" }, feed.title),
+            h("span", { className: "feedtitle" }, title),
             h("ul", { className: "items" },
               items.map(item => h(Item, item))
             )
