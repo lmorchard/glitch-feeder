@@ -126,14 +126,15 @@ const FoldersList = ({
         ),
         Object.values(folders).map(folder =>
           h("li", { className: "folder" },
-            h("label", {
-              for: `reveal-${folder.id}`,
-            }, "X"),
             h("input", {
               id: `reveal-${folder.id}`,
               type: "checkbox",
               className: "revealFeeds",
             }),
+            h("label", {
+              for: `reveal-${folder.id}`,
+              className: "revealFeedsLabel",
+            }, " "),
             h("span", {
               id: folder.id,
               className: "foldertitle",

@@ -77,11 +77,20 @@ main.app nav.feedslist ul.folders .folder .feeds {
   list-style-type: none;
 }
 
+ul.folders .folder input.revealFeeds {
+  display: none;
+}
 ul.folders .folder input.revealFeeds ~ .feeds {
   display: none;
 }
 ul.folders .folder input.revealFeeds:checked ~ .feeds {
   display: block;
+}
+ul.folders .folder input.revealFeeds ~ .revealFeedsLabel:before {
+  content: "\25B6";
+}
+ul.folders .folder input.revealFeeds:checked ~ .revealFeedsLabel:before {
+  content: "\25BC";
 }
 
 main.app nav.feedslist ul.folders .folder .feeds .feed .feedtitle {
