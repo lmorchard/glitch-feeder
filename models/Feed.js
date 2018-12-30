@@ -64,10 +64,12 @@ class Feed extends guid(BaseModel) {
       if (folder) {
         result = result.where("folder", folder);
       }
+      if (limit) {
+        result = result.limit(limit);
+      }
       result = result
         .orderBy("lastNewItem", "DESC")
-        .orderBy("updated_at", "DESC")
-        .limit(limit);
+        .orderBy("updated_at", "DESC");
     }
     
     if (includeItems) {

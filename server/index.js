@@ -2,6 +2,7 @@ var express = require("express");
 require("express-async-errors");
 var bodyParser = require("body-parser");
 const PQueue = require("p-queue");
+const { indexBy } = require("../lib/common.js");
 
 module.exports = (options, context) => {
   const { config, models, log } = context;
@@ -32,9 +33,6 @@ module.exports = (options, context) => {
   const apiRouter = express.Router();
 
   apiRouter.route("/folders").get(async (req, res) => {
-    const allFeeds = Feed.queryWithParams({
-      includeItems: false
-    });
     const folders = await knex("Feeds").distinct("folder");
     const out = {};
     for (let { folder } of folders) {
@@ -43,7 +41,7 @@ module.exports = (options, context) => {
         feeds: `${API_BASE_URL}/feeds?folder=${folder}`,
         items: `${API_BASE_URL}/items?folder=${folder}`,
       };
-    }
+    }    
     res.json(out);
   });
 
