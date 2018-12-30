@@ -83,8 +83,14 @@ module.exports = (options, context) => {
 
   apiRouter.route("/feeds/:feed_id/items").get(async (req, res) => {
     const { feed_id } = req.params;
-    const items = await FeedItem.query().where({ feed_id }).eager("feed");
-    res.json(items);
+    const { limit = 10, before = null } = req.query;
+    
+    let result = FeedItem.query().where({ feed_id }).eager("feed");
+    if (before) {
+      result = result.where("date", "<", before);
+    }
+    result = result.orderBy("date", "DESC").limit(limit);
+    res.json(await result);
   });
 
   apiRouter.route("/items").get(async (req, res) => {
