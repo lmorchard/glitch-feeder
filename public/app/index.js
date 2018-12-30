@@ -92,18 +92,13 @@ const handlers = {
     dispatch(actions.loadFeeds(await fetchJson(apiRoot.hrefs.feeds)));
     dispatch(actions.loadItems(await fetchJson(apiRoot.hrefs.items)));
   },
-  handleFolderClick: ({ state, dispatch }) => async (ev) => {
-    const id = ev.target.id;
-    const folder = selectors.getFolder(state)(id);
+  handleFolderClick: ({ state, dispatch }) => folder => async (ev) => {
     const feeds = await fetchJson(folder.href + "&limit=10&itemsLimit=10");
-    dispatch(actions.loadItems(feeds));
+    dispatch(actions.loadFeeds(feeds));
   },
-  handleFeedClick: ({ state, dispatch }) => async (ev) => {
-    const id = ev.target.id;
-    const feed = selectors.getFeed(state)(id);
-    dispatch(actions.setCurrentFeed(feed));
-    const items = await fetchJson(feed.hrefs.items);
-    dispatch(actions.loadItems(items));
+  handleFolderFeedClick: ({ state, dispatch }) => feed => async (ev) => {
+    const result = await fetchJson(feed.hrefs.self + "?itemsLimit=10");
+    dispatch(actions.loadFeeds([ result ]));
   }
 };
 
@@ -112,7 +107,7 @@ const FoldersList = ({
   handleNewFeedsClick,
   handleAllFeedsClick,
   handleFolderClick,
-  handleFeedClick 
+  handleFolderFeedClick 
 }) => {
   return (
     h("nav", { className: "feedslist" },
@@ -127,16 +122,20 @@ const FoldersList = ({
             onClick: handleAllFeedsClick
           }, "ALL")
         ),
-        Object.entries(folders).map(([ folder, { feeds } ]) =>
+        Object.values(folders).map(folder =>
           h("li", { className: "folder" },
             h("span", {
               id: folder,
               className: "foldertitle",
-              onClick: handleFolderClick
+              onClick: handleFolderClick(folder)
             }, folder),
             h("ul", { className: "feeds" },
-              feeds.map(feed =>
-              h(FeedItem, { feed, handleFeedClick })),
+              folder.feeds.map(feed => h(
+                FeedItem, {
+                  feed,
+                  handleClick: handleFolderFeedClick(feed)
+                }
+              )),
             )
           )
         )
@@ -145,12 +144,12 @@ const FoldersList = ({
   );
 };
 
-const FeedItem = ({ feed, handleFeedClick }) => (
+const FeedItem = ({ feed, handleClick }) => (
   h("li", { className: "feed" },
     h("span", {
       id: feed.id,
       className: "feedtitle",
-      onClick: handleFeedClick
+      onClick: handleClick
     }, feed.title)
   )
 );
@@ -159,14 +158,16 @@ const ItemsList = ({ feeds = [] }) => {
   return (
     h("section", { className: "itemslist" },
       h("ul", { className: "feeds" },
-        feeds.map(({ title, items }) =>
-          h("li", { className: "feed" },
-            h("span", { className: "feedtitle" }, title),
-            h("ul", { className: "items" },
-              items.map(item => h(Item, item))
+        feeds
+          .filter(feed => feed.items.length > 0)
+          .map(({ title, items }) =>
+            h("li", { className: "feed" },
+              h("span", { className: "feedtitle" }, title),
+              h("ul", { className: "items" },
+                items.map(item => h(Item, item))
+              )
             )
           )
-        )
       )
     )
   );
