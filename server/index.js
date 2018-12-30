@@ -77,7 +77,7 @@ module.exports = (options, context) => {
 
   apiRouter.route("/feeds/:id").get(async (req, res) => {
     const { id } = req.params;
-    const feed = await Feed.query().where({ id }).first();
+    const feed = await Feed.query().findById(id).first();
     res.json(feed);
   });
 
@@ -109,17 +109,13 @@ module.exports = (options, context) => {
 
   apiRouter.route("/items/:id").get(async (req, res) => {
     const { id } = req.params;
-    const item = await FeedItem
-      .query()
-      .where({ id })
-      .eager("feed")
-      .first();
+    const item = await FeedItem.query().findById(id).eager("feed");
     res.json(item);
   });
 
   apiRouter.route("/items/:id/html").get(async (req, res) => {
     const { id } = req.params;
-    const item = await FeedItem.query().where({ id }).first();
+    const item = await FeedItem.query().findById(id);
     res.send(item.html());
   });
   
