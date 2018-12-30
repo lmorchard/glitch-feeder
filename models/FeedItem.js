@@ -68,7 +68,7 @@ class FeedItem extends guid(BaseModel) {
     before = null,
     limit = 10,
   }) {
-    let result = FeedItem
+    let result = this
       .query()
       .eager("feed")
       .orderBy("date", "DESC")

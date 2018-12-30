@@ -55,49 +55,22 @@ module.exports = (options, context) => {
       before = null
     } = req.query;
     
-    let result = Feed.query()
-      .eagerAlgorithm(Feed.NaiveEagerAlgorithm)
-      .eager("items")
-      .modifyEager("items", builder => {
-        builder
-          .orderBy("date", "DESC")
-          .orderBy("id", "DESC")
-          .limit(itemsLimit);
-      })    
-      .orderBy("lastNewItem", "DESC")
-      .orderBy("updated_at", "DESC")
-      .limit(limit);
-    
-    if (before) {
-      result = result.where("lastNewItem", "<", before);
-    }
-    
-    if (folder) {
-      result = result.where("folder", folder);
-    }
+    let result = Feed.queryWithParams({
+      folder,
+      limit,
+      itemsLimit,
+      before,
+    });
 
     res.json(await result);
   });
 
   apiRouter.route("/feeds/:id").get(async (req, res) => {
-    const {
-      id,
-    } = req.params;
-    
-    const {
-      itemsLimit = 10,
-    } = req.query;
-        
-    let result = Feed.query()
-      .findById(id)
-      .eager("items")
-      .modifyEager("items", builder => {
-        builder
-          .orderBy("date", "DESC")
-          .orderBy("id", "DESC")
-          .limit(itemsLimit);
-      });
-    
+    const { id } = req.params;
+    const { itemsLimit = 10 } = req.query;
+    let result = Feed.queryWithParams({ id, itemsLimit,
+    });
+
     res.json(await result);
   });
   

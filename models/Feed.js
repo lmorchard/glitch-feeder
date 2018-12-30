@@ -44,6 +44,45 @@ class Feed extends guid(BaseModel) {
       items: `${API_BASE_URL}/feeds/${this.id}/items`,
     };
   };
+
+  static queryWithParams ({
+    id = null,
+    folder = null,
+    limit = 5,
+    itemsLimit = 10,
+    before = null
+  }) {    
+    let result = Feed.query();
+    
+    if (id) {
+      result = result.findById(id);
+    } else {
+      if (before) {
+        result = result.where("lastNewItem", "<", before);
+      }
+      if (folder) {
+        result = result.where("folder", folder);
+      }
+      result = result
+        .orderBy("lastNewItem", "DESC")
+        .orderBy("updated_at", "DESC")
+        .limit(limit);
+    }
+
+    result = result
+      // Naive eager used here so itemsLimit applies per-feed
+      // rather than for all items between feeds
+      .eagerAlgorithm(Feed.NaiveEagerAlgorithm)
+      .eager("items")
+      .modifyEager("items", builder => {
+        builder
+          .orderBy("date", "DESC")
+          .orderBy("id", "DESC")
+          .limit(itemsLimit);
+      });
+
+    return result;
+  }
   
   static async importOpmlStream (stream, context) {
     const { log } = context;
