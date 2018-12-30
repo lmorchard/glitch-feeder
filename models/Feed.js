@@ -222,6 +222,10 @@ class Feed extends guid(BaseModel) {
           if (isNew) { newGuids.add(item.guid); }
         }
 
+        if (newGuids.size > 0) {
+          attrs.lastNewItem = (new Date()).toISOString();
+        }
+
         const defunctGuids = Array.from(existingGuids.values())
             .filter(guid => !seenGuids.has(guid));
 
@@ -239,9 +243,11 @@ class Feed extends guid(BaseModel) {
           .where({ feed_id: this.id })
           .whereNotIn("guid", Array.from(newGuids));
         
-        log.verbose("Parsed %s items (%s new / %s seen / %s defunct / %s existing) for feed %s",
+        log.verbose(
+          "Parsed %s items (%s new / %s seen / %s defunct / %s existing) for feed %s",
           items.length, newGuids.size, seenGuids.size,
-          defunctGuids.length, existingGuids.size, title);
+          defunctGuids.length, existingGuids.size, title
+        );
       }
     } catch (err) {
       log.error("Feed poll failed for %s - %s", title, err, err.stack);
@@ -263,7 +269,6 @@ class Feed extends guid(BaseModel) {
       log.error("Feed update failed for %s - %s", title, err, err.stack);
     }
   }
-  
 }
 
 const parseOpmlStream = ({ stream }, { log }) =>

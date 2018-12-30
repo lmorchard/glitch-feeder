@@ -12,7 +12,7 @@ async function command (options, context) {
   const { models, log, exit } = context;
   const { knex, Feed } = models;
 
-  const fetchQueue = new PQueue({ concurrency: 16 });
+  const fetchQueue = new PQueue({ concurrency: 8 });
 
   const timeStart = Date.now();
   
