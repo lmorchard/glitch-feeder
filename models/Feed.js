@@ -215,6 +215,7 @@ class Feed extends guid(BaseModel) {
         const newGuids = new Set();
         const seenGuids = new Set();
 
+        let 
         for (let rawItem of items) {
           const { isNew, item } =
             await FeedItem.importItem(this, rawItem, context, options);
