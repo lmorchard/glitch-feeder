@@ -33,16 +33,20 @@ module.exports = (options, context) => {
   const apiRouter = express.Router();
 
   apiRouter.route("/folders").get(async (req, res) => {
-    const folders = await knex("Feeds").distinct("folder");
-    const out = {};
-    for (let { folder } of folders) {
-      out[folder] = {
-        id: folder,
-        feeds: `${API_BASE_URL}/feeds?folder=${folder}`,
-        items: `${API_BASE_URL}/items?folder=${folder}`,
-      };
-    }    
-    res.json(out);
+    const feeds = await Feed.query();
+    const folders = {};
+    for (let feed of feeds) {
+      const folder = feed.folder || "
+    }
+    const folders = indexBy(
+      feeds,
+      feed => feed.folder,
+      feed => {
+        const { id, title, hrefs, lastNewItem } = feed.toJSON();
+        return ({ id, title, hrefs, lastNewItem });
+      }
+    );
+    res.json(folders);
   });
 
   apiRouter.route("/feeds").get(async (req, res) => {
