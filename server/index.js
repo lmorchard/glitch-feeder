@@ -55,6 +55,7 @@ module.exports = (options, context) => {
       .modifyEager("items", builder => {
         builder
           .orderBy("date", "DESC")
+          .orderBy("id", "DESC")
           .limit(15)
         ;
       })
@@ -77,13 +78,14 @@ module.exports = (options, context) => {
 
   apiRouter.route("/feeds/:id").get(async (req, res) => {
     const { id } = req.params;
-    const feed = await Feed.query().findById(id).first();
+    const feed = await Feed.query().findById(id);
     res.json(feed);
   });
 
   const itemsQuery = ({
-    new = falsem
-    feedId: feed_id = null,
+    useNew = false,
+    folder = false,
+    feedId = null,
     before = null,
     limit = 10,
   }) => {
@@ -97,8 +99,16 @@ module.exports = (options, context) => {
     if (before) {
       result = result.where("date", "<", before);
     }
-    if (feed_id) {
-      result = result.where({ feed_id });
+    if (feedId) {
+      result = result.where({ feed_id: feedId });
+    }
+    if (useNew) {
+      result = result.where({ new: true });
+    }
+    if (folder) {
+      result = result
+        .joinRelation("feed")
+        .where("feed.folder", folder);
     }
 
     return result;
@@ -107,29 +117,12 @@ module.exports = (options, context) => {
   apiRouter.route("/feeds/:feedId/items").get(async (req, res) => {
     const { feedId } = req.params;
     const { limit = 10, before = null } = req.query;
-
-    let result = itemsQuery({ limit, before, feedId });
-    res.json(await result);
+    res.json(await itemsQuery({ limit, before, feedId }));
   });
 
   apiRouter.route("/items").get(async (req, res) => {
-    const { folder, new: useNew } = req.query;
-    const where = {};
-    if (folder) {
-      where["folder"] = folder;
-    }
-    if (!!useNew) {
-      where["new"] = true;
-    }
-    const items = await FeedItem
-      .query()
-      .where(where)
-      .whereRaw(`datetime(FeedItems.date) > datetime("now", "-3 days")`)
-      .joinRelation("feed")
-      .eager("feed")
-      .orderBy("date", "DESC")
-      .limit(250, 0);
-    res.json(items);
+    const { folder = null, new: useNew, limit = 100, before = null } = req.query;
+    res.json(await itemsQuery({ useNew, folder, limit, before }));
   });
 
   apiRouter.route("/items/:id").get(async (req, res) => {
