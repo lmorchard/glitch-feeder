@@ -51,16 +51,15 @@ module.exports = (options, context) => {
     const feeds = await Feed
       .query()
       .eager("items")
-      /*
       .modifyEager("items", builder => {
         builder
           .orderBy("date", "DESC")
-          .limit(15);
+          .limit(15)
+        ;
       })
-      */
       .orderBy("lastNewItem", "DESC")
       .orderBy("updated_at", "DESC")
-      .limit(10, 0)
+      .limit(10)
     ;
     res.json(feeds);
   });
