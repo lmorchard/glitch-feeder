@@ -11,8 +11,8 @@ export const defaultState = {
     root: null,
   },
   folders: {},
-  feeds: {},
-  items: {},
+  feeds: [],
+  items: [],
 };
 
 export const selectors = {
@@ -51,23 +51,11 @@ export const reducers = {
   }, defaultState.api),
   
   folders: handleActions({
-    [actions.loadFolders]: (state, { payload: folders = [] }) => {
-      const newState = {};
-      for (let [name, folder] of Object.entries(folders)) {
-        newState[folder.id] = folder;
-      }
-      return newState;
-    }
+    [actions.loadFolders]: (state, { payload: folders = {} }) => folders
   }, defaultState.folders),
   
   feeds: handleActions({
-    [actions.loadFeeds]: (state, { payload: feeds = [] }) => {
-      const newState = {};
-      for (let feed of feeds) {
-        newState[feed.id] = feed;
-      }
-      return newState;
-    }
+    [actions.loadFeeds]: (state, { payload: feeds = {} }) => feeds
   }, defaultState.feeds),
   
   items: handleActions({

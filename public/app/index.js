@@ -29,8 +29,8 @@ export async function init(appEl) {
     apiFeeds,
     apiFolders,
   ] = await Promise.all([
-    fetchJson(apiRoot.hrefs.feeds),    
-    fetchJson(apiRoot.hrefs.folders + "?limit=5&itemsLimit=10"),  
+    fetchJson(apiRoot.hrefs.feeds + "?limit=5&itemsLimit=10"),    
+    fetchJson(apiRoot.hrefs.folders),  
   ]);
 
   store.dispatch(actions.loadFeeds(apiFeeds));
@@ -47,7 +47,6 @@ const App = ({ state, dispatch }) => {
       "folders",
       "getFolder",
       "feeds",
-      "items",
       "currentFeed",
     ],
     name => selectors[name](state)
@@ -96,7 +95,8 @@ const handlers = {
   handleFolderClick: ({ state, dispatch }) => async (ev) => {
     const id = ev.target.id;
     const folder = selectors.getFolder(state)(id);
-    dispatch(actions.loadItems(await fetchJson(folder.items)));
+    const feeds = await fetchJson(folder.href + "&limit=10&itemsLimit=10");
+    dispatch(actions.loadItems(feeds));
   },
   handleFeedClick: ({ state, dispatch }) => async (ev) => {
     const id = ev.target.id;
@@ -155,7 +155,7 @@ const FeedItem = ({ feed, handleFeedClick }) => (
   )
 );
 
-const ItemsList = ({ feeds }) => {
+const ItemsList = ({ feeds = [] }) => {
   return (
     h("section", { className: "itemslist" },
       h("ul", { className: "feeds" },
