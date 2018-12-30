@@ -47,6 +47,24 @@ module.exports = (options, context) => {
     res.json(out);
   });
   
+  apiRouter.route("/latest").get(async (req, res) => {
+    const feeds = await Feed
+      .query()
+      .eager("items")
+      /*
+      .modifyEager("items", builder => {
+        builder
+          .orderBy("date", "DESC")
+          .limit(15);
+      })
+      */
+      .orderBy("lastNewItem", "DESC")
+      .orderBy("updated_at", "DESC")
+      .limit(10, 0)
+    ;
+    res.json(feeds);
+  });
+  
   apiRouter.route("/feeds").get(async (req, res) => {
     const { folder } = req.query;
     const where = {};
