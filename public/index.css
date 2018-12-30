@@ -44,7 +44,7 @@ main.app .foldersAndItems {
 
 main.app nav.feedslist {
   flex: 0;
-  flex-basis: 20em;
+  flex-basis: 18em;
 }
 
 main.app nav.feedslist ul.folders {
@@ -89,10 +89,15 @@ ul.folders .folder input.revealFeeds ~ .feeds {
 ul.folders .folder input.revealFeeds:checked ~ .feeds {
   display: block;
 }
+ul.folders .folder .revealFeedsLabel:hover:before {
+  background-color: rgba(0, 0, 0, 0.1);
+}
 ul.folders .folder input.revealFeeds ~ .revealFeedsLabel:before {
   cursor: pointer;
+  padding: 0.25em 0.5em;
+  border-radius: 0.25em;
   font-size: 1.25em;
-  padding-left: 0.25em;
+  margin-left: 0.25em;
   margin-right: -0.125em;
   /*
   content: "\2295";
@@ -101,10 +106,7 @@ ul.folders .folder input.revealFeeds ~ .revealFeedsLabel:before {
 }
 ul.folders .folder input.revealFeeds:checked ~ .revealFeedsLabel:before {
   cursor: pointer;
-  content: "\25BC"; 
-  /* 
-  content: "\2296";
-  */
+  content: "\25BC";
 }
 
 main.app nav.feedslist ul.folders .folder .feeds .feed .feedtitle {
