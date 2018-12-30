@@ -60,7 +60,6 @@ main.app nav.feedslist ul.folders .folder {
 }
 
 main.app nav.feedslist ul.folders .folder .foldertitle {
-  display: block;
   margin: 0 0 0.5em 0;
   padding: 0.5em;
   cursor: pointer;
@@ -76,6 +75,13 @@ main.app nav.feedslist ul.folders .folder .feeds {
   margin: 0 0 0 1em;
   padding: 0;
   list-style-type: none;
+}
+
+ul.folders .folder input.revealFeeds ~ .feeds {
+  display: none;
+}
+ul.folders .folder input.revealFeeds:checked ~ .feeds {
+  display: block;
 }
 
 main.app nav.feedslist ul.folders .folder .feeds .feed .feedtitle {

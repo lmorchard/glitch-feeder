@@ -117,6 +117,8 @@ const FoldersList = ({
             className: "foldertitle",
             onClick: handleNewFeedsClick
           }, "NEW"),
+        ),
+        h("li", { className: "folder" },
           h("span", {
             className: "foldertitle",
             onClick: handleAllFeedsClick
@@ -124,11 +126,19 @@ const FoldersList = ({
         ),
         Object.values(folders).map(folder =>
           h("li", { className: "folder" },
+            h("label", {
+              for: `reveal-${folder.id}`,
+            }, "X"),
+            h("input", {
+              id: `reveal-${folder.id}`,
+              type: "checkbox",
+              className: "revealFeeds",
+            }),
             h("span", {
-              id: folder,
+              id: folder.id,
               className: "foldertitle",
               onClick: handleFolderClick(folder)
-            }, folder),
+            }, folder.id),
             h("ul", { className: "feeds" },
               folder.feeds.map(feed => h(
                 FeedItem, {
