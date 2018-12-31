@@ -15,3 +15,4 @@ Someday, this wants to grow up to be a simple remixable feed reader.
 - Implement a proper FeedFolder model with sub-folders
 - OPML live playlist subscription
 - Variable maxage per feed with AIMD adjustment based on when new items are found
+- Next folder / next feed button at bottom of feeds list
