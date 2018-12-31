@@ -39,7 +39,8 @@ export async function init(appEl) {
       appEl,
       appEl.lastElementChild
     );
-  store.subscribe(renderApp); // TODO: Work out how to use preact-redux
+  // TODO: Work out how to use preact-redux
+  store.subscribe(renderApp);
   renderApp();
 
   const url = new URL(window.location);
@@ -64,7 +65,10 @@ export async function init(appEl) {
   });
 
   dispatch(
-    actions.loadFeeds({ url: feedsUrl, feeds: await fetchJson(feedsUrl) })
+    actions.loadFeeds({
+      url: feedsUrl,
+      feeds: await fetchJson(feedsUrl),
+    })
   );
   dispatch(actions.loadFolders(await fetchJson(foldersUrl)));
   dispatch(actions.setAppLoading(false));

@@ -2,9 +2,6 @@ import { h } from "https://unpkg.com/preact@8.4.2/dist/preact.mjs?module";
 
 import { actions, selectors } from "../app/store.js";
 
-import FoldersList from "./FoldersList.js";
-import ItemsList from "./ItemsList.js";
-
 import {
   addEventListeners,
   mapToObject,
@@ -15,6 +12,9 @@ import {
   paramsFromUrl,
   urlWithParams,
 } from "../app/utils.js";
+
+import FoldersList from "./FoldersList.js";
+import ItemsList from "./ItemsList.js";
 
 export const App = props => {
   const { state, dispatch, feedsLimit, itemsLimit } = props;
