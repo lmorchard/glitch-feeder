@@ -24,7 +24,7 @@ import {
 const { assign } = Object;
 
 const feedsLimit = 5;
-const itemsLimit = 10;
+const itemsLimit = 5
 
 export async function init(appEl) {
   const store = createAppStore();

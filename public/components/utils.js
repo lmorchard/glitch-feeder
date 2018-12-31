@@ -71,6 +71,7 @@ export const withClickOnScrollVisibility = conditionFn => WrappedComponent =>
       }
       this.scrollTimer = setTimeout(() => {
         this.scrollTimer = null;
+        // TODO: Add a margin? i.e. when the button is just off screen by 10px, click?
         const scrollBottom =
           this.scrollRef.scrollTop +
           this.scrollRef.offsetHeight +
