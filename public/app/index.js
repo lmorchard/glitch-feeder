@@ -17,7 +17,7 @@ import {
 
 const { assign } = Object;
 
-const feedsLimit = 10;
+const feedsLimit = 5;
 const itemsLimit = 10;
 
 export async function init(appEl) {
@@ -49,40 +49,39 @@ export async function init(appEl) {
 }
 
 const App = ({ state, dispatch }) => {
+  const handlers = bindHandlers({ state, dispatch });
   const props = Object.assign(
     {},
     mapToObject(Object.keys(selectors), name => selectors[name](state)),
-    mapToObject(Object.keys(handlers), name =>
-      handlers[name]({ state, dispatch })
-    )
+    mapToObject(Object.keys(handlers), name => handlers[name]),
   );
   return AppLayout(props);
 };
 
-const handlers = {
-  handleAllFeedsClick: ({ state, dispatch }) => async () => {
+const bindHandlers = ({ state, dispatch }) => ({
+  handleAllFeedsClick: async () => {
     const apiRoot = selectors.apiRoot(state);
     const url = apiRoot.hrefs.feeds + `?limit=${feedsLimit}&itemsLimit=${itemsLimit}`;
     const feeds = await fetchJson(url);
     dispatch(actions.loadFeeds({ url, feeds }));
   },
-  handleFolderClick: ({ state, dispatch }) => folder => async ev => {
-    const url = folder.href + `?limit=${feedsLimit}&itemsLimit=${itemsLimit}`;
+  handleFolderClick: folder => async ev => {
+    const url = folder.href + `&limit=${feedsLimit}&itemsLimit=${itemsLimit}`;
     const feeds = await fetchJson(url);
     dispatch(actions.loadFeeds({ url, feeds }));
   },
-  handleFolderFeedClick: ({ state, dispatch }) => feed => async ev => {
+  handleFolderFeedClick: feed => async ev => {
     const url = feed.hrefs.self + `?itemsLimit=${itemsLimit}`;
     const result = await fetchJson(url);
     dispatch(actions.loadFeeds({ url: null, feeds: [result] }));
   },
-  handleMoreItemsClick: ({ state, dispatch }) => feed => async ev => {
+  handleMoreItemsClick: feed => async ev => {
     const lastItem = feed.items[feed.items.length - 1];
     const url = feed.hrefs.items + `?limit=${feedsLimit}&itemsLimit=${itemsLimit}&before=${lastItem.date}`;
     const items = await fetchJson(url);
     dispatch(actions.appendFeedItems({ feedId: feed.id, items }));
   },
-  handleMoreFeedsClick: ({ state, dispatch }) => ({
+  handleMoreFeedsClick: ({
     feedsUrl,
     feeds,
   }) => async ev => {
@@ -91,7 +90,7 @@ const handlers = {
     const newFeeds = await fetchJson(url);
     dispatch(actions.appendFeeds(newFeeds));
   },
-};
+});
 
 const AppLayout = props =>
   h(
@@ -224,7 +223,10 @@ const withScrollResetOnCondition = (conditionFn, WrappedComponent) =>
   };
 
 const ItemsList = withScrollResetOnCondition(
-  ({ prevProps, props }) => ! prevProps.feeds[0].id !== props.feeds[0].id,
+  ({ prevProps, props }) => 
+    prevProps.feeds.length === 0 ||
+    props.feeds.length === 0 ||
+    prevProps.feeds[0].id !== props.feeds[0].id,
   ({
     feedsUrl,
     feeds = [],
