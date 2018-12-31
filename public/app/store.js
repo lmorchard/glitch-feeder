@@ -7,6 +7,7 @@ export const defaultState = {
   ui: {
     appLoading: true,
     currentFeed: null,
+    feedsU
   },
   api: {
     root: null,
@@ -28,9 +29,10 @@ export const actions = createActions(
   {},
   "setAppLoading",
   "setApiRoot",
-  "setCurrentFeed",
+  "setFeedsUrl",
   "loadFolders",
   "loadFeeds",
+  "appendFeeds",
   "appendFeedItems"
 );
 
@@ -62,7 +64,8 @@ export const reducers = {
 
   feeds: handleActions(
     {
-      [actions.loadFeeds]: (state, { payload: feeds = {} }) => feeds,
+      [actions.loadFeeds]: (state, { payload: feeds = {} }) => [ ...feeds ],
+      [actions.appendFeeds]: (state, { payload: feeds = {} }) => [ ...state, ...feeds ],
       [actions.appendFeedItems]: (
         state,
         {
@@ -72,16 +75,12 @@ export const reducers = {
           },
         }
       ) => {
-        const feedIdx = state.map(feed => feed.id).indexOf(feedId);        
-        if (feedIdx === -1) return state;
-        
-        return Object.assign([], state
-
-        return [
-          ...feeds.slice(0, feedIdx),
-          assign({}, feed, { items: [...feed.items, ...items] }),
-          ...feeds.slice(feedIdx + 1),
-        ];
+        const idx = state.map(feed => feed.id).indexOf(feedId);        
+        if (idx === -1) return state;
+        const feed = state[idx];
+        return assign([], state, {
+          [idx]: assign({}, feed, { items: [...feed.items, ...items] }),
+        });
       },
     },
     defaultState.feeds
