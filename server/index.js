@@ -62,8 +62,8 @@ module.exports = (options, context) => {
 
   apiRouter.route("/feeds/:id").get(async (req, res) => {
     const { id } = req.params;
-    const { itemsLimit = 10 } = req.query;
-    let result = Feed.queryWithParams({ id, itemsLimit });
+    const { after, before, itemsLimit = 10 } = req.query;
+    let result = Feed.queryWithParams({ id, after, before, itemsLimit });
     res.json(await result);
   });
 
