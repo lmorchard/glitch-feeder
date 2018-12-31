@@ -26,33 +26,64 @@ const { assign } = Object;
 const feedsLimit = 7;
 const itemsLimit = 10;
 
+const paramsFromUrl = src => {
+  const url = new URL(src);
+  const params = new URLSearchParams(url.search);
+  const out = {};
+  for (let [k, v] of params.entries()) {
+    out[k] = v;
+  }
+  return out;
+};
+
+const urlFromParams = (src, newParams) => {
+  const url = new URL(src);
+  const params = new URLSearchParams();
+  for (let [k, v] of Object.entries(newParams)) {
+    params.set(k, v);
+  }
+  url.search = `?
+};
+
 export async function init(appEl) {
   const store = createAppStore();
+  const { dispatch, getState } = store;
 
   const renderApp = () =>
     render(
       h(App, {
-        state: store.getState(),
-        dispatch: store.dispatch,
+        state: getState(),
+        dispatch,
       }),
       appEl,
       appEl.lastElementChild
     );
   store.subscribe(renderApp); // TODO: Work out how to use preact-redux
   renderApp();
+  
+  const url = new URL(window.location);
+  const params = new URLSearchParams(url.search);
+  let after;
+  if (params.has("after")) {
+    after = params.get("after");
+    dispatch(actions.setReadAfter(after));
+  }
+  console.log(after);
 
   const apiRoot = await fetchJson("/api");
-  store.dispatch(actions.setApiRoot(apiRoot));
+  dispatch(actions.setApiRoot(apiRoot));
 
   const feedsUrl =
     apiRoot.hrefs.feeds + `?limit=${feedsLimit}&itemsLimit=${itemsLimit}`;
+  
   const [apiFeeds, apiFolders] = await Promise.all([
     fetchJson(feedsUrl),
     fetchJson(apiRoot.hrefs.folders),
   ]);
-  store.dispatch(actions.loadFeeds({ url: feedsUrl, feeds: apiFeeds }));
-  store.dispatch(actions.loadFolders(apiFolders));
-  store.dispatch(actions.setAppLoading(false));
+  
+  dispatch(actions.loadFeeds({ url: feedsUrl, feeds: apiFeeds }));
+  dispatch(actions.loadFolders(apiFolders));
+  dispatch(actions.setAppLoading(false));
 }
 
 const App = ({ state, dispatch }) => {
