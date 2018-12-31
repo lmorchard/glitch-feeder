@@ -6,6 +6,7 @@ const { assign } = Object;
 export const defaultState = {
   ui: {
     appLoading: true,
+    readAfter: null,
     folderNavLoading: true,
     feedItemsLoading: true,
     feedsUrl: null,
@@ -22,6 +23,7 @@ export const selectors = {
   isFolderNavLoading: state => state.ui.folderNavLoading,
   isFeedItemsLoading: state => state.ui.feedItemsLoading,
   feedsUrl: state => state.ui.feedsUrl,
+  readAfter: state => state.ui.readAfter,
   apiRoot: state => state.api.root,
   folders: state => state.folders,
   getFolder: state => id => state.folders[id],
@@ -35,6 +37,7 @@ export const actions = createActions(
   "setFolderNavLoading",
   "setFeedItemsLoading",
   "setFeedsUrl",
+  "setReadAfter",
   "setApiRoot",
   "loadFolders",
   "loadFeeds",
@@ -57,6 +60,8 @@ export const reducers = {
       ) => assign({}, state, { feedItemsLoading }),
       [actions.setFeedsUrl]: (state, { payload: feedsUrl = null }) =>
         assign({}, state, { feedsUrl }),
+      [actions.setReadAfter]: (state, { payload: readAfter = null }) =>
+        assign({}, state, { readAfter }),
       [actions.loadFeeds]: (
         state,
         { payload: { url: feedsUrl, feeds = {} } }
