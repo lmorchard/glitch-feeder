@@ -24,7 +24,7 @@ import {
 const { assign } = Object;
 
 const feedsLimit = 7;
-const itemsLimit = 7;
+const itemsLimit = 10;
 
 export async function init(appEl) {
   const store = createAppStore();
@@ -45,8 +45,7 @@ export async function init(appEl) {
   store.dispatch(actions.setApiRoot(apiRoot));
 
   const feedsUrl =
-    apiRoot.hrefs.feeds +
-    `?limit=${feedsLimit}&itemsLimit=${itemsLimit}&itemsNew=true`;
+    apiRoot.hrefs.feeds + `?limit=${feedsLimit}&itemsLimit=${itemsLimit}`;
   const [apiFeeds, apiFolders] = await Promise.all([
     fetchJson(feedsUrl),
     fetchJson(apiRoot.hrefs.folders),
@@ -278,7 +277,7 @@ const Item = ({ title, link, summary, text, date, pubdate, created_at }) =>
     h(
       "div",
       { className: "details" },
-      h("a", { className: "title", href: link }, title),
+      title && h("a", { className: "title", href: link }, title),
       text &&
         h(
           "span",
