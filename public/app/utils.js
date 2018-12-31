@@ -51,7 +51,9 @@ export const urlWithParams = (src, newParams, merge = true) => {
   const url = new URL(src);
   const params = new URLSearchParams(merge ? url.search : null);
   for (let [k, v] of Object.entries(newParams)) {
-    if (v === null) { continue; }
+    if (v === null) {
+      continue;
+    }
     params.set(k, v);
   }
   url.search = `?${params.toString()}`;
