@@ -15,7 +15,7 @@ import {
   rcmp,
 } from "./utils.js";
 
-import { assign } = Object;
+const { assign } = Object;
 
 export async function init(appEl) {
   const store = createAppStore();
@@ -190,70 +190,90 @@ const FeedItem = ({ feed, handleClick }) =>
     )
   );
 
-const withScrollReset = (WrappedComponent) => 
+const withScrollResetOnCondition = (condFn, WrappedComponent) =>
   class extends Component {
     constructor(props) {
       super(props);
+      this.scrollRef = null;
+    }
+    componentDidUpdate(prevProps, prevState) {
+      if (!condFn({
+        prevProps,
+        prevState, props: this.props, state: this.state, self: this })) {
+        return;
+      }
+      if (this.scrollRef) {
+        this.scrollRef.scrollTop = 0;
+      }
     }
     render(props) {
-      return h(WrappedComponent, assign({}, props));
-    }
-    componentDidUpdate() {
+      return h(
+        WrappedComponent,
+        assign(
+          {
+            onScrollRef: ref => (this.scrollRef = ref),
+          },
+          props
+        )
+      );
     }
   };
 
-class ResetScrollOnUpdate extends Component {
-}
-
-const ItemsList = ({
-  feedsUrl,
-  feeds = [],
-  handleMoreItemsClick,
-  handleMoreFeedsClick,
-}) => {
-  return h(
-    "section",
-    { className: "itemslist" },
-    h(
-      "ul",
-      { className: "feeds" },
-      feeds
-        .filter(feed => feed.items.length > 0)
-        .map(feed =>
-          h(
-            "li",
-            { className: "feed" },
-            h(
-              "span",
-              { className: "feedtitle" },
-              `${feed.title} (${feed.lastNewItem})`
-            ),
-            h(
-              "ul",
-              { className: "items" },
-              feed.items.map(item => h(Item, item))
-            ),
-            h(
-              "button",
-              {
-                className: "moreItems",
-                onClick: handleMoreItemsClick(feed),
-              },
-              "More items"
-            )
-          )
-        ),
+const ItemsList = withScrollResetOnFeedsChange(
+  ({ prevProps, props }) => {
+    prevProps.feeds[0].id === props.feeds[0].id) {
+  },
+  ({
+    feedsUrl,
+    feeds = [],
+    handleMoreItemsClick,
+    handleMoreFeedsClick,
+    onScrollRef,
+  }) => {
+    return h(
+      "section",
+      { className: "itemslist" },
       h(
-        "button",
-        {
-          className: "moreFeeds",
-          onClick: handleMoreFeedsClick({ feedsUrl, feeds }),
-        },
-        "More feeds"
+        "ul",
+        { className: "feeds", ref: onScrollRef },
+        feeds
+          .filter(feed => feed.items.length > 0)
+          .map(feed =>
+            h(
+              "li",
+              { className: "feed" },
+              h(
+                "span",
+                { className: "feedtitle" },
+                `${feed.title} (${feed.lastNewItem})`
+              ),
+              h(
+                "ul",
+                { className: "items" },
+                feed.items.map(item => h(Item, item))
+              ),
+              h(
+                "button",
+                {
+                  className: "moreItems",
+                  onClick: handleMoreItemsClick(feed),
+                },
+                "More items"
+              )
+            )
+          ),
+        h(
+          "button",
+          {
+            className: "moreFeeds",
+            onClick: handleMoreFeedsClick({ feedsUrl, feeds }),
+          },
+          "More feeds"
+        )
       )
-    )
-  );
-};
+    );
+  }
+);
 
 const Item = ({ title, link, summary, text, date, pubdate, created_at }) =>
   h(
