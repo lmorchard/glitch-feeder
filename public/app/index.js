@@ -24,7 +24,7 @@ import {
 const { assign } = Object;
 
 const feedsLimit = 7;
-const itemsLimit = 15;
+const itemsLimit = 7;
 
 export async function init(appEl) {
   const store = createAppStore();
@@ -89,8 +89,7 @@ const bindHandlers = ({ state, dispatch }) => ({
   handleMoreItemsClick: feed => async ev => {
     const lastItem = feed.items[feed.items.length - 1];
     const url =
-      feed.hrefs.items +
-      `?limit=${feedsLimit}&itemsLimit=${itemsLimit}&before=${lastItem.date}`;
+      feed.hrefs.items + `?limit=${itemsLimit}&before=${lastItem.date}`;
     const items = await fetchJson(url);
     dispatch(actions.appendFeedItems({ feedId: feed.id, items }));
   },
@@ -246,25 +245,27 @@ const ItemsList = composeComponents(
                 { className: "items" },
                 feed.items.map(item => h(Item, item))
               ),
-              h(
-                "button",
-                {
-                  className: "moreItems",
-                  onClick: handleMoreItemsClick(feed),
-                },
-                `More items (${feed.itemsRemaining})`
-              )
+              feed.itemsRemaining > 0 &&
+                h(
+                  "button",
+                  {
+                    className: "moreItems",
+                    onClick: handleMoreItemsClick(feed),
+                  },
+                  `More items (${feed.itemsRemaining})`
+                )
             )
           ),
-        feedsUrl && h(
-          "button",
-          {
-            className: "moreFeeds",
-            onClick: handleMoreFeedsClick({ feedsUrl, feeds }),
-            ref: onClickableRef,
-          },
-          "More feeds"
-        )
+        feedsUrl &&
+          h(
+            "button",
+            {
+              className: "moreFeeds",
+              onClick: handleMoreFeedsClick({ feedsUrl, feeds }),
+              ref: onClickableRef,
+            },
+            "More feeds"
+          )
       )
     );
   }

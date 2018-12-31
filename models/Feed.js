@@ -94,16 +94,18 @@ class Feed extends guid(BaseModel) {
           }
         });
 
-      const countItems = async row =>
-        assign(row, {
+      const countItems = async row => {
+        let query = row.$relatedQuery("items").count("* as itemsCount");
+        if (itemsNew) {
+          query = query.where("new", true);
+        }
+        return assign(row, {
           itemsRemaining: Math.max(
             0,
-            (await row
-              .$relatedQuery("items")
-              .count("* as itemsCount")
-              .first()).itemsCount - itemsLimit
+            (await query.first()).itemsCount - itemsLimit
           ),
         });
+      };
 
       result = id ? countItems(await result) : result.map(countItems);
     }

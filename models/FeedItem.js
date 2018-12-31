@@ -102,7 +102,7 @@ class FeedItem extends guid(BaseModel) {
         .first()
     );
 
-    return { items, itemsRemaining: Math.min(0, itemsCount - limit) };
+    return { items, itemsRemaining: Math.max(0, itemsCount - limit) };
   }
 
   // TODO: flag in return value whether item exists / updated / new
