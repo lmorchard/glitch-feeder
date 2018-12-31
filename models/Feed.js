@@ -97,6 +97,11 @@ class Feed extends guid(BaseModel) {
         });
     }
 
+    result = result.map(async row => {
+      row.itemsCount = row.hrefs(); // await row.items().count();
+      return row;
+    });
+    
     return result;
   }
 
