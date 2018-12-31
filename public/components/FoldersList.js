@@ -15,12 +15,6 @@ export const FoldersList = ({
     { className: "feedslist" },
     h(
       "ul",
-      { className: "afterLinks" },
-      afterLinks.map(([ name, href ]) =>
-        h("li", null, h("a", { href }, name)))
-    ),
-    h(
-      "ul",
       { className: "folders" },
       h(
         "li",

@@ -85,7 +85,7 @@ const AppLayout = props =>
   h(
     "main",
     { className: "app" },
-    h("header", { className: "topnav" }, h("h1", null, "Glitch Feeder")),
+    h(HeaderNav, props),
     props.isAppLoading
       ? h(LoadingMessage)
       : h(
@@ -95,6 +95,30 @@ const AppLayout = props =>
           h(ItemsList, props)
         )
   );
+
+const HeaderNav = ({ after, afterLinks }) => {
+  let selectedTime = null;
+  for (let [name, time] of afterLinks.reverse()) {
+    if (selectedTime === null || time >= after) {
+      selectedTime = time;
+    }
+  }
+
+  return h(
+    "header",
+    { className: "topnav" },
+    h("h1", null, "Glitch Feeder"),
+    h(
+      "select",
+      {
+        onChange: ev => (window.location.href = ev.target.value),
+      },
+      afterLinks.map(([name, time, href]) =>
+        h("option", { value: href, selected: time === selectedTime }, name)
+      )
+    )
+  );
+};
 
 const LoadingMessage = () =>
   h("div", { className: "loading" }, h("p", null, "Loading..."));

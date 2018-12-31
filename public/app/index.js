@@ -30,20 +30,20 @@ export async function init(appEl) {
 
   const renderApp = () => {
     const afterLinks = [
-      [ "1 hour ago",  1 * 60 * 60 * 1000 ],
-      [ "4 hours ago", 4 * 60 * 60 * 1000 ],
-      [ "12 hours ago", 12 * 60 * 60 * 1000 ],
-      [ "1 day ago", 1 * 24 * 60 * 60 * 1000 ],
-      [ "2 days ago", 2 * 24 * 60 * 60 * 1000 ],
-      [ "7 days ago", 7 * 24 * 60 * 60 * 1000 ],
-    ].map(([n, offset]) => ([
+      ["1 hour ago", 1 * 60 * 60 * 1000],
+      ["4 hours ago", 4 * 60 * 60 * 1000],
+      ["12 hours ago", 12 * 60 * 60 * 1000],
+      ["1 day ago", 1 * 24 * 60 * 60 * 1000],
+      ["2 days ago", 2 * 24 * 60 * 60 * 1000],
+      ["7 days ago", 7 * 24 * 60 * 60 * 1000],
+    ].map(([n, offset]) => [
       n,
-      urlWithParams(
-        window.location,
-        { after: (new Date(Date.now() - offset)).toISOString() }
-      )
-    ]));
-    
+      new Date(Date.now() - offset).toISOString(),
+      urlWithParams(window.location, {
+        after: new Date(Date.now() - offset).toISOString(),
+      }),
+    ]);
+
     render(
       h(App, {
         enableInfiniteFeedScroll: true,
@@ -56,7 +56,7 @@ export async function init(appEl) {
       appEl,
       appEl.lastElementChild
     );
-  }
+  };
   // TODO: Work out how to use preact-redux
   store.subscribe(renderApp);
   renderApp();
