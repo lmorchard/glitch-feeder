@@ -108,15 +108,19 @@ const HeaderNav = ({ readAfter, afterLinks }) => {
   return h(
     "header",
     { className: "topnav" },
-    h("h1", null, "Glitch Feeder"),
-    h(
-      "select",
-      {
-        className: "afterNav",
-        onChange: ev => (window.location.href = ev.target.value),
-      },
-      afterLinks.map(([name, time, href]) =>
-        h("option", { value: href, selected: time === selectedTime }, name)
+    h("div", { className: "title" },
+      h("h1", null, "Glitch Feeder"),
+    ),
+    h("div", { className: "appNav" },
+      h(
+        "select",
+        {
+          className: "afterNav",
+          onChange: ev => (window.location.href = ev.target.value),
+        },
+        afterLinks.map(([name, time, href]) =>
+          h("option", { value: href, selected: time === selectedTime }, name)
+        )
       )
     )
   );

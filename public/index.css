@@ -20,12 +20,25 @@ main.app header {
   padding: 0.25em;
   min-height: 40px;
   display: flex;
+  justify-content: start;
+  align-items: center;
   flex-direction: row;
 }
 
+main.app header .title {
+  flex: 0;
+  flex-basis: 18em;
+}
+
 main.app header h1 {
-  margin: 0;
+  margin: 0.125em 0;
   padding: 0;
+}
+
+main.app header .afterNav {
+  min-width: 20em;
+  margin: 0;
+  padding: 0.25em 1em;
 }
 
 main.app .loading {
