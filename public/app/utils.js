@@ -36,3 +36,24 @@ const _cmp = (key, a, b) => (a[key] < b[key] ? -1 : a[key] > b[key] ? 1 : 0);
 export const cmp = key => (a, b) => _cmp(key, a, b);
 
 export const rcmp = key => (a, b) => _cmp(key, b, a);
+
+export const paramsFromUrl = src => {
+  const url = new URL(src);
+  const params = new URLSearchParams(url.search);
+  const out = {};
+  for (let [k, v] of params.entries()) {
+    out[k] = v;
+  }
+  return out;
+};
+
+export const urlWithParams = (src, newParams, merge = true) => {
+  const url = new URL(src);
+  const params = new URLSearchParams(merge ? url.search : null);
+  for (let [k, v] of Object.entries(newParams)) {
+    if (v === null) { continue; }
+    params.set(k, v);
+  }
+  url.search = `?${params.toString()}`;
+  return url.toString();
+};

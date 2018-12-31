@@ -13,6 +13,8 @@ import {
   fetchJson,
   cmp,
   rcmp,
+  paramsFromUrl,
+  urlWithParams,
 } from "./utils.js";
 
 import {
@@ -25,25 +27,6 @@ const { assign } = Object;
 
 const feedsLimit = 7;
 const itemsLimit = 10;
-
-const paramsFromUrl = src => {
-  const url = new URL(src);
-  const params = new URLSearchParams(url.search);
-  const out = {};
-  for (let [k, v] of params.entries()) {
-    out[k] = v;
-  }
-  return out;
-};
-
-const urlFromParams = (src, newParams) => {
-  const url = new URL(src);
-  const params = new URLSearchParams();
-  for (let [k, v] of Object.entries(newParams)) {
-    params.set(k, v);
-  }
-  url.search = `?
-};
 
 export async function init(appEl) {
   const store = createAppStore();
@@ -60,7 +43,7 @@ export async function init(appEl) {
     );
   store.subscribe(renderApp); // TODO: Work out how to use preact-redux
   renderApp();
-  
+
   const url = new URL(window.location);
   const params = new URLSearchParams(url.search);
   let after;
@@ -68,19 +51,21 @@ export async function init(appEl) {
     after = params.get("after");
     dispatch(actions.setReadAfter(after));
   }
-  console.log(after);
 
   const apiRoot = await fetchJson("/api");
   dispatch(actions.setApiRoot(apiRoot));
 
-  const feedsUrl =
-    apiRoot.hrefs.feeds + `?limit=${feedsLimit}&itemsLimit=${itemsLimit}`;
-  
+  const feedsUrl = urlWithParams(apiRoot.hrefs.feeds, {
+    after,
+    limit: feedsLimit,
+    itemsLimit: itemsLimit,
+  });
+
   const [apiFeeds, apiFolders] = await Promise.all([
     fetchJson(feedsUrl),
     fetchJson(apiRoot.hrefs.folders),
   ]);
-  
+
   dispatch(actions.loadFeeds({ url: feedsUrl, feeds: apiFeeds }));
   dispatch(actions.loadFolders(apiFolders));
   dispatch(actions.setAppLoading(false));
@@ -98,38 +83,60 @@ const App = ({ state, dispatch }) => {
   return AppLayout(props);
 };
 
-const bindHandlers = ({ state, dispatch }) => ({
-  handleAllFeedsClick: async () => {
-    const apiRoot = selectors.apiRoot(state);
-    const url =
-      apiRoot.hrefs.feeds + `?limit=${feedsLimit}&itemsLimit=${itemsLimit}`;
-    const feeds = await fetchJson(url);
-    dispatch(actions.loadFeeds({ url, feeds }));
-  },
-  handleFolderClick: folder => async ev => {
-    const url = folder.href + `&limit=${feedsLimit}&itemsLimit=${itemsLimit}`;
-    const feeds = await fetchJson(url);
-    dispatch(actions.loadFeeds({ url, feeds }));
-  },
-  handleFolderFeedClick: feed => async ev => {
-    const url = feed.hrefs.self + `?itemsLimit=${itemsLimit}`;
-    const result = await fetchJson(url);
-    dispatch(actions.loadFeeds({ url: null, feeds: [result] }));
-  },
-  handleMoreItemsClick: feed => async ev => {
-    const lastItem = feed.items[feed.items.length - 1];
-    const url =
-      feed.hrefs.items + `?limit=${itemsLimit}&before=${lastItem.date}`;
-    const items = await fetchJson(url);
-    dispatch(actions.appendFeedItems({ feedId: feed.id, items }));
-  },
-  handleMoreFeedsClick: ({ feedsUrl, feeds }) => async ev => {
-    const lastFeed = feeds[feeds.length - 1];
-    const url = feedsUrl + `&before=${lastFeed.lastNewItem}`;
-    const newFeeds = await fetchJson(url);
-    dispatch(actions.appendFeeds(newFeeds));
-  },
-});
+const bindHandlers = ({ state, dispatch }) => {
+  const apiRoot = selectors.apiRoot(state);
+  const after = selectors.after(state);
+  
+  return ({
+    handleAllFeedsClick: async () => {
+      const url = urlWithParams(apiRoot.hrefs.feeds, {
+        after,
+        limit: feedsLimit,
+        itemsLimit: itemsLimit,
+      });
+      const feeds = await fetchJson(url);
+      dispatch(actions.loadFeeds({ url, feeds }));
+    },
+    handleFolderClick: folder => async ev => {
+      const url = urlWithParams(folder.href, {
+        after,
+        limit: feedsLimit,
+        itemsLimit: itemsLimit,
+      });
+      const feeds = await fetchJson(url);
+      dispatch(actions.loadFeeds({ url, feeds }));
+    },
+    handleFolderFeedClick: feed => async ev => {
+      const url = urlWithParams(feed.hrefs.self, {
+        after,
+        itemsLimit: itemsLimit,
+      });
+      const result = await fetchJson(url);
+      dispatch(actions.loadFeeds({ url: null, feeds: [result] }));
+    },
+    handleMoreItemsClick: feed => async ev => {
+      const lastItem = feed.items[feed.items.length - 1];
+      const url = urlWithParams(feed.hrefs.items, {
+        after,
+        before: lastItem.date,
+        limit: itemsLimit,
+      });
+      const items = await fetchJson(url);
+      dispatch(actions.appendFeedItems({ feedId: feed.id, items }));
+    },
+    handleMoreFeedsClick: ({ feedsUrl, feeds }) => async ev => {
+      const lastFeed = feeds[feeds.length - 1];
+      const url = feedsUrl + `&before=${lastFeed.lastNewItem}`;
+      const url = urlWithParams(feedsUrl.hrefs.items, {
+        after,
+        before: lastItem.date,
+        limit: itemsLimit,
+      });
+      const newFeeds = await fetchJson(url);
+      dispatch(actions.appendFeeds(newFeeds));
+    },
+  });
+};
 
 const AppLayout = props =>
   h(
