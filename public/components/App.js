@@ -96,10 +96,11 @@ const AppLayout = props =>
         )
   );
 
-const HeaderNav = ({ after, afterLinks }) => {
+const HeaderNav = ({ readAfter, afterLinks }) => {
+  afterLinks.sort(rcmp(1));
   let selectedTime = null;
-  for (let [name, time] of afterLinks.reverse()) {
-    if (selectedTime === null || time >= after) {
+  for (let [name, time] of afterLinks) {
+    if (selectedTime === null || time >= readAfter) {
       selectedTime = time;
     }
   }
@@ -111,6 +112,7 @@ const HeaderNav = ({ after, afterLinks }) => {
     h(
       "select",
       {
+        className: "afterNav",
         onChange: ev => (window.location.href = ev.target.value),
       },
       afterLinks.map(([name, time, href]) =>
