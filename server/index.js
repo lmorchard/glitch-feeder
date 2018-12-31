@@ -107,6 +107,20 @@ module.exports = (options, context) => {
     const item = await FeedItem.query().findById(id);
     res.send(item.html());
   });
+  
+  apiRouter
+    .route("/poll")
+    .get(async (req, res) => {
+      const { pending, size } = fetchQueue;
+      res.json({ pending, size });
+    })
+    .post(async (req, res) => {
+      if (fetchQueue.size > 0) {
+        re
+      }
+    
+    });
+  
 
   app.use(API_BASE_PATH, apiRouter);
 
