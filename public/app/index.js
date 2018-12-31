@@ -53,7 +53,7 @@ const App = ({ state, dispatch }) => {
   const props = Object.assign(
     {},
     mapToObject(Object.keys(selectors), name => selectors[name](state)),
-    mapToObject(Object.keys(handlers), name => handlers[name]),
+    mapToObject(Object.keys(handlers), name => handlers[name])
   );
   return AppLayout(props);
 };
@@ -215,6 +215,48 @@ const withScrollResetOnCondition = (conditionFn, WrappedComponent) =>
         assign(
           {
             onScrollRef: ref => (this.scrollRef = ref),
+          },
+          props
+        )
+      );
+    }
+  };
+
+const withClickOnScrollVisibility = (WrappedComponent) =>
+  class extends Component {
+    constructor(props) {
+      super(props);
+      this.scrollTimer = null;
+      this.handleScroll = this.handleScroll.bind(this);
+    }
+    componentWillMount() {
+      this.scrollRef = null;
+    }
+    componentDidMount() {
+      this.scrollRef.addEventListener("scroll", this.handleScroll);
+    }
+    conponentWillUnmount() {
+      this.scrollRef.removeEventListener("scroll", this.handleScroll);
+    }
+    handleScroll() {
+      if (this.scrollTimer) {
+        clearTimeout(this.scrollTimer);
+      }
+      this.scrollTimer = setTimeout(() => {
+        this.scrollTimer = null;
+        console.log(
+          this.clickableRef,
+          window.scrollTop,
+          this.clickableRef.scrollTop,
+        );
+      }, 500);
+    }
+    render(props) {
+      return h(
+        WrappedComponent,
+        assign(
+          {
+            onClickableRef: ref => (this.clickableRef = ref),
           },
           props
         )
