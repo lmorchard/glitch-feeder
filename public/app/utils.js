@@ -20,7 +20,9 @@ export const indexBy = (list, fn) => {
   const out = {};
   for (const item of list) {
     const key = fn(item);
-    if (!out[key]) { out[key] = []; }
+    if (!out[key]) {
+      out[key] = [];
+    }
     out[key].push(item);
   }
   return out;
@@ -28,9 +30,8 @@ export const indexBy = (list, fn) => {
 
 export const fetchJson = (url, options = {}) =>
   fetch(url, options).then(response => response.json());
-  
-const _cmp = (key, a, b) =>
-  (a[key] < b[key]) ? -1 : ((a[key] > b[key]) ? 1 : 0);
+
+const _cmp = (key, a, b) => (a[key] < b[key] ? -1 : a[key] > b[key] ? 1 : 0);
 
 export const cmp = key => (a, b) => _cmp(key, a, b);
 

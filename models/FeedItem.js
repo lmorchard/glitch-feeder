@@ -20,20 +20,20 @@ class FeedItem extends guid(BaseModel) {
         join: {
           from: "FeedItems.feed_id",
           to: "Feeds.id",
-        }
-      }
-    }
-  }
-    
-  static get uniqueAttributes() {
-    return [ "guid" ];
-  }
-  
-  static get virtualAttributes() {
-    return [ "hrefs", "html", "text" ];
+        },
+      },
+    };
   }
 
-  hrefs () {
+  static get uniqueAttributes() {
+    return ["guid"];
+  }
+
+  static get virtualAttributes() {
+    return ["hrefs", "html", "text"];
+  }
+
+  hrefs() {
     const { API_BASE_URL } = this.constructor.config();
     return {
       self: `${API_BASE_URL}/items/${this.id}`,
@@ -41,14 +41,14 @@ class FeedItem extends guid(BaseModel) {
       feed: `${API_BASE_URL}/feeds/${this.feed_id}`,
     };
   }
-  
+
   // TODO: move html & text virtuals into parsing?
-  html () {
+  html() {
     // TODO: do some HTML sanitizing here
     return this.description || this.summary;
   }
-  
-  text () {
+
+  text() {
     try {
       const source = this.summary || this.description;
       if (!source) {
@@ -61,15 +61,14 @@ class FeedItem extends guid(BaseModel) {
     }
   }
 
-  static queryWithParams ({
+  static queryWithParams({
     useNew = false,
     folder = false,
     feedId = null,
     before = null,
     limit = 10,
   }) {
-    let result = this
-      .query()
+    let result = this.query()
       .eager("feed")
       .orderBy("date", "DESC")
       .orderBy("id", "DESC")
@@ -85,32 +84,32 @@ class FeedItem extends guid(BaseModel) {
       result = result.where({ new: true });
     }
     if (folder) {
-      result = result
-        .joinRelation("feed")
-        .where("feed.folder", folder);
+      result = result.joinRelation("feed").where("feed.folder", folder);
     }
 
     return result;
   }
 
   // TODO: flag in return value whether item exists / updated / new
-  static async importItem (feed, item, context, options = {}) {
+  static async importItem(feed, item, context, options = {}) {
     const { log } = context;
     const { force = false } = options;
 
     const guid = itemGuid(item);
-    const existingItem = await FeedItem.query().where({ guid }).first();
+    const existingItem = await FeedItem.query()
+      .where({ guid })
+      .first();
     if (!force && existingItem) {
       // Skip insert/update if there's an existing item and no force option
       // TODO: mind a max-age here?
       return {
         isNew: false,
-        item: existingItem
+        item: existingItem,
       };
     }
-    
+
     const date = itemDate(item, existingItem);
-    
+
     const {
       id: feed_id,
       title: feedTitle,
@@ -122,35 +121,39 @@ class FeedItem extends guid(BaseModel) {
       link = "",
       description = "",
       summary = "",
-      author = "",          
+      author = "",
       ...json
     } = stripNullValues(item);
 
     return {
       isNew: !existingItem,
-      item: await this.insertOrUpdate({
-        defunct: false,
-        feed_id,
-        guid,
-        title,
-        link,
-        summary,
-        date: date.toISOString(),
-        json
-      }, { log })
+      item: await this.insertOrUpdate(
+        {
+          defunct: false,
+          feed_id,
+          guid,
+          title,
+          link,
+          summary,
+          date: date.toISOString(),
+          json,
+        },
+        { log }
+      ),
     };
   }
 }
 
-// Relevant date for an item has a bit of variance, so let's 
+// Relevant date for an item has a bit of variance, so let's
 // work with some fallbacks
 const itemDate = ({ date, pubdate }, { created_at } = {}) =>
   new Date(date || pubdate || created_at || Date.now());
 
-// Some items don't have a guid, so let's use a hash of the 
+// Some items don't have a guid, so let's use a hash of the
 // title & link as a rough fallback
 const itemGuid = ({ guid, title = "", link = "" }) =>
-  guid || crypto
+  guid ||
+  crypto
     .createHash("md5")
     .update(title)
     .update(link)

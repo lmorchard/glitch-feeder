@@ -9,6 +9,6 @@ module.exports = (init, program) => {
     .action(init(command));
 };
 
-async function command (options, context) {
+async function command(options, context) {
   require("../server")(options, context);
 }

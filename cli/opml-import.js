@@ -9,17 +9,15 @@ module.exports = (init, program) => {
     .action(init(command));
 };
 
-async function command (filename, env, context) {
+async function command(filename, env, context) {
   const { models, log, exit } = context;
   const { Feed } = models;
 
-  const stream =
-    fs.createReadStream(filename, { encoding: "utf8" });
+  const stream = fs.createReadStream(filename, { encoding: "utf8" });
 
-  const count =
-    await Feed.importOpmlStream(stream, context);
+  const count = await Feed.importOpmlStream(stream, context);
 
   log.info("Imported %s feeds", count);
-  
+
   exit();
-};
+}

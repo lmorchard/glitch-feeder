@@ -12,7 +12,8 @@
     "start": "./bin/feeder server",
     "migrate": "knex migrate:latest",
     "reset": "rm -rf .data && mkdir .data && knex migrate:latest && ./bin/feeder -v opml-import ./sample.opml",
-    "poll": "./bin/feeder -v poll-feeds"
+    "poll": "./bin/feeder -v poll-feeds",
+    "format": "prettier --write ./*.js ./bin/feeder \"{cli,lib,migrations,models,public,server}/**/*.js\""
   },
   "dependencies": {
     "abort-controller": "^2.0.0",

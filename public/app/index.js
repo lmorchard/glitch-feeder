@@ -2,7 +2,9 @@ import {
   h,
   render,
 } from "https://unpkg.com/preact@8.4.2/dist/preact.mjs?module";
+
 import { createAppStore, actions, selectors } from "./store.js";
+
 import {
   addEventListeners,
   mapToObject,
@@ -35,10 +37,8 @@ export async function init(appEl) {
     fetchJson(feedsUrl),
     fetchJson(apiRoot.hrefs.folders),
   ]);
-
   store.dispatch(actions.loadFeeds({ url: feedsUrl, feeds: apiFeeds }));
   store.dispatch(actions.loadFolders(apiFolders));
-
   store.dispatch(actions.setAppLoading(false));
 }
 
@@ -76,7 +76,10 @@ const handlers = {
     const items = await fetchJson(url);
     dispatch(actions.appendFeedItems({ feedId: feed.id, items }));
   },
-  handleMoreFeedsClick: ({ state, dispatch }) => ({ feedsUrl, feeds }) => async ev => {
+  handleMoreFeedsClick: ({ state, dispatch }) => ({
+    feedsUrl,
+    feeds,
+  }) => async ev => {
     const lastFeed = feeds[feeds.length - 1];
     const url = feedsUrl + `&before=${lastFeed.lastNewItem}`;
     const newFeeds = await fetchJson(url);
@@ -184,7 +187,12 @@ const FeedItem = ({ feed, handleClick }) =>
     )
   );
 
-const ItemsList = ({ feedsUrl, feeds = [], handleMoreItemsClick, handleMoreFeedsClick }) => {
+const ItemsList = ({
+  feedsUrl,
+  feeds = [],
+  handleMoreItemsClick,
+  handleMoreFeedsClick,
+}) => {
   return h(
     "section",
     { className: "itemslist" },
@@ -197,7 +205,11 @@ const ItemsList = ({ feedsUrl, feeds = [], handleMoreItemsClick, handleMoreFeeds
           h(
             "li",
             { className: "feed" },
-            h("span", { className: "feedtitle" }, `${feed.title} (${feed.lastNewItem})`),
+            h(
+              "span",
+              { className: "feedtitle" },
+              `${feed.title} (${feed.lastNewItem})`
+            ),
             h(
               "ul",
               { className: "items" },
