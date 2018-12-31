@@ -33,6 +33,9 @@ const bindHandlers = ({ state, dispatch, feedsLimit, itemsLimit }) => {
   const after = selectors.readAfter(state);
 
   return {
+    handleRefreshFeedsClick: async () => {
+      const status = await fetch(apiRoot.hrefs.poll, { method: "POST" });
+    },
     handleAllFeedsClick: async () => {
       const url = urlWithParams(apiRoot.hrefs.feeds, {
         after,
@@ -96,7 +99,12 @@ const AppLayout = props =>
         )
   );
 
-const HeaderNav = ({ readAfter, afterLinks }) => {
+const HeaderNav = ({
+  queueStats,
+  readAfter,
+  afterLinks,
+  handleRefreshFeedsClick,
+}) => {
   afterLinks.sort(rcmp(1));
   let selectedTime = null;
   for (let [name, time] of afterLinks) {
@@ -105,13 +113,15 @@ const HeaderNav = ({ readAfter, afterLinks }) => {
     }
   }
 
+  const pollInProgress = queueStats.pending > 0;
+
   return h(
     "header",
     { className: "topnav" },
-    h("div", { className: "title" },
-      h("h1", null, "Glitch Feeder"),
-    ),
-    h("div", { className: "appNav" },
+    h("div", { className: "title" }, h("h1", null, "Glitch Feeder")),
+    h(
+      "div",
+      { className: "appNav" },
       h(
         "select",
         {
@@ -121,6 +131,17 @@ const HeaderNav = ({ readAfter, afterLinks }) => {
         afterLinks.map(([name, time, href]) =>
           h("option", { value: href, selected: time === selectedTime }, name)
         )
+      ),
+      h(
+        "button",
+        {
+          className: "refresh",
+          onClick: handleRefreshFeedsClick,
+          disabled: pollInProgress,
+        },
+        pollInProgress
+          ? `Refreshing... (${queueStats.pending}/${queueStats.size})`
+          : `Refresh feeds (${queueStats.pending}/${queueStats.size})`
       )
     )
   );

@@ -5,6 +5,10 @@ const { assign } = Object;
 
 export const defaultState = {
   ui: {
+    queueStats: {
+      pending: 0,
+      size: 0,
+    },
     appLoading: true,
     readAfter: null,
     folderNavLoading: true,
@@ -19,6 +23,7 @@ export const defaultState = {
 };
 
 export const selectors = {
+  queueStats: state => state.ui.queueStats,
   isAppLoading: state => state.ui.appLoading,
   isFolderNavLoading: state => state.ui.folderNavLoading,
   isFeedItemsLoading: state => state.ui.feedItemsLoading,
@@ -33,6 +38,7 @@ export const selectors = {
 
 export const actions = createActions(
   {},
+  "setQueueStats",
   "setAppLoading",
   "setFolderNavLoading",
   "setFeedItemsLoading",
@@ -48,6 +54,8 @@ export const actions = createActions(
 export const reducers = {
   ui: handleActions(
     {
+      [actions.setQueueStats]: (state, { payload: queueStats = {} }) =>
+        assign({}, state, { queueStats }),
       [actions.setAppLoading]: (state, { payload: appLoading = false }) =>
         assign({}, state, { appLoading }),
       [actions.setFolderNavLoading]: (

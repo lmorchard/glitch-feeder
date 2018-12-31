@@ -23,6 +23,7 @@ module.exports = (options, context) => {
   app.get("/api", async (req, res) => {
     res.json({
       hrefs: {
+        poll: `${API_BASE_URL}/poll`,
         folders: `${API_BASE_URL}/folders`,
         feeds: `${API_BASE_URL}/feeds`,
         items: `${API_BASE_URL}/items`,
@@ -107,7 +108,7 @@ module.exports = (options, context) => {
     const item = await FeedItem.query().findById(id);
     res.send(item.html());
   });
-  
+
   apiRouter
     .route("/poll")
     .get(async (req, res) => {
@@ -116,11 +117,11 @@ module.exports = (options, context) => {
     })
     .post(async (req, res) => {
       if (fetchQueue.size > 0) {
-        re
+        return res.json({ status: "inProgress" });
       }
-    
+      Feed.pollAll(fetchQueue, context, options);
+      res.json({ status: "started" });
     });
-  
 
   app.use(API_BASE_PATH, apiRouter);
 

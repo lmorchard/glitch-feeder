@@ -65,7 +65,7 @@ export async function init(appEl) {
   // TODO: Handle this more gracefully
   const url = new URL(window.location);
   const params = new URLSearchParams(url.search);
-  let after = (new Date(Date.now() - (12 * 60 * 60 * 1000))).toISOString();
+  let after = new Date(Date.now() - 12 * 60 * 60 * 1000).toISOString();
   if (params.has("after")) {
     after = params.get("after");
   }
@@ -92,6 +92,13 @@ export async function init(appEl) {
   );
   dispatch(actions.loadFolders(await fetchJson(foldersUrl)));
   dispatch(actions.setAppLoading(false));
+
+  const pollStatus = async () => {
+    const queueStats = await fetchJson(apiRoot.hrefs.poll);
+    dispatch(actions.setQueueStats(queueStats));
+  };
+  setInterval(pollStatus, 2000);
+  pollStatus();
 }
 
 export default { init };
