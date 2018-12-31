@@ -119,7 +119,7 @@ module.exports = (options, context) => {
       if (fetchQueue.size > 0) {
         return res.json({ status: "inProgress" });
       }
-      Feed.pollAll(fetchQueue, context, options);
+      Feed.pollAll(fetchQueue, context);
       res.json({ status: "started" });
     });
 

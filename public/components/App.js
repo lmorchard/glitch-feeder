@@ -28,13 +28,20 @@ export const App = props => {
   );
 };
 
-const bindHandlers = ({ state, dispatch, feedsLimit, itemsLimit }) => {
+const bindHandlers = ({
+  state,
+  dispatch,
+  pollStatus,
+  feedsLimit,
+  itemsLimit,
+}) => {
   const apiRoot = selectors.apiRoot(state);
   const after = selectors.readAfter(state);
 
   return {
     handleRefreshFeedsClick: async () => {
-      const status = await fetch(apiRoot.hrefs.poll, { method: "POST" });
+      await fetch(apiRoot.hrefs.poll, { method: "POST" });
+      pollStatus();
     },
     handleAllFeedsClick: async () => {
       const url = urlWithParams(apiRoot.hrefs.feeds, {

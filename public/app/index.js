@@ -28,38 +28,8 @@ export async function init(appEl) {
   const store = createAppStore();
   const { dispatch, getState } = store;
 
-  const renderApp = () => {
-    const afterLinks = [
-      ["1 hour ago", 1 * 60 * 60 * 1000],
-      ["4 hours ago", 4 * 60 * 60 * 1000],
-      ["12 hours ago", 12 * 60 * 60 * 1000],
-      ["1 day ago", 1 * 24 * 60 * 60 * 1000],
-      ["2 days ago", 2 * 24 * 60 * 60 * 1000],
-      ["7 days ago", 7 * 24 * 60 * 60 * 1000],
-    ].map(([n, offset]) => [
-      n,
-      new Date(Date.now() - offset).toISOString(),
-      urlWithParams(window.location, {
-        after: new Date(Date.now() - offset).toISOString(),
-      }),
-    ]);
-
-    render(
-      h(App, {
-        enableInfiniteFeedScroll: true,
-        afterLinks,
-        feedsLimit,
-        itemsLimit,
-        state: getState(),
-        dispatch,
-      }),
-      appEl,
-      appEl.lastElementChild
-    );
-  };
-  // TODO: Work out how to use preact-redux
-  store.subscribe(renderApp);
-  renderApp();
+  const apiRoot = await fetchJson("/api");
+  dispatch(actions.setApiRoot(apiRoot));
 
   // Quick & dirty ?after parameter parsing
   // TODO: Handle this more gracefully
@@ -71,8 +41,14 @@ export async function init(appEl) {
   }
   dispatch(actions.setReadAfter(after));
 
-  const apiRoot = await fetchJson("/api");
-  dispatch(actions.setApiRoot(apiRoot));
+  // Quick & dirty periodic queue status poll
+  // TODO: Switch this over to a websocket!
+  const pollStatus = async () => {
+    const queueStats = await fetchJson(apiRoot.hrefs.poll);
+    dispatch(actions.setQueueStats(queueStats));
+  };
+  setInterval(pollStatus, 5000);
+  pollStatus();
 
   const feedsUrl = urlWithParams(apiRoot.hrefs.feeds, {
     after,
@@ -93,12 +69,40 @@ export async function init(appEl) {
   dispatch(actions.loadFolders(await fetchJson(foldersUrl)));
   dispatch(actions.setAppLoading(false));
 
-  const pollStatus = async () => {
-    const queueStats = await fetchJson(apiRoot.hrefs.poll);
-    dispatch(actions.setQueueStats(queueStats));
+  const renderApp = () => {
+    const afterLinks = [
+      ["1 hour ago", 1 * 60 * 60 * 1000],
+      ["4 hours ago", 4 * 60 * 60 * 1000],
+      ["12 hours ago", 12 * 60 * 60 * 1000],
+      ["1 day ago", 1 * 24 * 60 * 60 * 1000],
+      ["2 days ago", 2 * 24 * 60 * 60 * 1000],
+      ["7 days ago", 7 * 24 * 60 * 60 * 1000],
+    ].map(([n, offset]) => [
+      n,
+      new Date(Date.now() - offset).toISOString(),
+      urlWithParams(window.location, {
+        after: new Date(Date.now() - offset).toISOString(),
+      }),
+    ]);
+
+    render(
+      h(App, {
+        enableInfiniteFeedScroll: true,
+        pollStatus,
+        afterLinks,
+        feedsLimit,
+        itemsLimit,
+        state: getState(),
+        dispatch,
+      }),
+      appEl,
+      appEl.lastElementChild
+    );
   };
-  setInterval(pollStatus, 2000);
-  pollStatus();
+
+  // TODO: Work out how to use preact-redux
+  store.subscribe(renderApp);
+  renderApp();
 }
 
 export default { init };

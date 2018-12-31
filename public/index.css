@@ -41,6 +41,11 @@ main.app header .afterNav {
   padding: 0.25em 1em;
 }
 
+main.app header button.refresh {
+  margin: 0 1em;
+  padding: 0.125em 0.5em;
+}
+
 main.app .loading {
   width: 100%;
   display: flex;
