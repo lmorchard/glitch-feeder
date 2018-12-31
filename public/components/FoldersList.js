@@ -4,6 +4,7 @@ import FeedItem from "./FeedItem.js";
 
 export const FoldersList = ({
   folders,
+  afterLinks,
   handleNewFeedsClick,
   handleAllFeedsClick,
   handleFolderClick,
@@ -12,6 +13,12 @@ export const FoldersList = ({
   return h(
     "nav",
     { className: "feedslist" },
+    h(
+      "ul",
+      { className: "afterLinks" },
+      afterLinks.map(([ name, href ]) =>
+        h("li", null, h("a", { href }, name)))
+    ),
     h(
       "ul",
       { className: "folders" },

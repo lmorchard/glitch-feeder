@@ -21,9 +21,7 @@ export const App = props => {
   const handlers = bindHandlers(props);
   return AppLayout(
     Object.assign(
-      {
-        enableInfiniteFeedScroll: true,
-      },
+      props,
       mapToObject(Object.keys(selectors), name => selectors[name](state)),
       mapToObject(Object.keys(handlers), name => handlers[name])
     )
