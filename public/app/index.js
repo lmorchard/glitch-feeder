@@ -256,7 +256,7 @@ const ItemsList = composeComponents(
               )
             )
           ),
-        h(
+        feedsUrl && h(
           "button",
           {
             className: "moreFeeds",

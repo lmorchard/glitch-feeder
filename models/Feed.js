@@ -36,11 +36,7 @@ class Feed extends guid(BaseModel) {
   }
 
   static get virtualAttributes() {
-    return ["hrefs", "itemsCount"];
-  }
-
-  async itemsCount() {
-    return await this.items().count();
+    return ["hrefs"];
   }
 
   hrefs() {
@@ -51,7 +47,7 @@ class Feed extends guid(BaseModel) {
     };
   }
 
-  static queryWithParams({
+  static async queryWithParams({
     id = null,
     folder = null,
     limit = null,
@@ -97,22 +93,21 @@ class Feed extends guid(BaseModel) {
             builder.where("new", true);
           }
         });
-    
-      const countItems = async row => assign(row, {
-        itemsRemaining: Math.max(
-          0,
-          (await row
-            .$relatedQuery("items")
-            .count("* as itemsCount")
-            .first()).itemsCount - itemsLimit
-        ),
-      });
 
-      result = !id
-        ? result.map(countItems)
-        : countItems(result);
+      const countItems = async row =>
+        assign(row, {
+          itemsRemaining: Math.max(
+            0,
+            (await row
+              .$relatedQuery("items")
+              .count("* as itemsCount")
+              .first()).itemsCount - itemsLimit
+          ),
+        });
+
+      result = id ? countItems(await result) : result.map(countItems);
     }
-    
+
     return result;
   }
 

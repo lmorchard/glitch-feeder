@@ -63,6 +63,9 @@ export const withClickOnScrollVisibility = conditionFn => WrappedComponent =>
     }
 
     handleScroll() {
+      if (!this.clickableRef || !this.scrollRef) {
+        return;
+      }
       if (!conditionFn(this.props)) {
         return;
       }
