@@ -15,6 +15,11 @@ import {
   rcmp,
 } from "./utils.js";
 
+import {
+  withScrollResetOnCondition,
+  withClickOnScrollVisibility,
+} from "../components/utils.js";
+
 const { assign } = Object;
 
 const feedsLimit = 5;
@@ -193,82 +198,6 @@ const FeedItem = ({ feed, handleClick }) =>
       feed.title
     )
   );
-
-const withScrollResetOnCondition = (conditionFn, WrappedComponent) =>
-  class extends Component {
-    componentWillMount() {
-      this.scrollRef = null;
-    }
-    componentDidUpdate(prevProps, prevState) {
-      const condition = conditionFn({
-        prevProps,
-        prevState,
-        props: this.props,
-        state: this.state,
-        self: this,
-      });
-      if (condition && this.scrollRef) {
-        this.scrollRef.scrollTop = 0;
-      }
-    }
-    render(props) {
-      return h(
-        WrappedComponent,
-        assign(
-          {
-            onScrollRef: ref => (this.scrollRef = ref),
-          },
-          props
-        )
-      );
-    }
-  };
-
-const withClickOnScrollVisibility = WrappedComponent =>
-  class extends Component {
-    constructor(props) {
-      super(props);
-      this.scrollTimer = null;
-      this.handleScroll = this.handleScroll.bind(this);
-    }
-    componentWillMount() {
-      this.scrollRef = null;
-    }
-    componentDidMount() {
-      this.scrollRef.addEventListener("scroll", this.handleScroll);
-    }
-    conponentWillUnmount() {
-      this.scrollRef.removeEventListener("scroll", this.handleScroll);
-    }
-    handleScroll() {
-      if (this.scrollTimer) {
-        clearTimeout(this.scrollTimer);
-      }
-      this.scrollTimer = setTimeout(() => {
-        const visible = 
-          this.scrollRef.scrollTop + this.scrollRef.offsetHeight + this.scrollRef.offsetTop
-        this.scrollTimer = null;
-        console.log(this.clickableRef);
-        console.log(this.scrollRef);
-        console.log(
-          this.clickableRef.offsetTop,
-          this.scrollRef.scrollTop + this.scrollRef.offsetHeight + this.scrollRef.offsetTop,
-        );
-      }, 100);
-    }
-    render(props) {
-      return h(
-        WrappedComponent,
-        assign(
-          {
-            onClickableScrollRef: ref => (this.scrollRef = ref),
-            onClickableRef: ref => (this.clickableRef = ref),
-          },
-          props
-        )
-      );
-    }
-  };
 
 const ItemsList = withClickOnScrollVisibility(
   withScrollResetOnCondition(
