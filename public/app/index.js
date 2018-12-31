@@ -1,6 +1,7 @@
 import {
   h,
   render,
+  Component,
 } from "https://unpkg.com/preact@8.4.2/dist/preact.mjs?module";
 
 import { createAppStore, actions, selectors } from "./store.js";
@@ -32,7 +33,7 @@ export async function init(appEl) {
   const apiRoot = await fetchJson("/api");
   store.dispatch(actions.setApiRoot(apiRoot));
 
-  const feedsUrl = apiRoot.hrefs.feeds + "?limit=5&itemsLimit=10&itemsNew=true";
+  const feedsUrl = apiRoot.hrefs.feeds + "?limit=5&itemsLimit=7&itemsNew=true";
   const [apiFeeds, apiFolders] = await Promise.all([
     fetchJson(feedsUrl),
     fetchJson(apiRoot.hrefs.folders),
@@ -56,17 +57,17 @@ const App = ({ state, dispatch }) => {
 const handlers = {
   handleAllFeedsClick: ({ state, dispatch }) => async () => {
     const apiRoot = selectors.apiRoot(state);
-    const url = apiRoot.hrefs.feeds + "?limit=5&itemsLimit=10";
+    const url = apiRoot.hrefs.feeds + "?limit=5&itemsLimit=7";
     const feeds = await fetchJson(url);
     dispatch(actions.loadFeeds({ url, feeds }));
   },
   handleFolderClick: ({ state, dispatch }) => folder => async ev => {
-    const url = folder.href + "&limit=5&itemsLimit=10";
+    const url = folder.href + "&limit=5&itemsLimit=7";
     const feeds = await fetchJson(url);
     dispatch(actions.loadFeeds({ url, feeds }));
   },
   handleFolderFeedClick: ({ state, dispatch }) => feed => async ev => {
-    const url = feed.hrefs.self + "?itemsLimit=10";
+    const url = feed.hrefs.self + "?itemsLimit=7";
     const result = await fetchJson(url);
     dispatch(actions.loadFeeds({ url: null, feeds: [result] }));
   },
@@ -186,6 +187,17 @@ const FeedItem = ({ feed, handleClick }) =>
       feed.title
     )
   );
+
+class ResetScrollOnUpdate extends Component {
+  constructor(props) {
+    super(props);
+  }
+  render() {
+    return this.props.children;
+  }
+  componentDidUpdate() {
+  }
+}
 
 const ItemsList = ({
   feedsUrl,
