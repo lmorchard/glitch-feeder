@@ -34,7 +34,11 @@ class Feed extends guid(BaseModel) {
   }
 
   static get virtualAttributes() {
-    return ["hrefs"];
+    return ["hrefs", "itemsCount"];
+  }
+  
+  async itemsCount() {
+    return await this.items().count();
   }
 
   hrefs() {
@@ -49,15 +53,19 @@ class Feed extends guid(BaseModel) {
     id = null,
     folder = null,
     limit = null,
+    after = null,
+    before = null,
     itemsLimit = 0,
     itemsNew = false,
-    before = null,
   } = {}) {
     let result = Feed.query();
 
     if (id) {
       result = result.findById(id);
     } else {
+      if (after) {
+        result = result.where("lastNewItem", ">", after);
+      }
       if (before) {
         result = result.where("lastNewItem", "<", before);
       }

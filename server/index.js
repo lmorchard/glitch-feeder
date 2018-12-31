@@ -41,14 +41,16 @@ module.exports = (options, context) => {
     const {
       folder = null,
       limit = null,
-      itemsLimit = 0,
+      after = null,
       before = null,
+      itemsLimit = 0,
       itemsNew = false,
     } = req.query;
     let result = Feed.queryWithParams({
       folder,
       limit,
       itemsLimit,
+      after,
       before,
       itemsNew: !!itemsNew,
     });
@@ -74,9 +76,10 @@ module.exports = (options, context) => {
       folder = null,
       new: useNew = false,
       limit = 100,
+      after = null,
       before = null,
     } = req.query;
-    const result = FeedItem.queryWithParams({ useNew, folder, limit, before });
+    const result = FeedItem.queryWithParams({ useNew, folder, limit, after, before });
     res.json(await result);
   });
 

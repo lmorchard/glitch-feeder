@@ -65,6 +65,7 @@ class FeedItem extends guid(BaseModel) {
     useNew = false,
     folder = false,
     feedId = null,
+    after = null,
     before = null,
     limit = 10,
   }) {
@@ -74,6 +75,9 @@ class FeedItem extends guid(BaseModel) {
       .orderBy("id", "DESC")
       .limit(limit);
 
+    if (after) {
+      result = result.where("date", ">", after);
+    }
     if (before) {
       result = result.where("date", "<", before);
     }
