@@ -6,8 +6,9 @@ const { assign } = Object;
 export const defaultState = {
   ui: {
     appLoading: true,
-    currentFeed: null,
-    feedsU
+    folderNavLoading: true,
+    feedItemsLoading: true,
+    feedsUrl: null,
   },
   api: {
     root: null,
@@ -18,6 +19,9 @@ export const defaultState = {
 
 export const selectors = {
   isAppLoading: state => state.ui.appLoading,
+  isFolderNavLoading: state => state.ui.folderNavLoading,
+  isFeedItemsLoading: state => state.ui.feedItemsLoading,
+  getFeedsUrl: state => state.ui.feedsUrl,
   apiRoot: state => state.api.root,
   folders: state => state.folders,
   getFolder: state => id => state.folders[id],
@@ -28,8 +32,10 @@ export const selectors = {
 export const actions = createActions(
   {},
   "setAppLoading",
-  "setApiRoot",
+  "setFolderNavLoading",
+  "setFeedItemsLoading",
   "setFeedsUrl",
+  "setApiRoot",
   "loadFolders",
   "loadFeeds",
   "appendFeeds",
@@ -41,8 +47,20 @@ export const reducers = {
     {
       [actions.setAppLoading]: (state, { payload: appLoading = false }) =>
         assign({}, state, { appLoading }),
-      [actions.setCurrentFeed]: (state, { payload: feed }) =>
-        assign({}, state, { currentFeed: feed }),
+      [actions.setFolderNavLoading]: (
+        state,
+        { payload: folderNavLoading = false }
+      ) => assign({}, state, { folderNavLoading }),
+      [actions.setFeedItemsLoading]: (
+        state,
+        { payload: feedItemsLoading = false }
+      ) => assign({}, state, { feedItemsLoading }),
+      [actions.setFeedsUrl]: (state, { payload: feedsUrl = null }) =>
+        assign({}, state, { feedsUrl }),
+      [actions.loadFeeds]: (
+        state,
+        { payload: { url: feedsUrl, feeds = {} } }
+      ) => assign({}, state, { feedsUrl }),
     },
     defaultState.ui
   ),
@@ -64,18 +82,18 @@ export const reducers = {
 
   feeds: handleActions(
     {
-      [actions.loadFeeds]: (state, { payload: feeds = {} }) => [ ...feeds ],
-      [actions.appendFeeds]: (state, { payload: feeds = {} }) => [ ...state, ...feeds ],
+      [actions.loadFeeds]: (state, { payload: { url, feeds = {} } }) => [
+        ...feeds,
+      ],
+      [actions.appendFeeds]: (state, { payload: feeds = {} }) => [
+        ...state,
+        ...feeds,
+      ],
       [actions.appendFeedItems]: (
         state,
-        {
-          payload: {
-            feedId,
-            items = [],
-          },
-        }
+        { payload: { feedId, items = [] } }
       ) => {
-        const idx = state.map(feed => feed.id).indexOf(feedId);        
+        const idx = state.map(feed => feed.id).indexOf(feedId);
         if (idx === -1) return state;
         const feed = state[idx];
         return assign([], state, {

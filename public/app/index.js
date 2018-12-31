@@ -30,12 +30,13 @@ export async function init(appEl) {
   const apiRoot = await fetchJson("/api");
   store.dispatch(actions.setApiRoot(apiRoot));
 
+  const feedsUrl = apiRoot.hrefs.feeds + "?limit=15&itemsLimit=10&itemsNew=true";
   const [apiFeeds, apiFolders] = await Promise.all([
-    fetchJson(apiRoot.hrefs.feeds + "?limit=15&itemsLimit=10&itemsNew=true"),
+    fetchJson(feedsUrl),
     fetchJson(apiRoot.hrefs.folders),
   ]);
 
-  store.dispatch(actions.loadFeeds(apiFeeds));
+  store.dispatch(actions.loadFeeds({ url: feedsUrl, feeds: apiFeeds }));
   store.dispatch(actions.loadFolders(apiFolders));
 
   store.dispatch(actions.setAppLoading(false));
@@ -55,18 +56,19 @@ const App = ({ state, dispatch }) => {
 const handlers = {
   handleAllFeedsClick: ({ state, dispatch }) => async () => {
     const apiRoot = selectors.apiRoot(state);
-    const feeds = await fetchJson(
-      apiRoot.hrefs.feeds + "?limit=5&itemsLimit=10"
-    );
-    dispatch(actions.loadFeeds(feeds));
+    const url = apiRoot.hrefs.feeds + "?limit=5&itemsLimit=10";
+    const feeds = await fetchJson(url);
+    dispatch(actions.loadFeeds({ url, feeds }));
   },
   handleFolderClick: ({ state, dispatch }) => folder => async ev => {
-    const feeds = await fetchJson(folder.href + "&limit=10&itemsLimit=10");
-    dispatch(actions.loadFeeds(feeds));
+    const url = folder.href + "&limit=10&itemsLimit=10";
+    const feeds = await fetchJson(url);
+    dispatch(actions.loadFeeds({ url, feeds }));
   },
   handleFolderFeedClick: ({ state, dispatch }) => feed => async ev => {
-    const result = await fetchJson(feed.hrefs.self + "?itemsLimit=10");
-    dispatch(actions.loadFeeds([result]));
+    const url = feed.hrefs.self + "?itemsLimit=10";
+    const result = await fetchJson(url);
+    dispatch(actions.loadFeeds({ url: null, feeds: [result] }));
   },
   handleMoreItemsClick: ({ state, dispatch }) => feed => async ev => {
     const lastItem = feed.items[feed.items.length - 1];
@@ -183,7 +185,7 @@ const FeedItem = ({ feed, handleClick }) =>
     )
   );
 
-const ItemsList = ({ feeds = [], handleMoreItemsClick }) => {
+const ItemsList = ({ feeds = [], handleMoreItemsClick, handleMoreFeedsClick }) => {
   return h(
     "section",
     { className: "itemslist" },
@@ -211,7 +213,15 @@ const ItemsList = ({ feeds = [], handleMoreItemsClick }) => {
               "More items"
             )
           )
-        )
+        ),
+      h(
+        "button",
+        {
+          className: "moreFeeds",
+          onClick: handleMoreFeedsClick(url),
+        },
+        "More feeds"
+      )
     )
   );
 };
