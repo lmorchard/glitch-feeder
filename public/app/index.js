@@ -70,8 +70,10 @@ const handlers = {
   },
   handleMoreItemsClick: ({ state, dispatch }) => feed => async ev => {
     const lastItem = feed.items[feed.items.length - 1];
-    const url = feed.hrefs.items + "";
-    const result = await
+    const url = feed.hrefs.items + `?limit=10&before=${lastItem.date}`;
+    const items = await fetchJson(url);
+    console.log("RESULT", feed, items);
+    dispatch(actions.appendFeedItems({ feed, items }));
   },
 };
 

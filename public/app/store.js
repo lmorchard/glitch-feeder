@@ -1,6 +1,7 @@
 /* global Redux, ReduxActions */
 const { createActions, handleActions, combineActions } = ReduxActions;
 const { createStore, combineReducers, compose } = Redux;
+const { assign } = Object;
 
 export const defaultState = {
   ui: {
@@ -12,7 +13,6 @@ export const defaultState = {
   },
   folders: {},
   feeds: [],
-  items: [],
 };
 
 export const selectors = {
@@ -22,9 +22,6 @@ export const selectors = {
   getFolder: state => id => state.folders[id],
   feeds: state => state.feeds,
   getFeed: state => id => state.feeds[id],
-  items: state => state.items,
-  getItem: state => id => state.items[id],
-  currentFeed: state => state.ui.currentFeed,
 };
 
 export const actions = createActions(
@@ -34,20 +31,20 @@ export const actions = createActions(
   "setCurrentFeed",
   "loadFolders",
   "loadFeeds",
-  "loadItems",
+  "appendFeedItems",
 );
 
 export const reducers = {
   ui: handleActions({
     [actions.setAppLoading]: (state, { payload: appLoading = false }) =>
-      Object.assign({}, state, { appLoading }),
+      assign({}, state, { appLoading }),
     [actions.setCurrentFeed]: (state, { payload: feed }) =>
-      Object.assign({}, state, { currentFeed: feed }),
+      assign({}, state, { currentFeed: feed }),
   }, defaultState.ui),
   
   api: handleActions({
     [actions.setApiRoot]: (state, { payload: root }) =>
-      Object.assign({}, state, { root }),
+      assign({}, state, { root }),
   }, defaultState.api),
   
   folders: handleActions({
@@ -55,18 +52,32 @@ export const reducers = {
   }, defaultState.folders),
   
   feeds: handleActions({
-    [actions.loadFeeds]: (state, { payload: feeds = {} }) => feeds
-  }, defaultState.feeds),
-  
-  items: handleActions({
-    [actions.loadItems]: (state, { payload: items = [] }) => {
-      const newState = {};
-      for (let item of items) {
-        newState[item.id] = item;
+    [actions.loadFeeds]: (state, { payload: feeds = {} }) => feeds,
+    [actions.appendFeedItems]: (state, { payload: { feed, items = [] } }) => {
+      const feeds = state.feeds;
+      
+      for (let idx = 0; idx < feeds.length; idx++) {
+      
       }
-      return newState;
+      
+      const existingFeed = state[feed.id];
+      if (!existingFeed) { return state; }
+      
+      const feedIdx = 0;
+      for (let idx = 0; idx < 
+      return assign(
+        {},
+        state,
+        {
+          [feed.id]: assign(
+            {},
+            feed,
+            { items: [ ...feed.items, ...items ] }
+          ),
+        }
+      );
     }
-  }, defaultState.items),
+  }, defaultState.feeds),
 };
 
 const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
