@@ -18,6 +18,10 @@ class BaseModel extends DbErrors(Model) {
     }
   }
 
+  static get relatedFindQueryMutates() {
+    return false;
+  }
+
   static get jsonAttributes() {
     return ["json"];
   }

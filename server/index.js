@@ -79,7 +79,13 @@ module.exports = (options, context) => {
       after = null,
       before = null,
     } = req.query;
-    const result = FeedItem.queryWithParams({ useNew, folder, limit, after, before });
+    const result = FeedItem.queryWithParams({
+      useNew,
+      folder,
+      limit,
+      after,
+      before,
+    });
     res.json(await result);
   });
 

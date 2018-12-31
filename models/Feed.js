@@ -8,6 +8,8 @@ const AbortController = require("abort-controller");
 const fetch = require("node-fetch");
 const { stripNullValues } = require("../lib/common");
 
+const { assign } = Object;
+
 const BaseModel = require("./BaseModel");
 
 class Feed extends guid(BaseModel) {
@@ -36,7 +38,7 @@ class Feed extends guid(BaseModel) {
   static get virtualAttributes() {
     return ["hrefs", "itemsCount"];
   }
-  
+
   async itemsCount() {
     return await this.items().count();
   }
@@ -97,11 +99,15 @@ class Feed extends guid(BaseModel) {
         });
     }
 
-    result = result.map(async row => {
-      row.itemsCount = row.hrefs(); // await row.items().count();
-      return row;
-    });
-    
+    result = result.map(async row =>
+      assign(row, {
+        itemsCount: (await row
+          .$relatedQuery("items")
+          .count("* as itemsCount")
+          .first()).itemsCount,
+      })
+    );
+
     return result;
   }
 
