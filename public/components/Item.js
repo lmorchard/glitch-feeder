@@ -1,6 +1,14 @@
 import { h } from "https://unpkg.com/preact@8.4.2/dist/preact.mjs?module";
 
-export const Item = ({ title, link, summary, text, date, pubdate, created_at }) =>
+export const Item = ({
+  title,
+  link,
+  summary,
+  text,
+  date,
+  pubdate,
+  created_at,
+}) =>
   h(
     "li",
     { className: "feeditem" },

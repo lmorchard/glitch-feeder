@@ -18,10 +18,6 @@ import {
 } from "./utils.js";
 
 import App from "../components/App.js";
-import FoldersList from "../components/FoldersList.js";
-import FeedItem from "../components/FeedItem.js";
-import Item from "../components/Item.js";
-import ItemsList from "../components/ItemsList.js";
 
 const { assign } = Object;
 
@@ -35,6 +31,8 @@ export async function init(appEl) {
   const renderApp = () =>
     render(
       h(App, {
+        feedsLimit,
+        itemsLimit,
         state: getState(),
         dispatch,
       }),
@@ -65,13 +63,10 @@ export async function init(appEl) {
     after,
   });
 
-  const [apiFeeds, apiFolders] = await Promise.all([
-    fetchJson(feedsUrl),
-    fetchJson(foldersUrl),
-  ]);
-
-  dispatch(actions.loadFeeds({ url: feedsUrl, feeds: apiFeeds }));
-  dispatch(actions.loadFolders(apiFolders));
+  dispatch(
+    actions.loadFeeds({ url: feedsUrl, feeds: await fetchJson(feedsUrl) })
+  );
+  dispatch(actions.loadFolders(await fetchJson(foldersUrl)));
   dispatch(actions.setAppLoading(false));
 }
 
