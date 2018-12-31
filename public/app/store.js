@@ -21,7 +21,7 @@ export const selectors = {
   isAppLoading: state => state.ui.appLoading,
   isFolderNavLoading: state => state.ui.folderNavLoading,
   isFeedItemsLoading: state => state.ui.feedItemsLoading,
-  getFeedsUrl: state => state.ui.feedsUrl,
+  feedsUrl: state => state.ui.feedsUrl,
   apiRoot: state => state.api.root,
   folders: state => state.folders,
   getFolder: state => id => state.folders[id],
@@ -82,10 +82,10 @@ export const reducers = {
 
   feeds: handleActions(
     {
-      [actions.loadFeeds]: (state, { payload: { url, feeds = {} } }) => [
+      [actions.loadFeeds]: (state, { payload: { url, feeds = [] } }) => [
         ...feeds,
       ],
-      [actions.appendFeeds]: (state, { payload: feeds = {} }) => [
+      [actions.appendFeeds]: (state, { payload: feeds = [] }) => [
         ...state,
         ...feeds,
       ],

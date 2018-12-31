@@ -30,7 +30,7 @@ export async function init(appEl) {
   const apiRoot = await fetchJson("/api");
   store.dispatch(actions.setApiRoot(apiRoot));
 
-  const feedsUrl = apiRoot.hrefs.feeds + "?limit=15&itemsLimit=10&itemsNew=true";
+  const feedsUrl = apiRoot.hrefs.feeds + "?limit=5&itemsLimit=10&itemsNew=true";
   const [apiFeeds, apiFolders] = await Promise.all([
     fetchJson(feedsUrl),
     fetchJson(apiRoot.hrefs.folders),
@@ -61,7 +61,7 @@ const handlers = {
     dispatch(actions.loadFeeds({ url, feeds }));
   },
   handleFolderClick: ({ state, dispatch }) => folder => async ev => {
-    const url = folder.href + "&limit=10&itemsLimit=10";
+    const url = folder.href + "&limit=5&itemsLimit=10";
     const feeds = await fetchJson(url);
     dispatch(actions.loadFeeds({ url, feeds }));
   },
@@ -76,12 +76,11 @@ const handlers = {
     const items = await fetchJson(url);
     dispatch(actions.appendFeedItems({ feedId: feed.id, items }));
   },
-  handleMoreFeedsClick: ({ state, dispatch }) => feed => async ev => {
-    const lastItem = feed.items[feed.items.length - 1];
-    const url = feed.hrefs.items + `?limit=10&before=${lastItem.date}`;
-    const items = await fetchJson(url);
-    console.log("RESULT", feed, items);
-    dispatch(actions.appendFeedItems({ feedId: feed.id, items }));
+  handleMoreFeedsClick: ({ state, dispatch }) => ({ feedsUrl, feeds }) => async ev => {
+    const lastFeed = feeds[feeds.length - 1];
+    const url = feedsUrl + `&before=${lastFeed.lastNewItem}`;
+    const newFeeds = await fetchJson(url);
+    dispatch(actions.appendFeeds(newFeeds));
   },
 };
 
@@ -185,7 +184,7 @@ const FeedItem = ({ feed, handleClick }) =>
     )
   );
 
-const ItemsList = ({ feeds = [], handleMoreItemsClick, handleMoreFeedsClick }) => {
+const ItemsList = ({ feedsUrl, feeds = [], handleMoreItemsClick, handleMoreFeedsClick }) => {
   return h(
     "section",
     { className: "itemslist" },
@@ -198,7 +197,7 @@ const ItemsList = ({ feeds = [], handleMoreItemsClick, handleMoreFeedsClick }) =
           h(
             "li",
             { className: "feed" },
-            h("span", { className: "feedtitle" }, feed.title),
+            h("span", { className: "feedtitle" }, `${feed.title} (${feed.lastNewItem})`),
             h(
               "ul",
               { className: "items" },
@@ -218,7 +217,7 @@ const ItemsList = ({ feeds = [], handleMoreItemsClick, handleMoreFeedsClick }) =
         "button",
         {
           className: "moreFeeds",
-          onClick: handleMoreFeedsClick(url),
+          onClick: handleMoreFeedsClick({ feedsUrl, feeds }),
         },
         "More feeds"
       )
