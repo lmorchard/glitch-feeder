@@ -15,6 +15,8 @@ import {
   rcmp,
 } from "./utils.js";
 
+import { assign } = Object;
+
 export async function init(appEl) {
   const store = createAppStore();
 
@@ -188,15 +190,19 @@ const FeedItem = ({ feed, handleClick }) =>
     )
   );
 
+const withScrollReset = (WrappedComponent) => 
+  class extends Component {
+    constructor(props) {
+      super(props);
+    }
+    render(props) {
+      return h(WrappedComponent, assign({}, props));
+    }
+    componentDidUpdate() {
+    }
+  };
+
 class ResetScrollOnUpdate extends Component {
-  constructor(props) {
-    super(props);
-  }
-  render() {
-    return this.props.children;
-  }
-  componentDidUpdate() {
-  }
 }
 
 const ItemsList = ({
