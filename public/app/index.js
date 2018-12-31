@@ -61,9 +61,13 @@ export async function init(appEl) {
     itemsLimit: itemsLimit,
   });
 
+  const foldersUrl = urlWithParams(apiRoot.hrefs.folders, {
+    after,
+  });
+  
   const [apiFeeds, apiFolders] = await Promise.all([
     fetchJson(feedsUrl),
-    fetchJson(apiRoot.hrefs.folders),
+    fetchJson(foldersUrl),
   ]);
 
   dispatch(actions.loadFeeds({ url: feedsUrl, feeds: apiFeeds }));
@@ -85,7 +89,7 @@ const App = ({ state, dispatch }) => {
 
 const bindHandlers = ({ state, dispatch }) => {
   const apiRoot = selectors.apiRoot(state);
-  const after = selectors.after(state);
+  const after = selectors.readAfter(state);
   
   return ({
     handleAllFeedsClick: async () => {
@@ -96,7 +100,7 @@ const bindHandlers = ({ state, dispatch }) => {
       });
       const feeds = await fetchJson(url);
       dispatch(actions.loadFeeds({ url, feeds }));
-    },
+    },    
     handleFolderClick: folder => async ev => {
       const url = urlWithParams(folder.href, {
         after,
@@ -126,11 +130,9 @@ const bindHandlers = ({ state, dispatch }) => {
     },
     handleMoreFeedsClick: ({ feedsUrl, feeds }) => async ev => {
       const lastFeed = feeds[feeds.length - 1];
-      const url = feedsUrl + `&before=${lastFeed.lastNewItem}`;
-      const url = urlWithParams(feedsUrl.hrefs.items, {
+      const url = urlWithParams(feedsUrl, {
         after,
-        before: lastItem.date,
-        limit: itemsLimit,
+        before: lastFeed.lastNewItem,
       });
       const newFeeds = await fetchJson(url);
       dispatch(actions.appendFeeds(newFeeds));

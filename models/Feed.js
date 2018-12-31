@@ -54,7 +54,6 @@ class Feed extends guid(BaseModel) {
     after = null,
     before = null,
     itemsLimit = 0,
-    itemsNew = false,
   } = {}) {
     let result = Feed.query();
 
@@ -89,15 +88,15 @@ class Feed extends guid(BaseModel) {
             .orderBy("date", "DESC")
             .orderBy("id", "DESC")
             .limit(itemsLimit);
-          if (itemsNew) {
-            builder.where("new", true);
+          if (after) {
+            builder.where("date", ">", after);
           }
         });
 
       const countItems = async row => {
         let query = row.$relatedQuery("items").count("* as itemsCount");
-        if (itemsNew) {
-          query = query.where("new", true);
+        if (after) {
+          query = query.where("date", ">", after);
         }
         return assign(row, {
           itemsRemaining: Math.max(
@@ -113,12 +112,20 @@ class Feed extends guid(BaseModel) {
     return result;
   }
 
-  static async queryFolders({} = {}) {
+  static async queryFolders({
+    after = null
+  } = {}) {
     const { API_BASE_URL } = Feed.config();
 
-    const feeds = await this.query()
+    let feeds = this.query()
       .orderBy("lastNewItem", "DESC")
       .orderBy("updated_at", "DESC");
+    
+    if (after) {
+      feeds = feeds.where("lastNewItem", ">", after);
+    }
+    
+    feeds = await feeds;
 
     const folders = {};
     for (let feed of feeds) {

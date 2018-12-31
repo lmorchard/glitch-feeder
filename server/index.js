@@ -33,7 +33,14 @@ module.exports = (options, context) => {
   const apiRouter = express.Router();
 
   apiRouter.route("/folders").get(async (req, res) => {
-    let result = Feed.queryFolders();
+    const {
+      after = null,
+      before = null,
+    } = req.query;
+    let result = Feed.queryFolders({
+      after,
+      before,
+    });
     res.json(await result);
   });
 
@@ -66,21 +73,28 @@ module.exports = (options, context) => {
 
   apiRouter.route("/feeds/:feedId/items").get(async (req, res) => {
     const { feedId } = req.params;
-    const { limit = 10, before = null } = req.query;
-    const result = FeedItem.queryWithParams({ limit, before, feedId });
+    const {
+      limit = 10,
+      after = null,
+      before = null,
+    } = req.query;
+    const result = FeedItem.queryWithParams({
+      limit,
+      after,
+      before,
+      feedId,
+    });
     res.json(await result);
   });
 
   apiRouter.route("/items").get(async (req, res) => {
     const {
       folder = null,
-      new: useNew = false,
       limit = 100,
       after = null,
       before = null,
     } = req.query;
     const result = FeedItem.queryWithParams({
-      useNew,
       folder,
       limit,
       after,
