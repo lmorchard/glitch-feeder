@@ -11,7 +11,7 @@ export const composeComponents = (...args) => {
   return hocs.reduce((acc, hoc) => hoc(acc), base);
 };
 
-export const withScrollResetOnCondition = conditionFn => WrappedComponent =>
+export const withScrollReset = conditionFn => WrappedComponent =>
   class extends Component {
     componentWillMount() {
       this.scrollRef = null;
@@ -20,9 +20,7 @@ export const withScrollResetOnCondition = conditionFn => WrappedComponent =>
     componentDidUpdate(prevProps, prevState) {
       const condition = conditionFn({
         prevProps,
-        prevState,
         props: this.props,
-        state: this.state,
         self: this,
       });
       if (condition && this.scrollRef) {
@@ -65,7 +63,7 @@ export const withClickOnScrollVisibility = conditionFn => WrappedComponent =>
     }
 
     handleScroll() {
-      if (!this.props.conditionFn(this.props)) {
+      if (!conditionFn(this.props)) {
         return;
       }
       if (this.scrollTimer) {

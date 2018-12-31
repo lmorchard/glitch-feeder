@@ -17,7 +17,7 @@ import {
 
 import {
   composeComponents,
-  withScrollResetOnCondition,
+  withScrollReset,
   withClickOnScrollVisibility,
 } from "../components/utils.js";
 
@@ -59,7 +59,9 @@ export async function init(appEl) {
 const App = ({ state, dispatch }) => {
   const handlers = bindHandlers({ state, dispatch });
   const props = Object.assign(
-    {},
+    {
+      enableInfiniteFeedScroll: true,
+    },
     mapToObject(Object.keys(selectors), name => selectors[name](state)),
     mapToObject(Object.keys(handlers), name => handlers[name])
   );
@@ -202,9 +204,9 @@ const FeedItem = ({ feed, handleClick }) =>
 
 const ItemsList = composeComponents(
   withClickOnScrollVisibility(
-    ({ enableInfiniteScroll = true }) => !props.disable
+    ({ enableInfiniteFeedScroll = true }) => enableInfiniteFeedScroll
   ),
-  withScrollResetOnCondition(
+  withScrollReset(
     ({ prevProps, props }) => prevProps.feeds[0].id !== props.feeds[0].id
   ),
   ({
