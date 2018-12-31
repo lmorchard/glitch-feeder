@@ -38,7 +38,9 @@ export async function init(appEl) {
   const apiRoot = await fetchJson("/api");
   store.dispatch(actions.setApiRoot(apiRoot));
 
-  const feedsUrl = apiRoot.hrefs.feeds + `?limit=${feedsLimit}&itemsLimit=${itemsLimit}&itemsNew=true`;
+  const feedsUrl =
+    apiRoot.hrefs.feeds +
+    `?limit=${feedsLimit}&itemsLimit=${itemsLimit}&itemsNew=true`;
   const [apiFeeds, apiFolders] = await Promise.all([
     fetchJson(feedsUrl),
     fetchJson(apiRoot.hrefs.folders),
@@ -61,7 +63,8 @@ const App = ({ state, dispatch }) => {
 const bindHandlers = ({ state, dispatch }) => ({
   handleAllFeedsClick: async () => {
     const apiRoot = selectors.apiRoot(state);
-    const url = apiRoot.hrefs.feeds + `?limit=${feedsLimit}&itemsLimit=${itemsLimit}`;
+    const url =
+      apiRoot.hrefs.feeds + `?limit=${feedsLimit}&itemsLimit=${itemsLimit}`;
     const feeds = await fetchJson(url);
     dispatch(actions.loadFeeds({ url, feeds }));
   },
@@ -77,14 +80,13 @@ const bindHandlers = ({ state, dispatch }) => ({
   },
   handleMoreItemsClick: feed => async ev => {
     const lastItem = feed.items[feed.items.length - 1];
-    const url = feed.hrefs.items + `?limit=${feedsLimit}&itemsLimit=${itemsLimit}&before=${lastItem.date}`;
+    const url =
+      feed.hrefs.items +
+      `?limit=${feedsLimit}&itemsLimit=${itemsLimit}&before=${lastItem.date}`;
     const items = await fetchJson(url);
     dispatch(actions.appendFeedItems({ feedId: feed.id, items }));
   },
-  handleMoreFeedsClick: ({
-    feedsUrl,
-    feeds,
-  }) => async ev => {
+  handleMoreFeedsClick: ({ feedsUrl, feeds }) => async ev => {
     const lastFeed = feeds[feeds.length - 1];
     const url = feedsUrl + `&before=${lastFeed.lastNewItem}`;
     const newFeeds = await fetchJson(url);
@@ -222,7 +224,7 @@ const withScrollResetOnCondition = (conditionFn, WrappedComponent) =>
     }
   };
 
-const withClickOnScrollVisibility = (WrappedComponent) =>
+const withClickOnScrollVisibility = WrappedComponent =>
   class extends Component {
     constructor(props) {
       super(props);
@@ -243,19 +245,23 @@ const withClickOnScrollVisibility = (WrappedComponent) =>
         clearTimeout(this.scrollTimer);
       }
       this.scrollTimer = setTimeout(() => {
+        const visible = 
+          this.scrollRef.scrollTop + this.scrollRef.offsetHeight + this.scrollRef.offsetTop
         this.scrollTimer = null;
+        console.log(this.clickableRef);
+        console.log(this.scrollRef);
         console.log(
-          this.clickableRef,
-          window.scrollTop,
-          this.clickableRef.scrollTop,
+          this.clickableRef.offsetTop,
+          this.scrollRef.scrollTop + this.scrollRef.offsetHeight + this.scrollRef.offsetTop,
         );
-      }, 500);
+      }, 100);
     }
     render(props) {
       return h(
         WrappedComponent,
         assign(
           {
+            onClickableScrollRef: ref => (this.scrollRef = ref),
             onClickableRef: ref => (this.clickableRef = ref),
           },
           props
@@ -264,61 +270,72 @@ const withClickOnScrollVisibility = (WrappedComponent) =>
     }
   };
 
-const ItemsList = withScrollResetOnCondition(
-  ({ prevProps, props }) => 
-    prevProps.feeds.length === 0 ||
-    props.feeds.length === 0 ||
-    prevProps.feeds[0].id !== props.feeds[0].id,
-  ({
-    feedsUrl,
-    feeds = [],
-    handleMoreItemsClick,
-    handleMoreFeedsClick,
-    onScrollRef,
-  }) => {
-    return h(
-      "section",
-      { className: "itemslist" },
-      h(
-        "ul",
-        { className: "feeds", ref: onScrollRef },
-        feeds
-          .filter(feed => feed.items.length > 0)
-          .map(feed =>
-            h(
-              "li",
-              { className: "feed" },
-              h(
-                "span",
-                { className: "feedtitle" },
-                `${feed.title} (${feed.lastNewItem})`
-              ),
-              h(
-                "ul",
-                { className: "items" },
-                feed.items.map(item => h(Item, item))
-              ),
-              h(
-                "button",
-                {
-                  className: "moreItems",
-                  onClick: handleMoreItemsClick(feed),
-                },
-                "More items"
-              )
-            )
-          ),
+const ItemsList = withClickOnScrollVisibility(
+  withScrollResetOnCondition(
+    ({ prevProps, props }) =>
+      prevProps.feeds.length === 0 ||
+      props.feeds.length === 0 ||
+      prevProps.feeds[0].id !== props.feeds[0].id,
+    ({
+      feedsUrl,
+      feeds = [],
+      handleMoreItemsClick,
+      handleMoreFeedsClick,
+      onScrollRef,
+      onClickableScrollRef,
+      onClickableRef,
+    }) => {
+      return h(
+        "section",
+        { className: "itemslist" },
         h(
-          "button",
+          "ul",
           {
-            className: "moreFeeds",
-            onClick: handleMoreFeedsClick({ feedsUrl, feeds }),
+            className: "feeds",
+            ref: ref => {
+              onScrollRef(ref);
+              onClickableScrollRef(ref);
+            },
           },
-          "More feeds"
+          feeds
+            .filter(feed => feed.items.length > 0)
+            .map(feed =>
+              h(
+                "li",
+                { className: "feed" },
+                h(
+                  "span",
+                  { className: "feedtitle" },
+                  `${feed.title} (${feed.lastNewItem})`
+                ),
+                h(
+                  "ul",
+                  { className: "items" },
+                  feed.items.map(item => h(Item, item))
+                ),
+                h(
+                  "button",
+                  {
+                    className: "moreItems",
+                    onClick: handleMoreItemsClick(feed),
+                  },
+                  "More items"
+                )
+              )
+            ),
+          h(
+            "button",
+            {
+              className: "moreFeeds",
+              onClick: handleMoreFeedsClick({ feedsUrl, feeds }),
+              ref: onClickableRef,
+            },
+            "More feeds"
+          )
         )
-      )
-    );
-  }
+      );
+    }
+  )
 );
 
 const Item = ({ title, link, summary, text, date, pubdate, created_at }) =>
