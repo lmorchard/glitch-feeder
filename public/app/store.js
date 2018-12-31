@@ -91,13 +91,21 @@ export const reducers = {
       ],
       [actions.appendFeedItems]: (
         state,
-        { payload: { feedId, items: { itemsCount, items } } }
+        {
+          payload: {
+            feedId,
+            items: { itemsRemaining, items },
+          },
+        }
       ) => {
         const idx = state.map(feed => feed.id).indexOf(feedId);
         if (idx === -1) return state;
         const feed = state[idx];
         return assign([], state, {
-          [idx]: assign({}, feed, { items: [...feed.items, ...items] }),
+          [idx]: assign({}, feed, {
+            itemsRemaining,
+            items: [...feed.items, ...items],
+          }),
         });
       },
     },

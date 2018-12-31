@@ -252,7 +252,7 @@ const ItemsList = composeComponents(
                   className: "moreItems",
                   onClick: handleMoreItemsClick(feed),
                 },
-                "More items"
+                `More items (${feed.itemsRemaining})`
               )
             )
           ),

@@ -101,10 +101,13 @@ class Feed extends guid(BaseModel) {
 
     result = result.map(async row =>
       assign(row, {
-        itemsCount: (await row
-          .$relatedQuery("items")
-          .count("* as itemsCount")
-          .first()).itemsCount,
+        itemsRemaining: Math.max(
+          0,
+          (await row
+            .$relatedQuery("items")
+            .count("* as itemsCount")
+            .first()).itemsCount - itemsLimit
+        ),
       })
     );
 
