@@ -6,12 +6,17 @@ import {
 
 const { assign } = Object;
 
-export 
-export const withScrollResetOnCondition = (conditionFn, WrappedComponent) =>
+export const composeComponents = (...args) => {
+  const [base, ...hocs] = args.reverse();
+  return hocs.reduce((acc, hoc) => hoc(acc), base);
+};
+
+export const withScrollResetOnCondition = conditionFn => WrappedComponent =>
   class extends Component {
     componentWillMount() {
       this.scrollRef = null;
     }
+
     componentDidUpdate(prevProps, prevState) {
       const condition = conditionFn({
         prevProps,
@@ -24,6 +29,7 @@ export const withScrollResetOnCondition = (conditionFn, WrappedComponent) =>
         this.scrollRef.scrollTop = 0;
       }
     }
+
     render(props) {
       return h(
         WrappedComponent,
@@ -37,7 +43,7 @@ export const withScrollResetOnCondition = (conditionFn, WrappedComponent) =>
     }
   };
 
-export const withClickOnScrollVisibility = WrappedComponent =>
+export const withClickOnScrollVisibility = conditionFn => WrappedComponent =>
   class extends Component {
     constructor(props) {
       super(props);
@@ -45,16 +51,23 @@ export const withClickOnScrollVisibility = WrappedComponent =>
       this.scrollTimer = null;
       this.handleScroll = this.handleScroll.bind(this);
     }
+
     componentWillMount() {
       this.scrollRef = null;
     }
+
     componentDidMount() {
       this.scrollRef.addEventListener("scroll", this.handleScroll);
     }
+
     conponentWillUnmount() {
       this.scrollRef.removeEventListener("scroll", this.handleScroll);
     }
+
     handleScroll() {
+      if (!this.props.conditionFn(this.props)) {
+        return;
+      }
       if (this.scrollTimer) {
         clearTimeout(this.scrollTimer);
       }
@@ -75,6 +88,7 @@ export const withClickOnScrollVisibility = WrappedComponent =>
         }
       }, 100);
     }
+
     render(props) {
       return h(
         WrappedComponent,

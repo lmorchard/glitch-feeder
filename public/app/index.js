@@ -16,6 +16,7 @@ import {
 } from "./utils.js";
 
 import {
+  composeComponents,
   withScrollResetOnCondition,
   withClickOnScrollVisibility,
 } from "../components/utils.js";
@@ -199,72 +200,72 @@ const FeedItem = ({ feed, handleClick }) =>
     )
   );
 
-const ItemsList = withClickOnScrollVisibility(
+const ItemsList = composeComponents(
+  withClickOnScrollVisibility(
+    ({ enableInfiniteScroll = true }) => !props.disable
+  ),
   withScrollResetOnCondition(
-    ({ prevProps, props }) =>
-      prevProps.feeds.length === 0 ||
-      props.feeds.length === 0 ||
-      prevProps.feeds[0].id !== props.feeds[0].id,
-    ({
-      feedsUrl,
-      feeds = [],
-      handleMoreItemsClick,
-      handleMoreFeedsClick,
-      onScrollRef,
-      onClickableScrollRef,
-      onClickableRef,
-    }) => {
-      return h(
-        "section",
-        { className: "itemslist" },
-        h(
-          "ul",
-          {
-            className: "feeds",
-            ref: ref => {
-              onScrollRef(ref);
-              onClickableScrollRef(ref);
-            },
+    ({ prevProps, props }) => prevProps.feeds[0].id !== props.feeds[0].id
+  ),
+  ({
+    feedsUrl,
+    feeds = [],
+    handleMoreItemsClick,
+    handleMoreFeedsClick,
+    onScrollRef,
+    onClickableScrollRef,
+    onClickableRef,
+  }) => {
+    return h(
+      "section",
+      { className: "itemslist" },
+      h(
+        "ul",
+        {
+          className: "feeds",
+          ref: ref => {
+            onScrollRef(ref);
+            onClickableScrollRef(ref);
           },
-          feeds
-            .filter(feed => feed.items.length > 0)
-            .map(feed =>
+        },
+        feeds
+          .filter(feed => feed.items.length > 0)
+          .map(feed =>
+            h(
+              "li",
+              { className: "feed" },
               h(
-                "li",
-                { className: "feed" },
-                h(
-                  "span",
-                  { className: "feedtitle" },
-                  `${feed.title} (${feed.lastNewItem})`
-                ),
-                h(
-                  "ul",
-                  { className: "items" },
-                  feed.items.map(item => h(Item, item))
-                ),
-                h(
-                  "button",
-                  {
-                    className: "moreItems",
-                    onClick: handleMoreItemsClick(feed),
-                  },
-                  "More items"
-                )
+                "span",
+                { className: "feedtitle" },
+                `${feed.title} (${feed.lastNewItem})`
+              ),
+              h(
+                "ul",
+                { className: "items" },
+                feed.items.map(item => h(Item, item))
+              ),
+              h(
+                "button",
+                {
+                  className: "moreItems",
+                  onClick: handleMoreItemsClick(feed),
+                },
+                "More items"
               )
-            ),
-          h(
-            "button",
-            {
-              className: "moreFeeds",
-              onClick: handleMoreFeedsClick({ feedsUrl, feeds }),
-              ref: onClickableRef,
-            },
-            "More feeds"
-          )
+            )
+          ),
+        h(
+          "button",
+          {
+            className: "moreFeeds",
+            onClick: handleMoreFeedsClick({ feedsUrl, feeds }),
+            ref: onClickableRef,
+          },
+          "More feeds"
         )
-      );
-    }
-  )
+      )
+    );
+  }
 );
 
 const Item = ({ title, link, summary, text, date, pubdate, created_at }) =>
