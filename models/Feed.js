@@ -112,7 +112,7 @@ class Feed extends guid(BaseModel) {
     return result;
   }
 
-  static async queryFolders({ after = null } = {}) {
+  static async queryFolders({ after = null, before = null } = {}) {
     const { API_BASE_URL } = Feed.config();
 
     let feeds = this.query()
@@ -121,6 +121,9 @@ class Feed extends guid(BaseModel) {
 
     if (after) {
       feeds = feeds.where("lastNewItem", ">", after);
+    }
+    if (before) {
+      feeds = feeds.where("lastNewItem", "<", before);
     }
 
     feeds = await feeds;

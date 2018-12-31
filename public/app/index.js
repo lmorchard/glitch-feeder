@@ -6,20 +6,9 @@ import {
 
 import { createAppStore, actions, selectors } from "./store.js";
 
-import {
-  addEventListeners,
-  mapToObject,
-  indexBy,
-  fetchJson,
-  cmp,
-  rcmp,
-  paramsFromUrl,
-  urlWithParams,
-} from "./utils.js";
+import { fetchJson, paramsFromUrl, urlWithParams } from "./utils.js";
 
 import App from "../components/App.js";
-
-const { assign } = Object;
 
 const feedsLimit = 7;
 const itemsLimit = 10;
@@ -70,15 +59,17 @@ export async function init(appEl) {
   dispatch(actions.setAppLoading(false));
 
   const renderApp = () => {
+    // TODO: Need something more flexible here?
     const afterLinks = [
       ["1 hour ago", 1 * 60 * 60 * 1000],
       ["4 hours ago", 4 * 60 * 60 * 1000],
+      ["8 hours ago", 8 * 60 * 60 * 1000],
       ["12 hours ago", 12 * 60 * 60 * 1000],
       ["1 day ago", 1 * 24 * 60 * 60 * 1000],
-      ["2 days ago", 2 * 24 * 60 * 60 * 1000],
+      ["3 days ago", 3 * 24 * 60 * 60 * 1000],
       ["7 days ago", 7 * 24 * 60 * 60 * 1000],
-    ].map(([n, offset]) => [
-      n,
+    ].map(([name, offset]) => [
+      name,
       new Date(Date.now() - offset).toISOString(),
       urlWithParams(window.location, {
         after: new Date(Date.now() - offset).toISOString(),
