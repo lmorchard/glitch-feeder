@@ -97,10 +97,8 @@ class Feed extends guid(BaseModel) {
             builder.where("new", true);
           }
         });
-    }
-
-    result = result.map(async row =>
-      assign(row, {
+    
+      const countItems = async row => assign(row, {
         itemsRemaining: Math.max(
           0,
           (await row
@@ -108,9 +106,13 @@ class Feed extends guid(BaseModel) {
             .count("* as itemsCount")
             .first()).itemsCount - itemsLimit
         ),
-      })
-    );
+      });
 
+      result = !id
+        ? result.map(countItems)
+        : countItems(result);
+    }
+    
     return result;
   }
 
