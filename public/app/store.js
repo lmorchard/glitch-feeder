@@ -31,53 +31,61 @@ export const actions = createActions(
   "setCurrentFeed",
   "loadFolders",
   "loadFeeds",
-  "appendFeedItems",
+  "appendFeedItems"
 );
 
 export const reducers = {
-  ui: handleActions({
-    [actions.setAppLoading]: (state, { payload: appLoading = false }) =>
-      assign({}, state, { appLoading }),
-    [actions.setCurrentFeed]: (state, { payload: feed }) =>
-      assign({}, state, { currentFeed: feed }),
-  }, defaultState.ui),
-  
-  api: handleActions({
-    [actions.setApiRoot]: (state, { payload: root }) =>
-      assign({}, state, { root }),
-  }, defaultState.api),
-  
-  folders: handleActions({
-    [actions.loadFolders]: (state, { payload: folders = {} }) => folders
-  }, defaultState.folders),
-  
-  feeds: handleActions({
-    [actions.loadFeeds]: (state, { payload: feeds = {} }) => feeds,
-    [actions.appendFeedItems]: (state, { payload: { feed, items = [] } }) => {
-      const feeds = state.feeds;
-      
-      for (let idx = 0; idx < feeds.length; idx++) {
-      
-      }
-      
-      const existingFeed = state[feed.id];
-      if (!existingFeed) { return state; }
-      
-      const feedIdx = 0;
-      for (let idx = 0; idx < 
-      return assign(
-        {},
+  ui: handleActions(
+    {
+      [actions.setAppLoading]: (state, { payload: appLoading = false }) =>
+        assign({}, state, { appLoading }),
+      [actions.setCurrentFeed]: (state, { payload: feed }) =>
+        assign({}, state, { currentFeed: feed }),
+    },
+    defaultState.ui
+  ),
+
+  api: handleActions(
+    {
+      [actions.setApiRoot]: (state, { payload: root }) =>
+        assign({}, state, { root }),
+    },
+    defaultState.api
+  ),
+
+  folders: handleActions(
+    {
+      [actions.loadFolders]: (state, { payload: folders = {} }) => folders,
+    },
+    defaultState.folders
+  ),
+
+  feeds: handleActions(
+    {
+      [actions.loadFeeds]: (state, { payload: feeds = {} }) => feeds,
+      [actions.appendFeedItems]: (
         state,
         {
-          [feed.id]: assign(
-            {},
-            feed,
-            { items: [ ...feed.items, ...items ] }
-          ),
+          payload: {
+            feedId,
+            items = [],
+          },
         }
-      );
-    }
-  }, defaultState.feeds),
+      ) => {
+        const feedIdx = state.map(feed => feed.id).indexOf(feedId);        
+        if (feedIdx === -1) return state;
+        
+        return Object.assign([], state
+
+        return [
+          ...feeds.slice(0, feedIdx),
+          assign({}, feed, { items: [...feed.items, ...items] }),
+          ...feeds.slice(feedIdx + 1),
+        ];
+      },
+    },
+    defaultState.feeds
+  ),
 };
 
 const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;

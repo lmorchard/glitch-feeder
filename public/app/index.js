@@ -73,7 +73,7 @@ const handlers = {
     const url = feed.hrefs.items + `?limit=10&before=${lastItem.date}`;
     const items = await fetchJson(url);
     console.log("RESULT", feed, items);
-    dispatch(actions.appendFeedItems({ feed, items }));
+    dispatch(actions.appendFeedItems({ feedId: feed.id, items }));
   },
 };
 
