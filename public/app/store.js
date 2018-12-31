@@ -91,7 +91,7 @@ export const reducers = {
       ],
       [actions.appendFeedItems]: (
         state,
-        { payload: { feedId, items = [] } }
+        { payload: { feedId, items: { itemsCount, items } } }
       ) => {
         const idx = state.map(feed => feed.id).indexOf(feedId);
         if (idx === -1) return state;

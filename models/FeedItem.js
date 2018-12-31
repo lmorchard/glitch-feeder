@@ -61,7 +61,7 @@ class FeedItem extends guid(BaseModel) {
     }
   }
 
-  static queryWithParams({
+  static async queryWithParams({
     useNew = false,
     folder = false,
     feedId = null,
@@ -69,29 +69,40 @@ class FeedItem extends guid(BaseModel) {
     before = null,
     limit = 10,
   }) {
-    let result = this.query()
-      .eager("feed")
-      .orderBy("date", "DESC")
-      .orderBy("id", "DESC")
-      .limit(limit);
+    const applyParams = result => {
+      if (after) {
+        result = result.where("date", ">", after);
+      }
+      if (before) {
+        result = result.where("date", "<", before);
+      }
+      if (feedId) {
+        result = result.where({ feed_id: feedId });
+      }
+      if (useNew) {
+        result = result.where({ new: true });
+      }
+      if (folder) {
+        result = result.joinRelation("feed").where("feed.folder", folder);
+      }
+      return result;
+    };
 
-    if (after) {
-      result = result.where("date", ">", after);
-    }
-    if (before) {
-      result = result.where("date", "<", before);
-    }
-    if (feedId) {
-      result = result.where({ feed_id: feedId });
-    }
-    if (useNew) {
-      result = result.where({ new: true });
-    }
-    if (folder) {
-      result = result.joinRelation("feed").where("feed.folder", folder);
-    }
+    const items = await applyParams(
+      this.query()
+        .eager("feed")
+        .orderBy("date", "DESC")
+        .orderBy("id", "DESC")
+        .limit(limit)
+    );
 
-    return result;
+    const { itemsCount } = await applyParams(
+      this.query()
+        .count("* as itemsCount")
+        .first()
+    );
+
+    return { items, itemsCount };
   }
 
   // TODO: flag in return value whether item exists / updated / new
