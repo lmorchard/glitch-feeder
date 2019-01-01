@@ -284,14 +284,19 @@ class Feed extends guid(BaseModel) {
       } else {
         const contentType = response.headers.get("content-type");
         const contentTypeParams = getParams(contentType || "");
-        const { charset: prevCharset } = attrs.json.charset;
-        const charset = attrs.json.charset = contentTypeParams.charset;
+        const { charset: prevCharset } = attrs.json || {};
+        const charset = attrs.json.charset = contentTypeParams.charset || prevCharset;
+        log.verbose(
+          "Charset %s for %s",
+          charset,
+          title
+        );
 
         let bodyStream = response.body;
         if (charset && !/utf-*8/i.test(charset)) {
           const iconv = new Iconv(charset, "utf-8");
-          log.debug(
-            "Converting from charset %s to utf-8 for %d",
+          log.verbose(
+            "Converting from charset %s to utf-8 for %s",
             charset,
             title
           );
