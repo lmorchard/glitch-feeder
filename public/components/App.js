@@ -109,9 +109,27 @@ const AppLayout = props =>
 const HeaderNav = ({
   queueStats,
   readAfter,
-  afterLinks,
+  windowLocationHref,
   handleRefreshFeedsClick,
 }) => {
+  // TODO: Need something more flexible here?
+  const afterLinks = [
+    ["1 hour ago", 1 * 60 * 60 * 1000],
+    ["4 hours ago", 4 * 60 * 60 * 1000],
+    ["8 hours ago", 8 * 60 * 60 * 1000],
+    ["12 hours ago", 12 * 60 * 60 * 1000],
+    ["1 day ago", 1 * 24 * 60 * 60 * 1000],
+    ["3 days ago", 3 * 24 * 60 * 60 * 1000],
+    ["7 days ago", 7 * 24 * 60 * 60 * 1000],
+    ["14 days ago", 7 * 24 * 60 * 60 * 1000],
+  ].map(([name, offset]) => [
+    name,
+    new Date(Date.now() - offset).toISOString(),
+    urlWithParams(windowLocationHref, {
+      after: new Date(Date.now() - offset).toISOString(),
+    }),
+  ]);
+
   afterLinks.sort(rcmp(1));
   let selectedTime = null;
   for (let [name, time] of afterLinks) {

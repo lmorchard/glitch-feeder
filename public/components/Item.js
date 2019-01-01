@@ -9,6 +9,9 @@ export const Item = ({
   pubdate,
   created_at,
   json,
+  hrefs: {
+    html,
+  },
 }) =>
   h(
     "li",
@@ -16,7 +19,6 @@ export const Item = ({
     h(
       "div",
       { className: "details" },
-      json.image && h("img", { href: json.image, height: "200" }),
       title && h("a", { className: "title", href: link }, title),
       text &&
         h(
@@ -24,7 +26,11 @@ export const Item = ({
           { className: "text" },
           text.length < 320 ? text : text.substr(0, 320) + "[...]"
         ),
-      // h("pre", null, JSON.stringify(json, null, " "))
+      html &&
+        h(
+          "iframe",
+          { src: html, frameBorder: "0", width: "100%", height: "150" }
+         )
     ),
     h(
       "div",
