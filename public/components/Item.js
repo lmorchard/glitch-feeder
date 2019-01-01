@@ -26,11 +26,6 @@ export const Item = ({
           { className: "text" },
           text.length < 320 ? text : text.substr(0, 320) + "[...]"
         ),
-      html &&
-        h(
-          "iframe",
-          { src: html, frameBorder: "0", width: "100%", height: "150" }
-         )
     ),
     h(
       "div",
