@@ -250,7 +250,10 @@ class Feed extends guid(BaseModel) {
     try {
       const fetchOptions = {
         method: "GET",
-        headers: {},
+        headers: {
+          "user-agent": "glitch-feeder/1.0",
+          "accept": "application/rss+xml, text/rss+xml, text/xml",
+        },
         signal: controller.signal,
       };
 
@@ -269,6 +272,8 @@ class Feed extends guid(BaseModel) {
       // Finally, fire off the GET request for the feed resource.
       const response = await fetch(resourceUrl, fetchOptions);
       clearTimeout(abortTimeout);
+      
+      const encoding = response.headers.get("content-encoding");
 
       // Response headers are a Map - convert to plain object
       const headers = {};

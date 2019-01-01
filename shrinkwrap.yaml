@@ -5,6 +5,7 @@ dependencies:
   express: 4.16.4
   express-async-errors: 3.1.1
   feedparser: 2.2.9
+  iconv: 2.3.2
   knex: 0.16.3
   node-fetch: 2.3.0
   objection: 1.4.0
@@ -1501,6 +1502,16 @@ packages:
       node: '>=0.10.0'
     resolution:
       integrity: sha512-v3MXnZAcvnywkTUEZomIActle7RXXeedOR31wwl7VlyoXO4Qi9arvSenNQWne1TcRwhCL1HwLI21bEqdpj8/rA==
+  /iconv/2.3.2:
+    dependencies:
+      nan: 2.12.1
+      safer-buffer: 2.1.2
+    dev: false
+    engines:
+      node: '>=0.8.0'
+    requiresBuild: true
+    resolution:
+      integrity: sha512-BDZ6vxEFhU6oWrtKEsEREMrxjDn2FccWHVMicUrgq3Ngij9jvh/jsP90K1UbMIavagkJ7EOagr+cJh8P9Jq5Qw==
   /ignore-walk/3.0.1:
     dependencies:
       minimatch: 3.0.4
@@ -2155,6 +2166,10 @@ packages:
     dev: false
     resolution:
       integrity: sha512-bAdJv7fBLhWC+/Bls0Oza+mvTaNQtP+1RyhhhvD95pgUJz6XM5IzgmxOkItJ9tkoCiplvAnXI1tNmmUD/eScyA==
+  /nan/2.12.1:
+    dev: false
+    resolution:
+      integrity: sha512-JY7V6lRkStKcKTvHO5NVSQRv+RV+FIL5pvDoLiAtSL9pKlC5x9PKQcZDsq7m4FO4d57mkhC6Z+QhAh3Jdk5JFw==
   /nanomatch/1.2.13:
     dependencies:
       arr-diff: 4.0.0
@@ -3525,6 +3540,7 @@ specifiers:
   express: ^4.16.4
   express-async-errors: ^3.1.1
   feedparser: ^2.2.9
+  iconv: ^2.3.2
   knex: ^0.16.3
   node-fetch: ^2.3.0
   objection: ^1.4.0
