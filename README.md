@@ -3,6 +3,12 @@ Glitch Feeder
 
 Someday, this wants to grow up to be a simple remixable feed reader.
 
+## Getting Started
+
+* [Remix this project on Glitch](https://glitch.com/edit/#!/remix/lmo-feeder?utm_source=lmo-feeder&utm_medium=button&utm_campaign=glitchButton)
+* Open a command line shell with Logs > Console and type these commands:
+  * `
+
 ## TODO
 
 - Periodically purge defunct items and vacuum() to clean DB
