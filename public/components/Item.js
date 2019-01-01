@@ -9,9 +9,7 @@ export const Item = ({
   pubdate,
   created_at,
   json,
-  hrefs: {
-    html,
-  },
+  hrefs: { html },
 }) =>
   h(
     "li",
@@ -25,7 +23,7 @@ export const Item = ({
           "span",
           { className: "text" },
           text.length < 320 ? text : text.substr(0, 320) + "[...]"
-        ),
+        )
     ),
     h(
       "div",

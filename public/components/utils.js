@@ -56,10 +56,12 @@ export const withClickOnScrollVisibility = conditionFn => WrappedComponent =>
 
     componentDidMount() {
       this.scrollRef.addEventListener("scroll", this.handleScroll);
+      window.addEventListener("scroll", this.handleScroll);
     }
 
     conponentWillUnmount() {
       this.scrollRef.removeEventListener("scroll", this.handleScroll);
+      window.removeEventListener("scroll", this.handleScroll);
     }
 
     handleScroll() {
@@ -74,17 +76,10 @@ export const withClickOnScrollVisibility = conditionFn => WrappedComponent =>
       }
       this.scrollTimer = setTimeout(() => {
         this.scrollTimer = null;
-        // TODO: Add a margin? i.e. when the button is just off screen by 10px, click?
-        const scrollBottom =
-          this.scrollRef.scrollTop +
-          this.scrollRef.offsetHeight +
-          this.scrollRef.offsetTop;
-        if (scrollBottom < this.clickableRef.offsetTop) {
+        if (!isElementInViewport(this.clickableRef)) {
           this.isVisible = false;
         } else {
-          if (this.isVisible) {
-            return;
-          }
+          if (this.isVisible) return;
           this.isVisible = true;
           this.clickableRef.click();
         }
@@ -104,3 +99,14 @@ export const withClickOnScrollVisibility = conditionFn => WrappedComponent =>
       );
     }
   };
+
+function isElementInViewport(el) {
+  var rect = el.getBoundingClientRect();
+  return (
+    rect.top >= 0 &&
+    rect.left >= 0 &&
+    rect.bottom <=
+      (window.innerHeight || document.documentElement.clientHeight) &&
+    rect.right <= (window.innerWidth || document.documentElement.clientWidth)
+  );
+}
