@@ -242,8 +242,13 @@ class Feed extends guid(BaseModel) {
     }
 
     try {
-      const response = await fetchResource(resourceUrl, prevHeaders);
-      
+      const response = await fetchResource({
+        resourceUrl,
+        prevHeaders,
+        force,
+        timeout,
+      });
+
       // Response headers are a Map - convert to plain object
       const headers = {};
       for (let [k, v] of response.headers) {
@@ -279,15 +284,15 @@ class Feed extends guid(BaseModel) {
       } else {
         const contentType = response.headers.get("content-type");
         const contentTypeParams = getParams(contentType || "");
-        const charset = contentTypeParams.charset;
-        
+        const charset = attrs.json.charset = contentTypeParams.charset;
+
         let bodyStream = response.body;
         if (charset && !/utf-*8/i.test(charset)) {
-          const iconv = new Iconv(charset, 'utf-8');
+          const iconv = new Iconv(charset, "utf-8");
           log.debug(
-            'Converting from charset %s to utf-8 for %d',
+            "Converting from charset %s to utf-8 for %d",
             charset,
-            title,
+            title
           );
           bodyStream = bodyStream.pipe(iconv);
         }
@@ -368,8 +373,6 @@ class Feed extends guid(BaseModel) {
     } catch (err) {
       log.error("Feed poll failed for %s - %s", title, err, err.stack);
 
-      clearTimeout(abortTimeout);
-
       Object.assign(attrs, {
         lastValidated: timeStart,
         lastError: err,
@@ -384,6 +387,47 @@ class Feed extends guid(BaseModel) {
     } catch (err) {
       log.error("Feed update failed for %s - %s", title, err, err.stack);
     }
+  }
+}
+
+async function fetchResource({
+  resourceUrl,
+  prevHeaders,
+  timeout = 10000,
+  force = false,
+}) {
+  const fetchOptions = {
+    method: "GET",
+    headers: {
+      "user-agent": "glitch-feeder/1.0 (+https://glitch.com/~lmo-feeder)",
+      accept: "application/rss+xml, text/rss+xml, text/xml",
+    },
+  };
+
+  // Set up an abort timeout - we're not waiting forever for a feed
+  const controller = new AbortController();
+  const abortTimeout = setTimeout(() => controller.abort(), parseInt(timeout));
+  fetchOptions.signal = controller.signal;
+
+  // Set up some headers for conditional GET so we can see
+  // some of those sweet 304 Not Modified responses
+  if (!force) {
+    if (prevHeaders.etag) {
+      fetchOptions.headers["If-None-Match"] = prevHeaders.etag;
+    }
+    if (prevHeaders["last-modified"]) {
+      fetchOptions.headers["If-Modified-Match"] = prevHeaders["last-modified"];
+    }
+  }
+
+  try {
+    // Finally, fire off the GET request for the feed resource.
+    const response = await fetch(resourceUrl, fetchOptions);
+    clearTimeout(abortTimeout);
+    return response;
+  } catch (err) {
+    clearTimeout(abortTimeout);
+    throw err;
   }
 }
 
@@ -431,8 +475,10 @@ const parseFeedStream = ({ stream, resourceUrl }, context) =>
   });
 
 function getParams(str) {
-  var params = str.split(';').reduce(function (params, param) {
-    var parts = param.split('=').map(function (part) { return part.trim(); });
+  var params = str.split(";").reduce(function(params, param) {
+    var parts = param.split("=").map(function(part) {
+      return part.trim();
+    });
     if (parts.length === 2) {
       params[parts[0]] = parts[1];
     }

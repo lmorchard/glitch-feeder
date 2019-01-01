@@ -28,7 +28,7 @@ export async function init(appEl) {
   };
   setInterval(pollStatus, 5000);
   pollStatus();
-  
+
   const renderApp = () => {
     render(
       h(App, {

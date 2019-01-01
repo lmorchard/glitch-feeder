@@ -39,7 +39,7 @@ class BaseModel extends DbErrors(Model) {
     let model;
     try {
       model = await this.query().insert(attrs);
-      log.debug("Inserted model", uniqueAttrs);
+      log.debug("Inserted model %s", JSON.stringify(uniqueAttrs));
     } catch (err) {
       if (err instanceof UniqueViolationError) {
         // HACK: Only try an update on an insert failed on constraint
@@ -49,7 +49,7 @@ class BaseModel extends DbErrors(Model) {
         model = await this.query()
           .where(uniqueAttrs)
           .first();
-        log.debug("Updated model", uniqueAttrs);
+        log.debug("Updated model %s", JSON.stringify(uniqueAttrs));
       } else {
         throw err;
       }
