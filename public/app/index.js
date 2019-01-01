@@ -20,16 +20,6 @@ export async function init(appEl) {
   const apiRoot = await fetchJson("/api");
   dispatch(actions.setApiRoot(apiRoot));
 
-  // Quick & dirty ?after parameter parsing
-  // TODO: Handle this more gracefully
-  const url = new URL(window.location);
-  const params = new URLSearchParams(url.search);
-  let after = new Date(Date.now() - 12 * 60 * 60 * 1000).toISOString();
-  if (params.has("after")) {
-    after = params.get("after");
-  }
-  dispatch(actions.setReadAfter(after));
-
   // Quick & dirty periodic queue status poll
   // TODO: Switch this over to a websocket!
   const pollStatus = async () => {
@@ -38,26 +28,7 @@ export async function init(appEl) {
   };
   setInterval(pollStatus, 5000);
   pollStatus();
-
-  const feedsUrl = urlWithParams(apiRoot.hrefs.feeds, {
-    after,
-    limit: feedsLimit,
-    itemsLimit: itemsLimit,
-  });
-
-  const foldersUrl = urlWithParams(apiRoot.hrefs.folders, {
-    after,
-  });
-
-  dispatch(
-    actions.loadFeeds({
-      url: feedsUrl,
-      feeds: await fetchJson(feedsUrl),
-    })
-  );
-  dispatch(actions.loadFolders(await fetchJson(foldersUrl)));
-  dispatch(actions.setAppLoading(false));
-
+  
   const renderApp = () => {
     render(
       h(App, {
@@ -77,6 +48,35 @@ export async function init(appEl) {
   // TODO: Work out how to use preact-redux
   store.subscribe(renderApp);
   renderApp();
+
+  // Quick & dirty ?after parameter parsing
+  // TODO: Handle this more gracefully
+  const url = new URL(window.location);
+  const params = new URLSearchParams(url.search);
+  let after = new Date(Date.now() - 12 * 60 * 60 * 1000).toISOString();
+  if (params.has("after")) {
+    after = params.get("after");
+  }
+  dispatch(actions.setReadAfter(after));
+
+  const feedsUrl = urlWithParams(apiRoot.hrefs.feeds, {
+    after,
+    limit: feedsLimit,
+    itemsLimit: itemsLimit,
+  });
+
+  const foldersUrl = urlWithParams(apiRoot.hrefs.folders, {
+    after,
+  });
+
+  dispatch(
+    actions.loadFeeds({
+      url: feedsUrl,
+      feeds: await fetchJson(feedsUrl),
+    })
+  );
+  dispatch(actions.loadFolders(await fetchJson(foldersUrl)));
+  dispatch(actions.setAppLoading(false));
 }
 
 export default { init };
