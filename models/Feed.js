@@ -284,18 +284,22 @@ class Feed extends guid(BaseModel) {
       } else {
         const contentType = response.headers.get("content-type");
         const contentTypeParams = getParams(contentType || "");
-        const { charset: prevCharset } = attrs.json || {};
-        const charset = attrs.json.charset = contentTypeParams.charset || prevCharset;
-        log.verbose(
-          "Charset %s for %s",
-          charset,
-          title
-        );
+        let charset = contentTypeParams.charset;
+        if (!charset) {
+          // HACK: Try to guess a charset from previous parsing
+          // Maybe we need to do a speculative parsing instead to 
+          // get XML encoding from doctype?
+          let prevCharset = attrs.json.charset;
+          if (!prevCharset) {
+            prevCharset = attrs.json.meta["#xml"].encoding;
+          }
+          charset = prevCharset;
+        }
 
         let bodyStream = response.body;
         if (charset && !/utf-*8/i.test(charset)) {
           const iconv = new Iconv(charset, "utf-8");
-          log.verbose(
+          log.debug(
             "Converting from charset %s to utf-8 for %s",
             charset,
             title
@@ -312,6 +316,7 @@ class Feed extends guid(BaseModel) {
           lastParsed: timeStart,
           json: Object.assign(attrs.json, {
             meta,
+            charset,
             parseDuration: Date.now() - timeStart,
           }),
         });
