@@ -16,6 +16,7 @@ It's early days for this project, so far. There's no feed management or easy way
 
 ## TODO
 
+- Get a version of this UI that works on my phone
 - Implement actual feed management
 - Periodically purge defunct items and vacuum() to clean DB
 - Accept maxage selection without full refresh
