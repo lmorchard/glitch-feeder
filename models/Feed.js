@@ -284,6 +284,7 @@ class Feed extends guid(BaseModel) {
       } else {
         const contentType = response.headers.get("content-type");
         const contentTypeParams = getParams(contentType || "");
+        const { charset: prevCharset } = attrs.json.charset;
         const charset = attrs.json.charset = contentTypeParams.charset;
 
         let bodyStream = response.body;
