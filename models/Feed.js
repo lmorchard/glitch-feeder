@@ -1,6 +1,7 @@
 const { Model } = require("objection");
 const guid = require("objection-guid")();
 
+const Iconv = require("iconv").Iconv;
 const FeedParser = require("feedparser");
 const OpmlParser = require("opmlparser");
 const stream = require("stream");
@@ -240,38 +241,8 @@ class Feed extends guid(BaseModel) {
       return;
     }
 
-    // Set up an abort timeout - we're not waiting forever for a feed
-    const controller = new AbortController();
-    const abortTimeout = setTimeout(
-      () => controller.abort(),
-      parseInt(timeout)
-    );
-
     try {
-      const fetchOptions = {
-        method: "GET",
-        headers: {
-          "user-agent": "glitch-feeder/1.0 (+https://glitch.com/~lmo-feeder)",
-          "accept": "application/rss+xml, text/rss+xml, text/xml",
-        },
-        signal: controller.signal,
-      };
-
-      // Set up some headers for conditional GET so we can see
-      // some of those sweet 304 Not Modified responses
-      if (!force) {
-        if (prevHeaders.etag) {
-          fetchOptions.headers["If-None-Match"] = prevHeaders.etag;
-        }
-        if (prevHeaders["last-modified"]) {
-          fetchOptions.headers["If-Modified-Match"] =
-            prevHeaders["last-modified"];
-        }
-      }
-
-      // Finally, fire off the GET request for the feed resource.
-      const response = await fetch(resourceUrl, fetchOptions);
-      clearTimeout(abortTimeout);
+      const response = await fetchResource(resourceUrl, prevHeaders);
       
       // Response headers are a Map - convert to plain object
       const headers = {};
@@ -312,7 +283,13 @@ class Feed extends guid(BaseModel) {
         
         let bodyStream = response.body;
         if (charset && !/utf-*8/i.test(charset)) {
-          
+          const iconv = new Iconv(charset, 'utf-8');
+          log.debug(
+            'Converting from charset %s to utf-8 for %d',
+            charset,
+            title,
+          );
+          bodyStream = bodyStream.pipe(iconv);
         }
 
         const { meta, items } = await parseFeedStream(
