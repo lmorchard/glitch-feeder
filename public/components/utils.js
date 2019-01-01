@@ -47,7 +47,7 @@ export const withClickOnScrollVisibility = conditionFn => WrappedComponent =>
       super(props);
       this.isVisible = false;
       this.scrollTimer = null;
-      this.handleScroll = this.handleScroll.bind(this);
+      this.checkVisibility = this.checkVisibility.bind(this);
     }
 
     componentWillMount() {
@@ -55,16 +55,16 @@ export const withClickOnScrollVisibility = conditionFn => WrappedComponent =>
     }
 
     componentDidMount() {
-      this.scrollRef.addEventListener("scroll", this.handleScroll);
-      window.addEventListener("scroll", this.handleScroll);
+      this.scrollRef.addEventListener("scroll", this.checkVisibility);
+      window.addEventListener("scroll", this.checkVisibility);
     }
 
-    conponentWillUnmount() {
-      this.scrollRef.removeEventListener("scroll", this.handleScroll);
-      window.removeEventListener("scroll", this.handleScroll);
+    componentWillUnmount() {
+      this.scrollRef.removeEventListener("scroll", this.checkVisibility);
+      window.removeEventListener("scroll", this.checkVisibility);
     }
 
-    handleScroll() {
+    checkVisibility() {
       if (!this.clickableRef || !this.scrollRef) {
         return;
       }
@@ -100,6 +100,7 @@ export const withClickOnScrollVisibility = conditionFn => WrappedComponent =>
     }
   };
 
+// https://stackoverflow.com/a/7557433
 function isElementInViewport(el) {
   var rect = el.getBoundingClientRect();
   return (
