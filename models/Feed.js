@@ -251,7 +251,7 @@ class Feed extends guid(BaseModel) {
       const fetchOptions = {
         method: "GET",
         headers: {
-          "user-agent": "glitch-feeder/1.0",
+          "user-agent": "glitch-feeder/1.0 (+https://glitch.com/~lmo-feeder)",
           "accept": "application/rss+xml, text/rss+xml, text/xml",
         },
         signal: controller.signal,
@@ -273,8 +273,6 @@ class Feed extends guid(BaseModel) {
       const response = await fetch(resourceUrl, fetchOptions);
       clearTimeout(abortTimeout);
       
-      const encoding = response.headers.get("content-encoding");
-
       // Response headers are a Map - convert to plain object
       const headers = {};
       for (let [k, v] of response.headers) {
@@ -308,8 +306,17 @@ class Feed extends guid(BaseModel) {
           title
         );
       } else {
+        const contentType = response.headers.get("content-type");
+        const contentTypeParams = getParams(contentType || "");
+        const charset = contentTypeParams.charset;
+        
+        let bodyStream = response.body;
+        if (charset && !/utf-*8/i.test(charset)) {
+          
+        }
+
         const { meta, items } = await parseFeedStream(
-          { stream: response.body, resourceUrl },
+          { stream: bodyStream, resourceUrl },
           context
         );
 
@@ -445,5 +452,16 @@ const parseFeedStream = ({ stream, resourceUrl }, context) =>
 
     stream.pipe(parser);
   });
+
+function getParams(str) {
+  var params = str.split(';').reduce(function (params, param) {
+    var parts = param.split('=').map(function (part) { return part.trim(); });
+    if (parts.length === 2) {
+      params[parts[0]] = parts[1];
+    }
+    return params;
+  }, {});
+  return params;
+}
 
 module.exports = Feed;
