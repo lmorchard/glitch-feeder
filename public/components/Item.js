@@ -8,6 +8,7 @@ export const Item = ({
   date,
   pubdate,
   created_at,
+  json,
 }) =>
   h(
     "li",
@@ -15,13 +16,15 @@ export const Item = ({
     h(
       "div",
       { className: "details" },
+      json.image && h("img", { href: json.image, height: "200" }),
       title && h("a", { className: "title", href: link }, title),
       text &&
         h(
           "span",
           { className: "text" },
           text.length < 320 ? text : text.substr(0, 320) + "[...]"
-        )
+        ),
+      // h("pre", null, JSON.stringify(json, null, " "))
     ),
     h(
       "div",
