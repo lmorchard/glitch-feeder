@@ -16,6 +16,7 @@ It's early days for this project, so far. There's no feed management or easy way
 
 ## TODO
 
+- Address text encoding issues
 - Move API fetches into multi-part store actions with promises
 - Get a version of this UI that works on my phone
 - Themes - light / dark
