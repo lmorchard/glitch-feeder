@@ -19,7 +19,7 @@ export const Item = ({
       "div",
       { className: "details" },
       title && h("a", { className: "title", href: link }, title),
-      text &&
+      (text && !html) && 
         h(
           "span",
           { className: "text" },

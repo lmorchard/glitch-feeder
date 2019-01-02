@@ -113,12 +113,11 @@ module.exports = (options, context) => {
           <link rel="stylesheet" href="/item.css">
         </head>
         <body>
-          ${item.html()}
-          <script type="javascript" src="https://unpkg.com/@nprapps/sidechain"></script>
+          <script src="https://unpkg.com/@nprapps/sidechain@1.0.1/dist/sidechain.js"></script>
           <script>
-  console.log("S
             Sidechain.registerGuest()
           </script>
+          ${item.html()}
         </body>
       </html>
     `);
