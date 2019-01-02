@@ -16,9 +16,10 @@ It's early days for this project, so far. There's no feed management or easy way
 
 ## TODO
 
-- Address text encoding issues
+- Refresh the view when feed refresh completes
+- Only poll for feed refresh status when the button is clicked and until it completes
 - Move API fetches into multi-part store actions with promises
-- Get a version of this UI that works on my phone
+- Find a decent way to include HTML content (iframes?)
 - Themes - light / dark
 - Implement actual feed management
 - Periodically purge defunct items and vacuum() to clean DB
@@ -33,3 +34,4 @@ It's early days for this project, so far. There's no feed management or easy way
 - OPML live playlist subscription
 - Variable maxage per feed with AIMD adjustment based on when new items are found
 - Read / unread flags? (I don't use them)
+- Better feed encoding handling
