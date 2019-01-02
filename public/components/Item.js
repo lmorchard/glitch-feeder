@@ -17,6 +17,18 @@ export const Item = ({
     { className: "feeditem" },
     h(
       "div",
+      {
+        className: "thumb",
+      },
+      h(
+        "img",
+        {
+          src: `https://thumb-o-matic.glitch.me/thumb?url=${link}`,
+        }
+      ),
+    ),
+    h(
+      "div",
       { className: "details" },
       title && h("a", { className: "title", href: link }, title),
       text && 
