@@ -1,5 +1,7 @@
 import { h } from "https://unpkg.com/preact@8.4.2/dist/preact.mjs?module";
 
+const DEFAULT_THUMB_SRC = "https://upload.wikimedia.org/wikipedia/commons/8/8a/PICOL_icon_News.svg";
+
 export const Item = ({
   title,
   link,
@@ -23,7 +25,13 @@ export const Item = ({
       h(
         "img",
         {
-          src: `https://thumb-o-matic.glitch.me/thumb?url=${link}`,
+          src: `https://thumb-o-matic.glitch.me/thumb?proxy=1&url=${link}`,
+          onError: ev => {
+            ev.target.src = DEFAULT_THUMB_SRC;
+          },
+          onAbort: ev => {
+            ev.target.src = DEFAULT_THUMB_SRC;
+          },
         }
       ),
     ),
