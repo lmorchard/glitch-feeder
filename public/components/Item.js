@@ -19,17 +19,12 @@ export const Item = ({
       "div",
       { className: "details" },
       title && h("a", { className: "title", href: link }, title),
-      (text && !html) && 
+      text && 
         h(
           "span",
           { className: "text" },
           text.length < 320 ? text : text.substr(0, 320) + "[...]"
         ),
-      html &&
-        h(
-          "side-chain",
-          { src: htmlSrc }
-        )
     ),
     h(
       "div",
