@@ -188,6 +188,15 @@ main.app section.itemslist .feeds .feed .item {
   border: none;
 }
 
+.feeditem .thumb {
+  width: 40em;
+  padding: 0 1em 1em 0;
+}
+
+.feeditem .thumb img {
+  width: 100%;
+}
+
 .feeditem .details {
   flex-grow: 2;
   padding-right: 1em;
