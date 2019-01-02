@@ -189,12 +189,13 @@ main.app section.itemslist .feeds .feed .item {
 }
 
 .feeditem .thumb {
-  width: 40em;
+  width: 10em;
+  flex-basis: 10em;
   padding: 0 1em 1em 0;
 }
 
 .feeditem .thumb img {
-  width: 100%;
+  width: 10em;
 }
 
 .feeditem .details {
@@ -228,7 +229,7 @@ main.app section.itemslist .feeds .feed .item {
   width: 8.5em;
 }
 
-@media only screen and (max-width: 900px) {
+@media only screen and (max-width: 1000px) {
   body {
     font-size: 13px;
   }
