@@ -106,7 +106,22 @@ module.exports = (options, context) => {
   apiRouter.route("/items/:id/html").get(async (req, res) => {
     const { id } = req.params;
     const item = await FeedItem.query().findById(id);
-    res.send(item.html());
+    res.send(`
+      <!doctype html>
+      <html>
+        <head>
+          <link rel="stylesheet" href="/item.css">
+        </head>
+        <body>
+          ${item.html()}
+          <script type="javascript" src="https://unpkg.com/@nprapps/sidechain"></script>
+          <script>
+  console.log("S
+            Sidechain.registerGuest()
+          </script>
+        </body>
+      </html>
+    `);
   });
 
   apiRouter

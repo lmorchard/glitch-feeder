@@ -9,7 +9,8 @@ export const Item = ({
   pubdate,
   created_at,
   json,
-  hrefs: { html },
+  html,
+  hrefs: { html: htmlSrc },
 }) =>
   h(
     "li",
@@ -23,6 +24,11 @@ export const Item = ({
           "span",
           { className: "text" },
           text.length < 320 ? text : text.substr(0, 320) + "[...]"
+        ),
+      html &&
+        h(
+          "side-chain",
+          { src: htmlSrc }
         )
     ),
     h(
