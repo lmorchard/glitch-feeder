@@ -17,7 +17,7 @@ export const Item = ({
   h(
     "li",
     { className: "feeditem" },
-    false && h(
+    h(
       "div",
       {
         className: "thumb",
@@ -25,9 +25,9 @@ export const Item = ({
       h(
         "img",
         {
-          src: `https://thumb-o-matic.glitch.me/thumb?proxy=1&url=${link}`,
-          style: {
-            display: "none",
+          src: `https://thumb-o-matic.glitch.me/thumb?url=${link}`,
+          onLoadStart: ev => {
+            ev.target.parentNode.style.display = "none";
           },
           onLoad: ev => {
             ev.target.parentNode.style.display = "block";

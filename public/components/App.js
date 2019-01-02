@@ -115,7 +115,7 @@ const HeaderNav = ({
   // TODO: Need something more flexible here?
   const afterLinks = [
     ["1 hour ago", 1 * 60 * 60 * 1000],
-    ["2 hour ago", 2 * 60 * 60 * 1000],
+    ["2 hours ago", 2 * 60 * 60 * 1000],
     ["4 hours ago", 4 * 60 * 60 * 1000],
     ["8 hours ago", 8 * 60 * 60 * 1000],
     ["12 hours ago", 12 * 60 * 60 * 1000],
