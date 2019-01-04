@@ -16,8 +16,6 @@ It's early days for this project, so far. There's no feed management or easy way
 
 ## TODO
 
-- Refresh the view when feed refresh completes
-- Only poll for feed refresh status when the button is clicked and until it completes
 - Move API fetches into multi-part store actions with promises
 - Find a decent way to include HTML content (iframes?)
 - Themes - light / dark

@@ -22,14 +22,16 @@ export async function init(appEl) {
 
   // Quick & dirty periodic queue status poll
   // TODO: Switch this over to a websocket!
-  const pollStatus = async () => {
+  const pollStatus = async (initial = false) => {
     const queueStats = await fetchJson(apiRoot.hrefs.poll);
     dispatch(actions.setQueueStats(queueStats));
     if (queueStats.pending > 0 || queueStats.size > 0) {
-      setTimeout(pollStatus, 1000
+      setTimeout(pollStatus, 1000);
+    } else if (!initial) {
+      window.location.reload();
     }
   };
-  pollStatus();
+  pollStatus(true);
 
   const renderApp = () => {
     render(
