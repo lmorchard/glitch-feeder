@@ -229,7 +229,7 @@ main.app section.itemslist .feeds .feed .item {
   width: 8.5em;
 }
 
-@media only screen and (max-width: 1000px) {
+@media only screen and (max-width: 900px) {
   body {
     font-size: 13px;
   }
