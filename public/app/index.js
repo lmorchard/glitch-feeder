@@ -11,7 +11,7 @@ import { fetchJson, paramsFromUrl, urlWithParams } from "./utils.js";
 import App from "../components/App.js";
 
 const feedsLimit = 5;
-const itemsLimit = 7;
+const itemsLimit = 10;
 
 export async function init(appEl) {
   const store = createAppStore();

@@ -16,6 +16,8 @@ It's early days for this project, so far. There's no feed management or easy way
 
 ## TODO
 
+- Hide "More Feeds" button when no feeds are left to load
+- Counts for items in folders, feeds, remaining for more feeds
 - Loading indicators for folders, feeds overall, appending feeds, appending items
 - Move API fetches into multi-part store actions with promises
 - Find a decent way to include HTML content (iframes?)
@@ -27,8 +29,6 @@ It's early days for this project, so far. There's no feed management or easy way
 - Periodically purge defunct items and vacuum() to clean DB
 - Accept maxage selection without full refresh
 - Feed queue monitoring via websocket (or at least smarter stats polling)
-- Hide "More Feeds" button when no feeds are left to load
-- Counts for items in folders, feeds, remaining for more feeds
 - Reader state in URL to bookmark / refresh at last folder & item view
 - Remote feed subscription bookmarklet?
 - Implement a proper FeedFolder model with sub-folders
