@@ -96,7 +96,7 @@ const AppLayout = props =>
     "main",
     { className: "app" },
     h(HeaderNav, props),
-    props.isAppLoading
+    props.appLoading
       ? h(LoadingMessage)
       : h(
           "section",

@@ -23,6 +23,7 @@ export const ItemsList = composeComponents(
   ),
   ({
     feedsUrl,
+    feedsLoading,
     feeds = [],
     handleMoreItemsClick,
     handleMoreFeedsClick,
@@ -30,6 +31,14 @@ export const ItemsList = composeComponents(
     onClickableScrollRef,
     onClickableRef,
   }) => {
+    if (feedsLoading === true) {
+      return h(
+        "section",
+        { className: "itemslist loading" },
+        "Loading..."
+      );
+    };
+    
     return h(
       "section",
       { className: "itemslist" },

@@ -13,10 +13,10 @@ export const defaultState = {
       pending: 0,
       size: 0,
     },
-    appLoading: true,
     readAfter: null,
+    appLoading: true,
     foldersLoading: true,
-    feedItemsLoading: true,
+    feedsLoading: true,
     feedsUrl: null,
   },
   api: {
@@ -27,14 +27,14 @@ export const defaultState = {
 };
 
 export const selectors = {
-  queueStats: state => state.ui.queueStats,
-  isAppLoading: state => state.ui.appLoading,
-  isFeedItemsLoading: state => state.ui.feedItemsLoading,
-  feedsUrl: state => state.ui.feedsUrl,
-  readAfter: state => state.ui.readAfter,
   apiRoot: state => state.api.root,
-  folders: state => state.folders,
+  queueStats: state => state.ui.queueStats,
+  readAfter: state => state.ui.readAfter,
+  appLoading: state => state.ui.appLoading,
+  feedsLoading: state => state.ui.feedsLoading,
+  feedsUrl: state => state.ui.feedsUrl,
   foldersLoading: state => state.ui.foldersLoading,
+  folders: state => state.folders,
   getFolder: state => id => state.folders[id],
   feeds: state => state.feeds,
   getFeed: state => id => state.feeds[id],
@@ -69,6 +69,8 @@ export const actions = createActions(
 
 const setStatic = newState => state =>
   assign({}, state, newState);
+
+const setAsPayload = (state, { payload }) => payload;
 
 const setFromPayload = (name, defval) => (state, { payload }) =>
   assign({}, state, { [name]: payload || defval });
@@ -105,7 +107,7 @@ export const reducers = {
   folders: typeToReducer(
     {
       [actions.loadFolders]: {
-        FULFILLED: setFromPayloadFn(({ folders = {}}) => ({ folders })),
+        FULFILLED: setAsPayload,
       },
     },
     defaultState.folders

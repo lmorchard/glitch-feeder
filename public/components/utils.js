@@ -55,12 +55,22 @@ export const withClickOnScrollVisibility = conditionFn => WrappedComponent =>
     }
 
     componentDidMount() {
-      this.scrollRef.addEventListener("scroll", this.checkVisibility);
       window.addEventListener("scroll", this.checkVisibility);
+    }
+    
+    componentDidUpdate() {
+    }
+    componentDidUpdate() {
+      if (this.scrollRef) {
+        this.scrollRef.removeEventListener("scroll", this.checkVisibility);
+      }
+      this.scrollRef.addEventListener("scroll", this.checkVisibility);
     }
 
     componentWillUnmount() {
-      this.scrollRef.removeEventListener("scroll", this.checkVisibility);
+      if (this.scrollRef) {
+        this.scrollRef.removeEventListener("scroll", this.checkVisibility);
+      }
       window.removeEventListener("scroll", this.checkVisibility);
     }
 

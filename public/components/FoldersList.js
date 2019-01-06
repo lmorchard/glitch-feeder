@@ -11,12 +11,19 @@ export const FoldersList = ({
   handleFolderClick,
   handleFolderFeedClick,
 }) => {
-  console.log("FOLDERS", foldersLoading, folders);
-  if (foldersLoading) {
+  if (foldersLoading === true) {
     return h(
       "nav",
       { className: "feedslist loading" },
       "Loading..."
+    );
+  }
+  
+  if (foldersLoading === "error") {
+    return h(
+      "nav",
+      { className: "feedslist error" },
+      "ERROR!"
     );
   }
   
