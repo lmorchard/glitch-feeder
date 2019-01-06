@@ -22,6 +22,7 @@ export const defaultState = {
     appLoading: true,
     foldersLoading: true,
     feedsLoading: true,
+    feedsAppending: false,
     feedsUrl: null,
   },
   api: {
@@ -39,11 +40,12 @@ export const selectors = {
   queueStats: state => state.ui.queueStats,
   readAfter: state => state.ui.readAfter,
   appLoading: state => state.ui.appLoading,
-  feedsLoading: state => state.ui.feedsLoading,
-  feedsUrl: state => state.ui.feedsUrl,
   foldersLoading: state => state.ui.foldersLoading,
   folders: state => state.folders,
   getFolder: state => id => state.folders[id],
+  feedsLoading: state => state.ui.feedsLoading,
+  feedsAppending: state => state.ui.feedsAppending,
+  feedsUrl: state => state.ui.feedsUrl,
   feeds: state => state.feeds.feeds,
   feedsRemaining: state => state.feeds.feedsRemaining,
   getFeed: state => id => state.feeds[id],
@@ -57,14 +59,16 @@ const fetchJsonWithParams = (baseUrl, params) => {
 export const actions = createActions(
   assign(
     {},
-    mapToObject(["loadFolders", "loadFeeds"], () => fetchJsonWithParams)
+    mapToObject(
+      ["loadFolders", "loadFeeds", "appendFeeds"],
+      () => fetchJsonWithParams
+    )
   ),
   "setAppLoading",
   "setQueueStats",
   "setFeedsUrl",
   "setReadAfter",
   "setApiRoot",
-  "appendFeeds",
   "appendFeedItems"
 );
 
@@ -93,6 +97,11 @@ export const reducers = {
           feedsLoading: false,
           feedsUrl,
         })),
+      },
+      [actions.appendFeeds]: {
+        PENDING: setStatic({ feedsAppending: true }),
+        REJECTED: setStatic({ feedsAppending: "error" }),
+        FULFILLED: setStatic({ feedsAppending: false }),
       },
       [actions.setApiRoot]: setStatic({ appLoading: false }),
       [actions.setQueueStats]: setFromPayload("queueStats", {}),
@@ -124,14 +133,19 @@ export const reducers = {
       [actions.loadFeeds]: {
         FULFILLED: (
           state,
-          { payload: { result: { feeds = [], feedsRemaining = 0 } = {} } }
-        ) => ({ feeds, feedsRemaining }),
+          { payload: { result: { feedsRemaining = 0, feeds = [] } = {} } }
+        ) => ({ feedsRemaining, feeds }),
       },
-      [actions.appendFeeds]: (state, { payload: { feeds = [] } }) => assign(
-        {}, state, { feeds: [
-          ...state.feeds,
-          ...feeds,
-        ] }),
+      [actions.appendFeeds]: {
+        FULFILLED: (
+          state,
+          { payload: { result: { feedsRemaining = 0, feeds = [] } = {} } }
+        ) =>
+          assign({}, state, {
+            feedsRemaining,
+            feeds: [...state.feeds, ...feeds],
+          }),
+      },
       [actions.appendFeedItems]: (
         state,
         {

@@ -22,6 +22,7 @@ export const ItemsList = composeComponents(
   ({
     feedsUrl,
     feedsLoading,
+    feedsAppending,
     feeds = [],
     feedsRemaining = 0,
     handleMoreItemsClick,
@@ -74,6 +75,18 @@ export const ItemsList = composeComponents(
             )
           ),
         feedsUrl &&
+          feedsAppending &&
+          h(
+            "button",
+            {
+              className: "moreFeeds",
+              disabled: true,
+            },
+            `More feeds loading...`
+          ),
+        feedsUrl &&
+          !feedsAppending &&
+          feedsRemaining > 0 &&
           h(
             "button",
             {
