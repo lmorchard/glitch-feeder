@@ -56,29 +56,13 @@ class Feed extends guid(BaseModel) {
     before = null,
     itemsLimit = 0,
   } = {}) {
-    let result = Feed.query();
+    let result;
 
-    if (id) {
-      result = result.findById(id);
-    } else {
-      if (after) {
-        result = result.where("lastNewItem", ">", after);
+    const decorateWithItemCounts = async (result, single = false) => {
+      if (itemsLimit === 0) {
+        return result;
       }
-      if (before) {
-        result = result.where("lastNewItem", "<", before);
-      }
-      if (folder) {
-        result = result.where("folder", folder);
-      }
-      if (limit) {
-        result = result.limit(limit);
-      }
-      result = result
-        .orderBy("lastNewItem", "DESC")
-        .orderBy("updated_at", "DESC");
-    }
-
-    if (itemsLimit > 0) {
+      
       result = result
         // Naive eager used here so itemsLimit applies per-feed
         // rather than for all items between feeds
@@ -107,10 +91,42 @@ class Feed extends guid(BaseModel) {
         });
       };
 
-      result = id ? countItems(await result) : result.map(countItems);
+      return single ? countItems(await result) : result.map(countItems);
+    };
+    
+    if (id) {
+      return decorateWithItemCounts(Feed.query.findById(id), true);
     }
+    
+    const applyParams = result => {
+      if (after) {
+        result = result.where("lastNewItem", ">", after);
+      }
+      if (before) {
+        result = result.where("lastNewItem", "<", before);
+      }
+      if (folder) {
+        result = result.where("folder", folder);
+      }
+      if (limit) {
+        result = result.limit(limit);
+      }
+      return result;
+    };
+    
+    const { feedsCount } = await applyParams(
+      this.query()
+        .count("* as feedsCount")
+        .first()
+    );
+    
+    const feeds = await decorateWithItemCounts(applyParams(
+      Feed.query()
+        .orderBy("lastNewItem", "DESC")
+        .orderBy("updated_at", "DESC")
+    ));
 
-    return result;
+    return { feedsCount, feeds };
   }
 
   static async queryFolders({ after = null, before = null } = {}) {
