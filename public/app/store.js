@@ -64,13 +64,13 @@ export const actions = createActions(
     {
       appendFeedItems: [
         (feedId, baseUrl, params) => fetchJsonWithParams(baseUrl, params),
-        (feedId) => ({ feedId }),
+        feedId => ({ feedId }),
       ],
     },
     mapToObject(
       ["loadFolders", "loadFeeds", "appendFeeds"],
       () => fetchJsonWithParams
-    ),
+    )
   ),
   "setAppLoading",
   "setQueueStats",
@@ -88,6 +88,13 @@ const setFromPayload = (name, defval) => (state, { payload }) =>
 
 const setFromPayloadFn = fn => (state, { payload }) =>
   assign({}, state, fn(payload));
+
+const setFeedItemsAppending = (feedId, value) => state =>
+  assign({}, state, {
+    feedItemsAppending: assign({}, state.feedItemsAppending, {
+      [feedId]: value,
+    }),
+  });
 
 export const reducers = {
   ui: typeToReducer(
@@ -114,27 +121,12 @@ export const reducers = {
         })),
       },
       [actions.appendFeedItems]: {
-        PENDING: (state, { payload, meta: { feedId } }) => assign(
-          {},
-          state,
-          {
-            feedItemsAppending: assign({}, state.feedItemsAppending, { [feedId]: true })
-          }
-        ),
-        REJECTED: (state, { payload: reason, meta: { feedId } }) => assign(
-          {},
-          state,
-          {
-            feedItemsAppending: assign({}, state.feedItemsAppending, { [feedId]: true })
-          }
-        ),
-        FULFILLED: (state, { payload: { url, result }, meta: { feedId } }) => { },
-        
-        REJECTED: setStatic({ feedsAppending: "error" }),
-        FULFILLED: setFromPayloadFn(({ url: feedsUrl }) => ({
-          feedsAppending: false,
-          feedsUrl,
-        })),
+        PENDING: (state, { meta: { feedId } }) =>
+          setFeedItemsAppending(feedId, true),
+        REJECTED: (state, { payload: reason, meta: { feedId } }) =>
+          setFeedItemsAppending(feedId, "error"),
+        FULFILLED: (state, { meta: { feedId } }) =>
+          setFeedItemsAppending(feedId, false),
       },
       [actions.setApiRoot]: setStatic({ appLoading: false }),
       [actions.setQueueStats]: setFromPayload("queueStats", {}),
@@ -180,26 +172,25 @@ export const reducers = {
           }),
       },
       [actions.appendFeedItems]: {
-        FULFILLED: (state, { payload: { url, result }, meta: { feedId } }) => { },
-      },
-      [actions.appendFeedItems]: (
-        state,
-        {
-          payload: {
-            feedId,
-            items: { itemsRemaining, items },
-          },
-        }
-      ) => {
-        const idx = state.map(feed => feed.id).indexOf(feedId);
-        if (idx === -1) return state;
-        const feed = state[idx];
-        return assign([], state, {
-          [idx]: assign({}, feed, {
-            itemsRemaining,
-            items: [...feed.items, ...items],
-          }),
-        });
+        FULFILLED: (
+          state,
+          {
+            payload: { url, result: { itemsRemaining = 0, items = [] } = {} },
+            meta: { feedId },
+          }
+        ) => {
+          const idx = state.feeds.map(feed => feed.id).indexOf(feedId);
+          if (idx === -1) return state;
+          const feed = state.feeds[idx];
+          return assign({}, state, {
+            feeds: assign([], state.feeds, {
+              [idx]: assign({}, feed, {
+                itemsRemaining,
+                items: [...feed.items, ...items],
+              }),
+            }),
+          });
+        },
       },
     },
     defaultState.feeds
