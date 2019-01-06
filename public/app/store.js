@@ -1,10 +1,12 @@
 /* global Redux, ReduxActions, ReduxPromiseMiddleware */
 const { createActions, handleActions, combineActions } = ReduxActions;
-const { createStore, combineReducers, compose } = Redux;
+const { createStore, combineReducers, compose, applyMiddleware } = Redux;
 const { default: promiseMiddleware } = ReduxPromiseMiddleware;
 const { assign } = Object;
 
-console.log("PROISE", promiseMiddleware.toString());
+import typeToReducer from "../vendor/type-to-reducer.js";
+
+console.log("typetoreducer", typeToReducer);
 
 export const defaultState = {
   ui: {
@@ -135,5 +137,10 @@ export const createAppStore = (initialState, enhancers = []) =>
   createStore(
     combineReducers(reducers),
     initialState,
-    composeEnhancers(...enhancers)
+    composeEnhancers(
+      applyMiddleware(
+        
+      ),
+      ...enhancers
+    )
   );
