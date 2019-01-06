@@ -9,7 +9,7 @@ export const addEventListeners = (el, listeners) => {
 };
 
 export const mapToObject = (list, mapFn) => {
-  const out = [];
+  const out = {};
   for (let item of list) {
     out[item] = mapFn(item);
   }

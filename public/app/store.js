@@ -4,7 +4,7 @@ const { createStore, combineReducers, compose, applyMiddleware } = Redux;
 const { default: promiseMiddleware, PENDING, FULFILLED, REJECTED } = ReduxPromiseMiddleware;
 const { assign } = Object;
 
-import { fetchJson, urlWithParams } from "./utils.js";
+import { fetchJson, urlWithParams, mapToObject } from "./utils.js";
 import typeToReducer from "../vendor/type-to-reducer.js";
 
 export const defaultState = {
@@ -15,7 +15,7 @@ export const defaultState = {
     },
     appLoading: false,
     readAfter: null,
-    folderNavLoading: true,
+    foldersLoading: true,
     feedItemsLoading: true,
     feedsUrl: null,
   },
@@ -40,22 +40,21 @@ export const selectors = {
   getFeed: state => id => state.feeds[id],
 };
 
-const fetchJsonWithParams = (url, params) => {
-  console.log("FETCH IT", url, params);
-  return fetchJson(urlWithParams(url, params));
-}
+const fetchJsonWithParams = (url, params) =>
+  fetchJson(urlWithParams(url, params));
 
 export const actions = createActions(
-  {
-    loadFolders: fetchJsonWithParams,
-  },
+  assign(
+    mapToObject([
+      "loadFolders",
+    ], () => fetchJsonWithParams),
+  ),
   "setQueueStats",
   "setFolderNavLoading",
   "setFeedItemsLoading",
   "setFeedsUrl",
   "setReadAfter",
   "setApiRoot",
-  "loadFolders",
   "loadFeeds",
   "appendFeeds",
   "appendFeedItems"
@@ -64,6 +63,11 @@ export const actions = createActions(
 export const reducers = {
   ui: typeToReducer(
     {
+      [actions.loadFolders]: {
+        PENDING: state => state,
+        REJECTED: state => state,
+        FULFILLED: state =>(state, { payload: folders = {} }) => folders,
+      },
       [actions.setQueueStats]: (state, { payload: queueStats = {} }) =>
         assign({}, state, { queueStats }),
       [actions.setAppLoading]: (state, { payload: appLoading = false }) =>

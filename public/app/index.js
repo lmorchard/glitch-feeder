@@ -31,7 +31,7 @@ export async function init(appEl) {
       window.location.reload();
     }
   };
-  pollStatus(true);
+  //pollStatus(true);
 
   const renderApp = () => {
     render(
@@ -62,9 +62,13 @@ export async function init(appEl) {
     after = params.get("after");
   }
   dispatch(actions.setReadAfter(after));
-  
-  dispatch(actions.loadFolders(apiRoot.hrefs.folders, { after }));
 
+  console.log("WUT", actions.loadFolders);
+  try {
+    dispatch(actions.loadFolders(apiRoot.hrefs.folders, { after }));
+  } catch (e) {
+    console.log("HUH", e);
+  }
   /*
   const feedsUrl = urlWithParams(apiRoot.hrefs.feeds, {
     after,

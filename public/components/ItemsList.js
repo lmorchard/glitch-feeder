@@ -15,7 +15,10 @@ export const ItemsList = composeComponents(
   withScrollReset(
     ({ prevProps, props }) => {
       try {
-      prevProps.feeds && props.feeds && prevProps.feeds[0].id !== props.feeds[0].id
+        return prevProps.feeds[0].id !== props.feeds[0].id
+      } catch (e) {
+        return false
+      }
     }
   ),
   ({
