@@ -1,7 +1,7 @@
 /* global Redux, ReduxActions, ReduxPromiseMiddleware */
 const { createActions, handleActions, combineActions } = ReduxActions;
 const { createStore, combineReducers, compose, applyMiddleware } = Redux;
-const { default: promiseMiddleware } = ReduxPromiseMiddleware;
+const { default: promiseMiddleware, PENDING, FULFILLED, REJECTED } = ReduxPromiseMiddleware;
 const { assign } = Object;
 
 import typeToReducer from "../vendor/type-to-reducer.js";
@@ -44,7 +44,6 @@ export const selectors = {
 export const actions = createActions(
   {},
   "setQueueStats",
-  "setAppLoading",
   "setFolderNavLoading",
   "setFeedItemsLoading",
   "setFeedsUrl",
@@ -57,7 +56,7 @@ export const actions = createActions(
 );
 
 export const reducers = {
-  ui: handleActions(
+  ui: typeToReducer(
     {
       [actions.setQueueStats]: (state, { payload: queueStats = {} }) =>
         assign({}, state, { queueStats }),
@@ -83,7 +82,7 @@ export const reducers = {
     defaultState.ui
   ),
 
-  api: handleActions(
+  api: typeToReducer(
     {
       [actions.setApiRoot]: (state, { payload: root }) =>
         assign({}, state, { root }),
@@ -91,14 +90,14 @@ export const reducers = {
     defaultState.api
   ),
 
-  folders: handleActions(
+  folders: typeToReducer(
     {
       [actions.loadFolders]: (state, { payload: folders = {} }) => folders,
     },
     defaultState.folders
   ),
 
-  feeds: handleActions(
+  feeds: typeToReducer(
     {
       [actions.loadFeeds]: (state, { payload: { url, feeds = [] } }) => [
         ...feeds,
@@ -139,7 +138,7 @@ export const createAppStore = (initialState, enhancers = []) =>
     initialState,
     composeEnhancers(
       applyMiddleware(
-        
+        promiseMiddleware(),
       ),
       ...enhancers
     )

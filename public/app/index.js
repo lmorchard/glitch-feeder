@@ -19,7 +19,8 @@ export async function init(appEl) {
 
   const apiRoot = await fetchJson("/api");
   dispatch(actions.setApiRoot(apiRoot));
-
+  dispatch(actions.setApiRoot("/api"));
+  
   // Quick & dirty periodic queue status poll
   // TODO: Switch this over to a websocket!
   const pollStatus = async (initial = false) => {
@@ -80,7 +81,6 @@ export async function init(appEl) {
     })
   );
   dispatch(actions.loadFolders(await fetchJson(foldersUrl)));
-  dispatch(actions.setAppLoading(false));
 }
 
 export default { init };
