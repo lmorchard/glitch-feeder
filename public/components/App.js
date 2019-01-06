@@ -43,32 +43,29 @@ const bindHandlers = ({
       await fetch(apiRoot.hrefs.poll, { method: "POST" });
       pollStatus();
     },
-    handleAllFeedsClick: async () => {
-      const url = urlWithParams(apiRoot.hrefs.feeds, {
-        after,
-        limit: feedsLimit,
-        itemsLimit: itemsLimit,
-      });
-      const feeds = await fetchJson(url);
-      dispatch(actions.loadFeeds({ url, feeds }));
-    },
-    handleFolderClick: folder => async ev => {
-      const url = urlWithParams(folder.href, {
-        after,
-        limit: feedsLimit,
-        itemsLimit: itemsLimit,
-      });
-      const feeds = await fetchJson(url);
-      dispatch(actions.loadFeeds({ url, feeds }));
-    },
-    handleFolderFeedClick: feed => async ev => {
-      const url = urlWithParams(feed.hrefs.self, {
-        after,
-        itemsLimit: itemsLimit,
-      });
-      const result = await fetchJson(url);
-      dispatch(actions.loadFeeds({ url: null, feeds: [result] }));
-    },
+    handleAllFeedsClick: () =>
+      dispatch(
+        actions.loadFeeds(apiRoot.hrefs.feeds, {
+          after,
+          limit: feedsLimit,
+          itemsLimit: itemsLimit,
+        })
+      ),
+    handleFolderClick: folder => () =>
+      dispatch(
+        actions.loadFeeds(folder.href, {
+          after,
+          limit: feedsLimit,
+          itemsLimit: itemsLimit,
+        })
+      ),
+    handleFolderFeedClick: feed => () =>
+      dispatch(
+        actions.loadFeeds(feed.hrefs.self, {
+          after,
+          itemsLimit: itemsLimit,
+        })
+      ),
     handleMoreItemsClick: feed => async ev => {
       const lastItem = feed.items[feed.items.length - 1];
       const url = urlWithParams(feed.hrefs.items, {

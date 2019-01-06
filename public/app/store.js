@@ -51,10 +51,10 @@ const fetchJsonWithParams = (baseUrl, params) => {
 };
 
 export const actions = createActions(
-  assign({}, mapToObject([
-    "loadFolders",
-    "loadFeeds",
-  ], () => fetchJsonWithParams)),
+  assign(
+    {},
+    mapToObject(["loadFolders", "loadFeeds"], () => fetchJsonWithParams)
+  ),
   "setAppLoading",
   "setQueueStats",
   "setFeedsUrl",
@@ -118,7 +118,7 @@ export const reducers = {
   feeds: typeToReducer(
     {
       [actions.loadFeeds]: {
-        FULFILLED: (state, { payload: { result = [] } }) => [...result],
+        FULFILLED: (state, { payload: { result = [] } }) => result,
       },
       [actions.appendFeeds]: (state, { payload: feeds = [] }) => [
         ...state,

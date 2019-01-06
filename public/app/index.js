@@ -31,7 +31,7 @@ export async function init(appEl) {
       window.location.reload();
     }
   };
-  //pollStatus(true);
+  pollStatus(true);
 
   const renderApp = () => {
     render(
