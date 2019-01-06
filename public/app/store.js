@@ -59,7 +59,18 @@ const fetchJsonWithParams = (baseUrl, params) => {
 
 export const actions = createActions(
   assign(
-    {},
+    {
+      appendFeedItems: (feedId, baseUrl, params) =>
+      
+        feed.id,
+        feed.hrefs.items,
+        {
+          after,
+          before: feed.items[feed.items.length - 1].date,
+          limit: itemsLimit,
+        }
+      
+    },
     mapToObject(
       ["loadFolders", "loadFeeds", "appendFeeds", "appendFeedItems"],
       () => fetchJsonWithParams

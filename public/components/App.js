@@ -66,15 +66,16 @@ const bindHandlers = ({
           itemsLimit: itemsLimit,
         })
       ),
-    handleMoreItemsClick: feed => async ev => {
-      const lastItem = feed.items[feed.items.length - 1];
-      const url = urlWithParams(feed.hrefs.items, {
-        after,
-        before: lastItem.date,
-        limit: itemsLimit,
-      });
-      const items = await fetchJson(url);
-      dispatch(actions.appendFeedItems({ feedId: feed.id, items }));
+    handleMoreItemsClick: feed => () => {
+      dispatch(actions.appendFeedItems(
+        feed.id,
+        feed.hrefs.items,
+        {
+          after,
+          before: feed.items[feed.items.length - 1].date,
+          limit: itemsLimit,
+        }
+      ));
     },
     handleMoreFeedsClick: ({ feedsUrl, feeds }) => () =>
       dispatch(actions.appendFeeds(feedsUrl, {
