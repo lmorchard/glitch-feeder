@@ -117,7 +117,6 @@ const HeaderNav = ({
   feedsUrl,
   queueStats,
   readAfter,
-  windowLocationHref,
   handleRefreshFeedsClick,
   handleAfterChange,
 }) => {

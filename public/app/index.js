@@ -10,6 +10,7 @@ import { fetchJson, paramsFromUrl, urlWithParams } from "./utils.js";
 
 import App from "../components/App.js";
 
+// TODO: Move these into some sort of localstorage prefs?
 const feedsLimit = 5;
 const itemsLimit = 10;
 
@@ -22,29 +23,29 @@ export async function init(appEl) {
 
   // Quick & dirty periodic queue status poll
   // TODO: Switch this over to a websocket!
-  const pollStatus = async (initial = false) => {
+  const pollStatus = async (inProgress = false) => {
     const queueStats = await fetchJson(apiRoot.hrefs.poll);
     dispatch(actions.setQueueStats(queueStats));
     if (queueStats.pending > 0 || queueStats.size > 0) {
-      setTimeout(pollStatus, 1000);
-    } else if (!initial) {
+      setTimeout(() => pollStatus(true), 1000);
+    } else if (inProgress) {
+      // Reload current feed view when in progress refresh ends
       dispatch(
         actions.loadFeeds(selectors.feedsUrl(getState()), {})
       );
     }
   };
-  pollStatus(true);
+  pollStatus();
 
   const renderApp = () => {
     render(
       h(App, {
+        state: getState(),
+        dispatch,
         enableInfiniteFeedScroll: true,
-        windowLocationHref: window.location.href,
         pollStatus,
         feedsLimit,
         itemsLimit,
-        state: getState(),
-        dispatch,
       }),
       appEl,
       appEl.lastElementChild
