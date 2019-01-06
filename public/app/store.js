@@ -75,7 +75,6 @@ export const actions = createActions(
       () => fetchJsonWithParams
     )
   ),
-  "setAppLoading",
   "setQueueStats",
   "setFeedsUrl",
   "setReadAfter",
@@ -133,7 +132,6 @@ export const reducers = {
       },
       [actions.setApiRoot]: setStatic({ appLoading: false }),
       [actions.setQueueStats]: setFromPayload("queueStats", {}),
-      [actions.setAppLoading]: setFromPayload("appLoading", false),
       [actions.setFeedsUrl]: setFromPayload("feedsUrl", null),
       [actions.setReadAfter]: setFromPayload("readAfter", null),
     },

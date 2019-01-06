@@ -101,6 +101,7 @@ const AppLayout = props =>
   );
 
 const HeaderNav = ({
+  feedsUrl,
   queueStats,
   readAfter,
   windowLocationHref,
@@ -141,6 +142,7 @@ const HeaderNav = ({
     h(
       "div",
       { className: "appNav" },
+      h("div", {}, feedsUrl),
       h(
         "select",
         {
