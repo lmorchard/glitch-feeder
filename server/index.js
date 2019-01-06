@@ -123,6 +123,13 @@ module.exports = (options, context) => {
     `);
   });
 
+  const startPoll = () => {
+    Feed.pollAll(fetchQueue, context);
+  };
+  
+  // HACK: auto poll every hour
+  setInterval(startPoll, 1000 * 60 * 60);
+  
   apiRouter
     .route("/poll")
     .get(async (req, res) => {
@@ -133,7 +140,7 @@ module.exports = (options, context) => {
       if (fetchQueue.size > 0) {
         return res.json({ status: "inProgress" });
       }
-      Feed.pollAll(fetchQueue, context);
+      startPoll();
       res.json({ status: "started" });
     });
 
