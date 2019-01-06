@@ -26,7 +26,7 @@ It's early days for this project, so far. There's no feed management or easy way
   - Text only, with images, tiled cards
   - Text / HTML expansion
 - Themes - light / dark
-- Implement actual feed management
+- Implement actual feed management 
 - Periodically purge defunct items and vacuum() to clean DB
 - Feed queue monitoring via websocket (or at least smarter stats polling)
 - Remote feed subscription bookmarklet?

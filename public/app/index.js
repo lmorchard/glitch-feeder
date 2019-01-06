@@ -28,7 +28,9 @@ export async function init(appEl) {
     if (queueStats.pending > 0 || queueStats.size > 0) {
       setTimeout(pollStatus, 1000);
     } else if (!initial) {
-      window.location.reload();
+      dispatch(
+        actions.loadFeeds(selectors.feedsUrl(getState()), {})
+      );
     }
   };
   pollStatus(true);
