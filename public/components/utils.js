@@ -45,9 +45,21 @@ export const withClickOnScrollVisibility = conditionFn => WrappedComponent =>
   class extends Component {
     constructor(props) {
       super(props);
+      this._scrollRef = null;
       this.isVisible = false;
       this.scrollTimer = null;
       this.checkVisibility = this.checkVisibility.bind(this);
+    }
+    
+    set scrollRef(ref) {
+      this._scrollRef = ref;
+      if (this._scrollRef) {
+        this._scrollRef.addEventListener("scroll", this.checkVisibility);
+      }
+    }
+    
+    get scrollRef() {
+      return this._scrollRef;
     }
 
     componentWillMount() {
@@ -56,18 +68,6 @@ export const withClickOnScrollVisibility = conditionFn => WrappedComponent =>
 
     componentDidMount() {
       window.addEventListener("scroll", this.checkVisibility);
-    }
-
-    componentWillUpdate() {
-      if (this.scrollRef) {
-        this.scrollRef.removeEventListener("scroll", this.checkVisibility);
-      }
-    }
-
-    componentDidUpdate() {
-      if (this.scrollRef) {
-        this.scrollRef.addEventListener("scroll", this.checkVisibility);
-      }
     }
 
     componentWillUnmount() {
