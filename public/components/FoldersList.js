@@ -3,13 +3,23 @@ import { h } from "https://unpkg.com/preact@8.4.2/dist/preact.mjs?module";
 import FeedItem from "./FeedItem.js";
 
 export const FoldersList = ({
-  folders,
+  folders = {},
+  foldersLoading = false,
   afterLinks,
   handleNewFeedsClick,
   handleAllFeedsClick,
   handleFolderClick,
   handleFolderFeedClick,
 }) => {
+  console.log("FOLDERS", foldersLoading, folders);
+  if (foldersLoading) {
+    return h(
+      "nav",
+      { className: "feedslist loading" },
+      "Loading..."
+    );
+  }
+  
   return h(
     "nav",
     { className: "feedslist" },

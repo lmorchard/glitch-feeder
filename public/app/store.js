@@ -29,12 +29,12 @@ export const defaultState = {
 export const selectors = {
   queueStats: state => state.ui.queueStats,
   isAppLoading: state => state.ui.appLoading,
-  isFolderNavLoading: state => state.ui.folderNavLoading,
   isFeedItemsLoading: state => state.ui.feedItemsLoading,
   feedsUrl: state => state.ui.feedsUrl,
   readAfter: state => state.ui.readAfter,
   apiRoot: state => state.api.root,
   folders: state => state.folders,
+  foldersLoading: state => state.ui.foldersLoading,
   getFolder: state => id => state.folders[id],
   feeds: state => state.feeds,
   getFeed: state => id => state.feeds[id],
@@ -48,6 +48,12 @@ export const actions = createActions(
     mapToObject([
       "loadFolders",
     ], () => fetchJsonWithParams),
+    {
+      loadFeeds: (baseUrl, params) => {
+        const url = urlWithParams(baseUrl, params);
+        return fetchJson(url).then(feeds => ({ url, feeds }));
+      },
+    }
   ),
   "setAppLoading",
   "setQueueStats",
@@ -99,9 +105,7 @@ export const reducers = {
   folders: typeToReducer(
     {
       [actions.loadFolders]: {
-        PENDING: state => state,
-        REJECTED: state => state,
-        FULFILLED: (state, { payload: folders = {} }) => folders,
+        FULFILLED: setFromPayloadFn(({ folders = {}}) => ({ folders })),
       },
     },
     defaultState.folders

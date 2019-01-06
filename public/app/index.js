@@ -64,19 +64,11 @@ export async function init(appEl) {
   dispatch(actions.setReadAfter(after));
 
   dispatch(actions.loadFolders(apiRoot.hrefs.folders, { after }));
-
-  const feedsUrl = urlWithParams(apiRoot.hrefs.feeds, {
+  dispatch(actions.loadFeeds(apiRoot.hrefs.feeds, {
     after,
     limit: feedsLimit,
     itemsLimit: itemsLimit,
-  });
-
-  dispatch(
-    actions.loadFeeds({
-      url: feedsUrl,
-      feeds: await fetchJson(feedsUrl),
-    })
-  );
+  }));
 }
 
 export default { init };
