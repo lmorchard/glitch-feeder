@@ -23,6 +23,7 @@ export const ItemsList = composeComponents(
     feedsUrl,
     feedsLoading,
     feeds = [],
+    feedsRemaining = 0,
     handleMoreItemsClick,
     handleMoreFeedsClick,
     onScrollRef,
@@ -80,7 +81,7 @@ export const ItemsList = composeComponents(
               onClick: handleMoreFeedsClick({ feedsUrl, feeds }),
               ref: onClickableRef,
             },
-            "More feeds"
+            `More feeds (${feedsRemaining})`
           )
       )
     );

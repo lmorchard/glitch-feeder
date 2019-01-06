@@ -28,7 +28,10 @@ export const defaultState = {
     root: null,
   },
   folders: {},
-  feeds: [],
+  feeds: {
+    feeds: [],
+    feedsRemaining: 0,
+  },
 };
 
 export const selectors = {
@@ -41,7 +44,8 @@ export const selectors = {
   foldersLoading: state => state.ui.foldersLoading,
   folders: state => state.folders,
   getFolder: state => id => state.folders[id],
-  feeds: state => state.feeds,
+  feeds: state => state.feeds.feeds,
+  feedsRemaining: state => state.feeds.feedsRemaining,
   getFeed: state => id => state.feeds[id],
 };
 
@@ -118,12 +122,16 @@ export const reducers = {
   feeds: typeToReducer(
     {
       [actions.loadFeeds]: {
-        FULFILLED: (state, { payload: { result = [] } }) => result,
+        FULFILLED: (
+          state,
+          { payload: { result: { feeds = [], feedsRemaining = 0 } = {} } }
+        ) => ({ feeds, feedsRemaining }),
       },
-      [actions.appendFeeds]: (state, { payload: feeds = [] }) => [
-        ...state,
-        ...feeds,
-      ],
+      [actions.appendFeeds]: (state, { payload: { feeds = [] } }) => assign(
+        {}, state, { feeds: [
+          ...state.feeds,
+          ...feeds,
+        ] }),
       [actions.appendFeedItems]: (
         state,
         {

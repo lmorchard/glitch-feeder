@@ -56,13 +56,11 @@ class Feed extends guid(BaseModel) {
     before = null,
     itemsLimit = 0,
   } = {}) {
-    let result;
-
     const decorateWithItemCounts = async (result, single = false) => {
       if (itemsLimit === 0) {
         return result;
       }
-      
+
       result = result
         // Naive eager used here so itemsLimit applies per-feed
         // rather than for all items between feeds
@@ -93,11 +91,11 @@ class Feed extends guid(BaseModel) {
 
       return single ? countItems(await result) : result.map(countItems);
     };
-    
+
     if (id) {
       return decorateWithItemCounts(Feed.query.findById(id), true);
     }
-    
+
     const applyParams = result => {
       if (after) {
         result = result.where("lastNewItem", ">", after);
@@ -113,20 +111,22 @@ class Feed extends guid(BaseModel) {
       }
       return result;
     };
-    
+
     const { feedsCount } = await applyParams(
       this.query()
         .count("* as feedsCount")
         .first()
     );
-    
-    const feeds = await decorateWithItemCounts(applyParams(
-      Feed.query()
-        .orderBy("lastNewItem", "DESC")
-        .orderBy("updated_at", "DESC")
-    ));
 
-    return { feedsCount, feeds };
+    const feeds = await decorateWithItemCounts(
+      applyParams(
+        Feed.query()
+          .orderBy("lastNewItem", "DESC")
+          .orderBy("updated_at", "DESC")
+      )
+    );
+
+    return { feeds, feedsRemaining: Math.max(0, feedsCount - limit) };
   }
 
   static async queryFolders({ after = null, before = null } = {}) {
