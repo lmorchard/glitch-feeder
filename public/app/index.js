@@ -19,7 +19,6 @@ export async function init(appEl) {
 
   const apiRoot = await fetchJson("/api");
   dispatch(actions.setApiRoot(apiRoot));
-  dispatch(actions.setApiRoot("/api"));
   
   // Quick & dirty periodic queue status poll
   // TODO: Switch this over to a websocket!
