@@ -50,6 +50,7 @@ export const selectors = {
   feeds: state => state.feeds.feeds,
   feedsRemaining: state => state.feeds.feedsRemaining,
   getFeed: state => id => state.feeds[id],
+  getFeedItemsAppending: state => id => state.ui.feedItemsAppending[id],
 };
 
 const fetchJsonWithParams = (baseUrl, params, extra = {}) => {
@@ -89,7 +90,7 @@ const setFromPayload = (name, defval) => (state, { payload }) =>
 const setFromPayloadFn = fn => (state, { payload }) =>
   assign({}, state, fn(payload));
 
-const setFeedItemsAppending = (feedId, value) => state =>
+const setFeedItemsAppending = (state, feedId, value) => 
   assign({}, state, {
     feedItemsAppending: assign({}, state.feedItemsAppending, {
       [feedId]: value,
@@ -122,11 +123,11 @@ export const reducers = {
       },
       [actions.appendFeedItems]: {
         PENDING: (state, { meta: { feedId } }) =>
-          setFeedItemsAppending(feedId, true),
+          setFeedItemsAppending(state, feedId, true),
         REJECTED: (state, { payload: reason, meta: { feedId } }) =>
-          setFeedItemsAppending(feedId, "error"),
+          setFeedItemsAppending(state, feedId, "error"),
         FULFILLED: (state, { meta: { feedId } }) =>
-          setFeedItemsAppending(feedId, false),
+          setFeedItemsAppending(state, feedId, false),
       },
       [actions.setApiRoot]: setStatic({ appLoading: false }),
       [actions.setQueueStats]: setFromPayload("queueStats", {}),
