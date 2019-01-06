@@ -1,7 +1,12 @@
 /* global Redux, ReduxActions, ReduxPromiseMiddleware */
 const { createActions, handleActions, combineActions } = ReduxActions;
 const { createStore, combineReducers, compose, applyMiddleware } = Redux;
-const { default: promiseMiddleware, PENDING, FULFILLED, REJECTED } = ReduxPromiseMiddleware;
+const {
+  default: promiseMiddleware,
+  PENDING,
+  FULFILLED,
+  REJECTED,
+} = ReduxPromiseMiddleware;
 const { assign } = Object;
 
 import { fetchJson, urlWithParams, mapToObject } from "./utils.js";
@@ -40,35 +45,26 @@ export const selectors = {
   getFeed: state => id => state.feeds[id],
 };
 
-const fetchJsonWithParams = (url, params) =>
-  fetchJson(urlWithParams(url, params));
+const fetchJsonWithParams = (baseUrl, params) => {
+  const url = urlWithParams(baseUrl, params);
+  return fetchJson(url).then(result => ({ url, result }));
+};
 
 export const actions = createActions(
-  assign(
-    mapToObject([
-      "loadFolders",
-    ], () => fetchJsonWithParams),
-    {
-      loadFeeds: (baseUrl, params) => {
-        const url = urlWithParams(baseUrl, params);
-        return fetchJson(url).then(feeds => ({ url, feeds }));
-      },
-    }
-  ),
+  assign({}, mapToObject([
+    "loadFolders",
+    "loadFeeds",
+  ], () => fetchJsonWithParams)),
   "setAppLoading",
   "setQueueStats",
-  "setFolderNavLoading",
-  "setFeedItemsLoading",
   "setFeedsUrl",
   "setReadAfter",
   "setApiRoot",
-  "loadFeeds",
   "appendFeeds",
   "appendFeedItems"
 );
 
-const setStatic = newState => state =>
-  assign({}, state, newState);
+const setStatic = newState => state => assign({}, state, newState);
 
 const setAsPayload = (state, { payload }) => payload;
 
@@ -86,8 +82,14 @@ export const reducers = {
         REJECTED: setStatic({ foldersLoading: "error" }),
         FULFILLED: setStatic({ foldersLoading: false }),
       },
-      [actions.loadFeeds]:
-        setFromPayloadFn(({ url: feedsUrl }) => ({ feedsUrl })),
+      [actions.loadFeeds]: {
+        PENDING: setStatic({ feedsLoading: true }),
+        REJECTED: setStatic({ feedsLoading: "error" }),
+        FULFILLED: setFromPayloadFn(({ url: feedsUrl }) => ({
+          feedsLoading: false,
+          feedsUrl,
+        })),
+      },
       [actions.setApiRoot]: setStatic({ appLoading: false }),
       [actions.setQueueStats]: setFromPayload("queueStats", {}),
       [actions.setAppLoading]: setFromPayload("appLoading", false),
@@ -107,7 +109,7 @@ export const reducers = {
   folders: typeToReducer(
     {
       [actions.loadFolders]: {
-        FULFILLED: setAsPayload,
+        FULFILLED: (state, { payload: { result = {} } }) => result,
       },
     },
     defaultState.folders
@@ -115,9 +117,9 @@ export const reducers = {
 
   feeds: typeToReducer(
     {
-      [actions.loadFeeds]: (state, { payload: { url, feeds = [] } }) => [
-        ...feeds,
-      ],
+      [actions.loadFeeds]: {
+        FULFILLED: (state, { payload: { result = [] } }) => [...result],
+      },
       [actions.appendFeeds]: (state, { payload: feeds = [] }) => [
         ...state,
         ...feeds,
@@ -152,10 +154,5 @@ export const createAppStore = (initialState, enhancers = []) =>
   createStore(
     combineReducers(reducers),
     initialState,
-    composeEnhancers(
-      applyMiddleware(
-        promiseMiddleware(),
-      ),
-      ...enhancers
-    )
+    composeEnhancers(applyMiddleware(promiseMiddleware()), ...enhancers)
   );

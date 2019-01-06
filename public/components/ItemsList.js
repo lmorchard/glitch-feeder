@@ -12,15 +12,13 @@ export const ItemsList = composeComponents(
   withClickOnScrollVisibility(
     ({ enableInfiniteFeedScroll = true }) => enableInfiniteFeedScroll
   ),
-  withScrollReset(
-    ({ prevProps, props }) => {
-      try {
-        return prevProps.feeds[0].id !== props.feeds[0].id
-      } catch (e) {
-        return false
-      }
+  withScrollReset(({ prevProps, props }) => {
+    try {
+      return prevProps.feeds[0].id !== props.feeds[0].id;
+    } catch (e) {
+      return false;
     }
-  ),
+  }),
   ({
     feedsUrl,
     feedsLoading,
@@ -32,13 +30,9 @@ export const ItemsList = composeComponents(
     onClickableRef,
   }) => {
     if (feedsLoading === true) {
-      return h(
-        "section",
-        { className: "itemslist loading" },
-        "Loading..."
-      );
-    };
-    
+      return h("section", { className: "itemslist loading" }, "Loading...");
+    }
+
     return h(
       "section",
       { className: "itemslist" },

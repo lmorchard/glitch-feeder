@@ -12,21 +12,13 @@ export const FoldersList = ({
   handleFolderFeedClick,
 }) => {
   if (foldersLoading === true) {
-    return h(
-      "nav",
-      { className: "feedslist loading" },
-      "Loading..."
-    );
+    return h("nav", { className: "feedslist loading" }, "Loading...");
   }
-  
+
   if (foldersLoading === "error") {
-    return h(
-      "nav",
-      { className: "feedslist error" },
-      "ERROR!"
-    );
+    return h("nav", { className: "feedslist error" }, "ERROR!");
   }
-  
+
   return h(
     "nav",
     { className: "feedslist" },

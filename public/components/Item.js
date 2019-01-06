@@ -1,6 +1,7 @@
 import { h } from "https://unpkg.com/preact@8.4.2/dist/preact.mjs?module";
 
-const DEFAULT_THUMB_SRC = "https://upload.wikimedia.org/wikipedia/commons/8/8a/PICOL_icon_News.svg";
+const DEFAULT_THUMB_SRC =
+  "https://upload.wikimedia.org/wikipedia/commons/8/8a/PICOL_icon_News.svg";
 
 export const Item = ({
   title,
@@ -47,12 +48,12 @@ export const Item = ({
       "div",
       { className: "details" },
       title && h("a", { className: "title", href: link }, title),
-      text && 
+      text &&
         h(
           "span",
           { className: "text" },
           text.length < 320 ? text : text.substr(0, 320) + "[...]"
-        ),
+        )
     ),
     h(
       "div",

@@ -287,7 +287,7 @@ class Feed extends guid(BaseModel) {
         let charset = contentTypeParams.charset;
         if (!charset) {
           // HACK: Try to guess a charset from previous parsing
-          // Maybe we need to do a speculative parsing instead to 
+          // Maybe we need to do a speculative parsing instead to
           // get XML encoding from doctype?
           let prevCharset = attrs.json.charset;
           if (!prevCharset) {

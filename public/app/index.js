@@ -19,7 +19,7 @@ export async function init(appEl) {
 
   const apiRoot = await fetchJson("/api");
   dispatch(actions.setApiRoot(apiRoot));
-  
+
   // Quick & dirty periodic queue status poll
   // TODO: Switch this over to a websocket!
   const pollStatus = async (initial = false) => {
@@ -64,11 +64,13 @@ export async function init(appEl) {
   dispatch(actions.setReadAfter(after));
 
   dispatch(actions.loadFolders(apiRoot.hrefs.folders, { after }));
-  dispatch(actions.loadFeeds(apiRoot.hrefs.feeds, {
-    after,
-    limit: feedsLimit,
-    itemsLimit: itemsLimit,
-  }));
+  dispatch(
+    actions.loadFeeds(apiRoot.hrefs.feeds, {
+      after,
+      limit: feedsLimit,
+      itemsLimit: itemsLimit,
+    })
+  );
 }
 
 export default { init };
