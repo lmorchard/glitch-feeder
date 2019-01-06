@@ -62,14 +62,15 @@ export async function init(appEl) {
     after = params.get("after");
   }
   dispatch(actions.setReadAfter(after));
+  
+  dispatch(actions.loadFolders(apiRoot.hrefs.folders, { after }));
 
+  /*
   const feedsUrl = urlWithParams(apiRoot.hrefs.feeds, {
     after,
     limit: feedsLimit,
     itemsLimit: itemsLimit,
   });
-
-  const foldersUrl = urlWithParams();
 
   dispatch(
     actions.loadFeeds({
@@ -77,8 +78,7 @@ export async function init(appEl) {
       feeds: await fetchJson(feedsUrl),
     })
   );
-  
-  dispatch(actions.loadFolders(apiRoot.hrefs.folders, { after }));
+  */
 }
 
 export default { init };

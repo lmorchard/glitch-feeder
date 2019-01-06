@@ -7,15 +7,13 @@ const { assign } = Object;
 import { fetchJson, urlWithParams } from "./utils.js";
 import typeToReducer from "../vendor/type-to-reducer.js";
 
-console.log("typetoreducer", typeToReducer);
-
 export const defaultState = {
   ui: {
     queueStats: {
       pending: 0,
       size: 0,
     },
-    appLoading: true,
+    appLoading: false,
     readAfter: null,
     folderNavLoading: true,
     feedItemsLoading: true,
@@ -42,8 +40,10 @@ export const selectors = {
   getFeed: state => id => state.feeds[id],
 };
 
-const fetchJsonWithParams = (url, params) =>
-  fetchJson(urlWithParams(url, params));
+const fetchJsonWithParams = (url, params) => {
+  console.log("FETCH IT", url, params);
+  return fetchJson(urlWithParams(url, params));
+}
 
 export const actions = createActions(
   {
@@ -98,7 +98,11 @@ export const reducers = {
 
   folders: typeToReducer(
     {
-      [actions.loadFolders]: (state, { payload: folders = {} }) => folders,
+      [actions.loadFolders]: {
+        PENDING: state => state,
+        REJECTED: state => state,
+        FULFILLED: (state, { payload: folders = {} }) => folders,
+      },
     },
     defaultState.folders
   ),
