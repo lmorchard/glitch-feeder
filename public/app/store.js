@@ -9,6 +9,7 @@ const {
 } = ReduxPromiseMiddleware;
 const { assign } = Object;
 
+import thunkMiddleware from "https://unpkg.com/redux-thunk@2.3.0/es/index.js";
 import { fetchJson, urlWithParams, mapToObject } from "./utils.js";
 import typeToReducer from "../vendor/type-to-reducer.js";
 
@@ -205,5 +206,8 @@ export const createAppStore = (initialState, enhancers = []) =>
   createStore(
     combineReducers(reducers),
     initialState,
-    composeEnhancers(applyMiddleware(promiseMiddleware()), ...enhancers)
+    composeEnhancers(
+      applyMiddleware(thunkMiddleware, promiseMiddleware()),
+      ...enhancers
+    )
   );

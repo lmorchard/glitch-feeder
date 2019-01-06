@@ -16,10 +16,8 @@ It's early days for this project, so far. There's no feed management or easy way
 
 ## TODO
 
-- Hide "More Feeds" button when no feeds are left to load
+- Change ?after time without reloading the whole page
 - Counts for items in folders, feeds, remaining for more feeds
-- Loading indicators for folders, feeds overall, appending feeds, appending items
-- Move API fetches into multi-part store actions with promises
 - Find a decent way to include HTML content (iframes?)
 - Selectable per-feed views
   - Text only, with images, tiled cards
