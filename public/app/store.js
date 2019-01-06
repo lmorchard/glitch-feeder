@@ -1,4 +1,5 @@
 /* global Redux, ReduxActions */
+import promiseMiddleware from "https://unpkg.com/redux-promise-middleware@5.1.1/dist/es/index.js";
 const { createActions, handleActions, combineActions } = ReduxActions;
 const { createStore, combineReducers, compose } = Redux;
 const { assign } = Object;
