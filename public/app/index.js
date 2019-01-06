@@ -69,9 +69,7 @@ export async function init(appEl) {
     itemsLimit: itemsLimit,
   });
 
-  const foldersUrl = urlWithParams(apiRoot.hrefs.folders, {
-    after,
-  });
+  const foldersUrl = urlWithParams();
 
   dispatch(
     actions.loadFeeds({
@@ -79,7 +77,8 @@ export async function init(appEl) {
       feeds: await fetchJson(feedsUrl),
     })
   );
-  dispatch(actions.loadFolders(await fetchJson(foldersUrl)));
+  
+  dispatch(actions.loadFolders(apiRoot.hrefs.folders, { after }));
 }
 
 export default { init };

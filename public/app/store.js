@@ -4,6 +4,7 @@ const { createStore, combineReducers, compose, applyMiddleware } = Redux;
 const { default: promiseMiddleware, PENDING, FULFILLED, REJECTED } = ReduxPromiseMiddleware;
 const { assign } = Object;
 
+import { fetchJson, urlWithParams } from "./utils.js";
 import typeToReducer from "../vendor/type-to-reducer.js";
 
 console.log("typetoreducer", typeToReducer);
@@ -41,8 +42,13 @@ export const selectors = {
   getFeed: state => id => state.feeds[id],
 };
 
+const fetchJsonWithParams = (url, params) =>
+  fetchJson(urlWithParams(url, params));
+
 export const actions = createActions(
-  {},
+  {
+    loadFolders: fetchJsonWithParams,
+  },
   "setQueueStats",
   "setFolderNavLoading",
   "setFeedItemsLoading",
