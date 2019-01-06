@@ -60,18 +60,19 @@ export const actions = createActions(
   "appendFeedItems"
 );
 
+const setStatic = newState => state => Object.assign({}, state, newState);
+const setWithPayload = fn => (state, { payload }) => Object.assign({}, state, fn(payload));
+
 export const reducers = {
   ui: typeToReducer(
     {
       [actions.loadFolders]: {
-        PENDING: state => state,
-        REJECTED: state => state,
-        FULFILLED: state =>(state, { payload: folders = {} }) => folders,
+        PENDING: setStatic({ foldersLoading: true }),
+        REJECTED: setStatic({ foldersLoading: "error" }),
+        FULFILLED: setStatic({ foldersLoading: false }),
       },
-      [actions.setQueueStats]: (state, { payload: queueStats = {} }) =>
-        assign({}, state, { queueStats }),
-      [actions.setAppLoading]: (state, { payload: appLoading = false }) =>
-        assign({}, state, { appLoading }),
+      [actions.setQueueStats]: setWithPayload((queueStats = {}) => ({ queueStats })),
+      [actions.setAppLoading]: setWithPayload((appLoading = false) => ({ appLoading })),
       [actions.setFolderNavLoading]: (
         state,
         { payload: folderNavLoading = false }

@@ -69,7 +69,7 @@ export async function init(appEl) {
   } catch (e) {
     console.log("HUH", e);
   }
-  /*
+
   const feedsUrl = urlWithParams(apiRoot.hrefs.feeds, {
     after,
     limit: feedsLimit,
@@ -82,7 +82,6 @@ export async function init(appEl) {
       feeds: await fetchJson(feedsUrl),
     })
   );
-  */
 }
 
 export default { init };
