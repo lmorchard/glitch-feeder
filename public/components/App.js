@@ -67,21 +67,21 @@ const bindHandlers = ({
         })
       ),
     handleMoreItemsClick: feed => () => {
-      dispatch(actions.appendFeedItems(
-        feed.id,
-        feed.hrefs.items,
-        {
+      dispatch(
+        actions.appendFeedItems(feed.id, feed.hrefs.items, {
           after,
           before: feed.items[feed.items.length - 1].date,
           limit: itemsLimit,
-        }
-      ));
+        })
+      );
     },
     handleMoreFeedsClick: ({ feedsUrl, feeds }) => () =>
-      dispatch(actions.appendFeeds(feedsUrl, {
-        after,
-        before: feeds[feeds.length - 1].lastNewItem,
-      })),
+      dispatch(
+        actions.appendFeeds(feedsUrl, {
+          after,
+          before: feeds[feeds.length - 1].lastNewItem,
+        })
+      ),
   };
 };
 

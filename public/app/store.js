@@ -52,35 +52,31 @@ export const selectors = {
   getFeed: state => id => state.feeds[id],
 };
 
-const fetchJsonWithParams = (baseUrl, params) => {
+const fetchJsonWithParams = (baseUrl, params, extra = {}) => {
   const url = urlWithParams(baseUrl, params);
-  return fetchJson(url).then(result => ({ url, result }));
+  return fetchJson(url).then(result =>
+    assign(extra, { url, result, params, baseUrl })
+  );
 };
 
 export const actions = createActions(
   assign(
     {
-      appendFeedItems: (feedId, baseUrl, params) =>
-      
-        feed.id,
-        feed.hrefs.items,
-        {
-          after,
-          before: feed.items[feed.items.length - 1].date,
-          limit: itemsLimit,
-        }
-      
+      appendFeedItems: (feedId, baseUrl, params) => ({
+        data: { feedId },
+        promise: fetchJsonWithParams(baseUrl, params, { feedId }),
+      }),
     },
     mapToObject(
-      ["loadFolders", "loadFeeds", "appendFeeds", "appendFeedItems"],
+      ["loadFolders", "loadFeeds", "appendFeeds"],
       () => fetchJsonWithParams
-    )
+    ),
   ),
   "setAppLoading",
   "setQueueStats",
   "setFeedsUrl",
   "setReadAfter",
-  "setApiRoot",
+  "setApiRoot"
 );
 
 const setStatic = newState => state => assign({}, state, newState);
