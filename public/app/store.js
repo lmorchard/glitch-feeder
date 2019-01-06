@@ -13,6 +13,9 @@ import { fetchJson, urlWithParams, mapToObject } from "./utils.js";
 import typeToReducer from "../vendor/type-to-reducer.js";
 
 export const defaultState = {
+  api: {
+    root: null,
+  },
   ui: {
     queueStats: {
       pending: 0,
@@ -24,9 +27,7 @@ export const defaultState = {
     feedsLoading: true,
     feedsAppending: false,
     feedsUrl: null,
-  },
-  api: {
-    root: null,
+    feedItemsAppending: {},
   },
   folders: {},
   feeds: {
@@ -60,7 +61,7 @@ export const actions = createActions(
   assign(
     {},
     mapToObject(
-      ["loadFolders", "loadFeeds", "appendFeeds"],
+      ["loadFolders", "loadFeeds", "appendFeeds", "appendFeedItems"],
       () => fetchJsonWithParams
     )
   ),
@@ -69,7 +70,6 @@ export const actions = createActions(
   "setFeedsUrl",
   "setReadAfter",
   "setApiRoot",
-  "appendFeedItems"
 );
 
 const setStatic = newState => state => assign({}, state, newState);
@@ -101,7 +101,18 @@ export const reducers = {
       [actions.appendFeeds]: {
         PENDING: setStatic({ feedsAppending: true }),
         REJECTED: setStatic({ feedsAppending: "error" }),
-        FULFILLED: setStatic({ feedsAppending: false }),
+        FULFILLED: setFromPayloadFn(({ url: feedsUrl }) => ({
+          feedsAppending: false,
+          feedsUrl,
+        })),
+      },
+      [actions.appendFeeds]: {
+        PENDING: setStatic({ feedsAppending: true }),
+        REJECTED: setStatic({ feedsAppending: "error" }),
+        FULFILLED: setFromPayloadFn(({ url: feedsUrl }) => ({
+          feedsAppending: false,
+          feedsUrl,
+        })),
       },
       [actions.setApiRoot]: setStatic({ appLoading: false }),
       [actions.setQueueStats]: setFromPayload("queueStats", {}),

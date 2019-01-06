@@ -76,15 +76,11 @@ const bindHandlers = ({
       const items = await fetchJson(url);
       dispatch(actions.appendFeedItems({ feedId: feed.id, items }));
     },
-    handleMoreFeedsClick: ({ feedsUrl, feeds }) => async ev => {
-      const lastFeed = feeds[feeds.length - 1];
-      const url = urlWithParams(feedsUrl, {
+    handleMoreFeedsClick: ({ feedsUrl, feeds }) => () =>
+      dispatch(actions.appendFeeds(feedsUrl, {
         after,
-        before: lastFeed.lastNewItem,
-      });
-      const newFeeds = await fetchJson(url);
-      dispatch(actions.appendFeeds(newFeeds));
-    },
+        before: feeds[feeds.length - 1].lastNewItem,
+      })),
   };
 };
 
