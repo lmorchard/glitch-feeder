@@ -82,6 +82,19 @@ const bindHandlers = ({
           before: feeds[feeds.length - 1].lastNewItem,
         })
       ),
+    handleAfterChange: ({ feedsUrl }) => ev => {
+      const after = ev.target.value;
+      dispatch(actions.setReadAfter(after));
+      // dispatch(actions.loadFolders(apiRoot.hrefs.folders, { after }));
+      dispatch(
+        actions.loadFeeds(feedsUrl, {
+          after,
+          before: "",
+          limit: feedsLimit,
+          itemsLimit: itemsLimit,
+        })
+      );    
+    }
   };
 };
 
@@ -106,6 +119,7 @@ const HeaderNav = ({
   readAfter,
   windowLocationHref,
   handleRefreshFeedsClick,
+  handleAfterChange,
 }) => {
   // TODO: Need something more flexible here?
   const afterLinks = [
@@ -121,9 +135,6 @@ const HeaderNav = ({
   ].map(([name, offset]) => [
     name,
     new Date(Date.now() - offset).toISOString(),
-    urlWithParams(windowLocationHref, {
-      after: new Date(Date.now() - offset).toISOString(),
-    }),
   ]);
   afterLinks.sort(rcmp(1));
   let selectedTime = null;
@@ -142,15 +153,14 @@ const HeaderNav = ({
     h(
       "div",
       { className: "appNav" },
-      h("div", {}, feedsUrl),
       h(
         "select",
         {
           className: "afterNav",
-          onChange: ev => (window.location.href = ev.target.value),
+          onChange: handleAfterChange({ feedsUrl }),
         },
-        afterLinks.map(([name, time, href]) =>
-          h("option", { value: href, selected: time === selectedTime }, name)
+        afterLinks.map(([name, time]) =>
+          h("option", { value: time, selected: time === selectedTime }, name)
         )
       ),
       h(

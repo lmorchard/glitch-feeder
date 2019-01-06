@@ -93,7 +93,8 @@ class Feed extends guid(BaseModel) {
     };
 
     if (id) {
-      return decorateWithItemCounts(Feed.query.findById(id), true);
+      return {
+        feeds: [ await decorateWithItemCounts(this.query().findById(id), true);
     }
 
     const applyParams = result => {
@@ -120,7 +121,7 @@ class Feed extends guid(BaseModel) {
 
     const feeds = await decorateWithItemCounts(
       applyParams(
-        Feed.query()
+        this.query()
           .orderBy("lastNewItem", "DESC")
           .orderBy("updated_at", "DESC")
       )
