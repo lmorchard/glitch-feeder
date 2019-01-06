@@ -62,10 +62,10 @@ const fetchJsonWithParams = (baseUrl, params, extra = {}) => {
 export const actions = createActions(
   assign(
     {
-      appendFeedItems: (feedId, baseUrl, params) => ({
-        data: { feedId },
-        promise: fetchJsonWithParams(baseUrl, params, { feedId }),
-      }),
+      appendFeedItems: [
+        (feedId, baseUrl, params) => fetchJsonWithParams(baseUrl, params),
+        (feedId) => ({ feedId }),
+      ],
     },
     mapToObject(
       ["loadFolders", "loadFeeds", "appendFeeds"],
@@ -114,7 +114,22 @@ export const reducers = {
         })),
       },
       [actions.appendFeedItems]: {
-        PENDING: setStatic({ feedsAppending: true }),
+        PENDING: (state, { payload, meta: { feedId } }) => assign(
+          {},
+          state,
+          {
+            feedItemsAppending: assign({}, state.feedItemsAppending, { [feedId]: true })
+          }
+        ),
+        REJECTED: (state, { payload: reason, meta: { feedId } }) => assign(
+          {},
+          state,
+          {
+            feedItemsAppending: assign({}, state.feedItemsAppending, { [feedId]: true })
+          }
+        ),
+        FULFILLED: (state, { payload: { url, result }, meta: { feedId } }) => { },
+        
         REJECTED: setStatic({ feedsAppending: "error" }),
         FULFILLED: setFromPayloadFn(({ url: feedsUrl }) => ({
           feedsAppending: false,
@@ -163,6 +178,9 @@ export const reducers = {
             feedsRemaining,
             feeds: [...state.feeds, ...feeds],
           }),
+      },
+      [actions.appendFeedItems]: {
+        FULFILLED: (state, { payload: { url, result }, meta: { feedId } }) => { },
       },
       [actions.appendFeedItems]: (
         state,
