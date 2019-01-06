@@ -16,7 +16,10 @@ It's early days for this project, so far. There's no feed management or easy way
 
 ## TODO
 
-- Change ?after time without reloading the whole page
+- Reader state in URL to bookmark / refresh at last folder & item view
+  - Update ?after in URL when changed in UI
+- Change ?after to a relative time rather than absolute?
+  - (That way, 4 hours ago isn't 6 hours ago two hours later)
 - Counts for items in folders, feeds, remaining for more feeds
 - Find a decent way to include HTML content (iframes?)
 - Selectable per-feed views
@@ -25,9 +28,7 @@ It's early days for this project, so far. There's no feed management or easy way
 - Themes - light / dark
 - Implement actual feed management
 - Periodically purge defunct items and vacuum() to clean DB
-- Accept maxage selection without full refresh
 - Feed queue monitoring via websocket (or at least smarter stats polling)
-- Reader state in URL to bookmark / refresh at last folder & item view
 - Remote feed subscription bookmarklet?
 - Implement a proper FeedFolder model with sub-folders
 - OPML live playlist subscription
