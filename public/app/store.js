@@ -50,7 +50,8 @@ export const selectors = {
   feeds: state => state.feeds.feeds,
   feedsRemaining: state => state.feeds.feedsRemaining,
   getFeed: state => id => state.feeds[id],
-  getFeedItemsAppending: state => id => state.ui.feedItemsAppending[id],
+  getFeedItemsAppending: state => id =>
+    state.ui.feedItemsAppending[id] || false,
 };
 
 const fetchJsonWithParams = (baseUrl, params, extra = {}) => {
@@ -90,7 +91,7 @@ const setFromPayload = (name, defval) => (state, { payload }) =>
 const setFromPayloadFn = fn => (state, { payload }) =>
   assign({}, state, fn(payload));
 
-const setFeedItemsAppending = (state, feedId, value) => 
+const setFeedItemsAppending = (state, feedId, value) =>
   assign({}, state, {
     feedItemsAppending: assign({}, state.feedItemsAppending, {
       [feedId]: value,

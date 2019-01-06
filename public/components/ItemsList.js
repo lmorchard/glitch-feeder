@@ -50,49 +50,7 @@ export const ItemsList = composeComponents(
         },
         feeds
           .filter(feed => feed.items.length > 0)
-          .map(feed =>
-            h(
-              "li",
-              { className: "feed" },
-              h(
-                "span",
-                { className: "feedtitle" },
-                `${feed.title} (${feed.lastNewItem})`
-              ),
-              h(
-                "ul",
-                { className: "items" },
-                feed.items.map(item => h(Item, item))
-              ),
-              getFeedItemsAppending(feed.id) === true && feed.itemsRemaining > 0 &&
-                h(
-                  "button",
-                  {
-                    disabled: true,
-                    className: "moreItems",
-                  },
-                  `More items loading...`
-                ),
-              getFeedItemsAppending(feed.id) === "error" && feed.itemsRemaining > 0 &&
-                h(
-                  "button",
-                  {
-                    className: "moreItems",
-                    onClick: handleMoreItemsClick(feed),
-                  },
-                  `More items (${feed.itemsRemaining})`
-                ),
-              getFeedItemsAppending(feed.id) === false && feed.itemsRemaining > 0 &&
-                h(
-                  "button",
-                  {
-                    className: "moreItems",
-                    onClick: handleMoreItemsClick(feed),
-                  },
-                  `More items (${feed.itemsRemaining})`
-                )
-            )
-          ),
+          .map(feed => h(FeedItems, {   feed, getFeedItemsAppending, handleModeItemsClick })),
         feedsUrl &&
           feedsAppending &&
           h(
@@ -119,5 +77,55 @@ export const ItemsList = composeComponents(
     );
   }
 );
+
+const FeedItems = ({
+  feed, getFeedItemsAppending, handleModeItemsClick
+}) => {
+            h(
+              "li",
+              { className: "feed" },
+              h(
+                "span",
+                { className: "feedtitle" },
+                `${feed.title} (${feed.lastNewItem})`
+              ),
+              h(
+                "ul",
+                { className: "items" },
+                feed.items.map(item => h(Item, item))
+              ),
+              h(
+                MoreItemsButton,
+                { feed, getFeedItemsAppending, onClick: handleMoreItemsClick(feed) }
+              )
+            )
+          ),
+  
+};
+
+const MoreItemsButton = ({
+  feed,
+  onClick,
+  getFeedItemsAppending,
+}) => {
+  const appending = getFeedItemsAppending(feed.id);
+  const itemsRemaining = feed.itemsRemaining;
+  if (itemsRemaining === 0) {
+    return "";
+  }
+  if (appending === true) {
+    return h("button",
+      { className: "moreItems", disabled: true },
+      `More items loading...`
+    );
+  }
+  return h(
+    "button",
+    { className: "moreItems", onClick },
+    (appending === "error")
+      ? `Failed! Click to again?`
+      : `More items (${itemsRemaining})`
+  );  
+};
 
 export default ItemsList;
