@@ -63,12 +63,7 @@ export async function init(appEl) {
   }
   dispatch(actions.setReadAfter(after));
 
-  console.log("WUT", actions.loadFolders);
-  try {
-    dispatch(actions.loadFolders(apiRoot.hrefs.folders, { after }));
-  } catch (e) {
-    console.log("HUH", e);
-  }
+  dispatch(actions.loadFolders(apiRoot.hrefs.folders, { after }));
 
   const feedsUrl = urlWithParams(apiRoot.hrefs.feeds, {
     after,

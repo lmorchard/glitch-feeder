@@ -13,7 +13,7 @@ export const defaultState = {
       pending: 0,
       size: 0,
     },
-    appLoading: false,
+    appLoading: true,
     readAfter: null,
     foldersLoading: true,
     feedItemsLoading: true,
@@ -49,6 +49,7 @@ export const actions = createActions(
       "loadFolders",
     ], () => fetchJsonWithParams),
   ),
+  "setAppLoading",
   "setQueueStats",
   "setFolderNavLoading",
   "setFeedItemsLoading",
@@ -61,10 +62,13 @@ export const actions = createActions(
 );
 
 const setStatic = newState => state =>
-  Object.assign({}, state, newState);
+  assign({}, state, newState);
 
-const setWithPayload = fn => (state, { payload }) =>
-  Object.assign({}, state, fn(payload));
+const setFromPayload = (name, defval) => (state, { payload }) =>
+  assign({}, state, { [name]: payload || defval });
+
+const setFromPayloadFn = fn => (state, { payload }) =>
+  assign({}, state, fn(payload));
 
 export const reducers = {
   ui: typeToReducer(
@@ -74,34 +78,20 @@ export const reducers = {
         REJECTED: setStatic({ foldersLoading: "error" }),
         FULFILLED: setStatic({ foldersLoading: false }),
       },
-      [actions.setQueueStats]:
-        setWithPayload((queueStats = {}) => ({ queueStats })),
-      [actions.setAppLoading]:
-        setWithPayload((appLoading = false) => ({ appLoading })),
-      [actions.setFolderNavLoading]: (
-        state,
-        { payload: folderNavLoading = false }
-      ) => assign({}, state, { folderNavLoading }),
-      [actions.setFeedItemsLoading]: (
-        state,
-        { payload: feedItemsLoading = false }
-      ) => assign({}, state, { feedItemsLoading }),
-      [actions.setFeedsUrl]: (state, { payload: feedsUrl = null }) =>
-        assign({}, state, { feedsUrl }),
-      [actions.setReadAfter]: (state, { payload: readAfter = null }) =>
-        assign({}, state, { readAfter }),
-      [actions.loadFeeds]: (
-        state,
-        { payload: { url: feedsUrl, feeds = {} } }
-      ) => assign({}, state, { feedsUrl }),
+      [actions.loadFeeds]:
+        setFromPayloadFn(({ url: feedsUrl }) => ({ feedsUrl })),
+      [actions.setApiRoot]: setStatic({ appLoading: false }),
+      [actions.setQueueStats]: setFromPayload("queueStats", {}),
+      [actions.setAppLoading]: setFromPayload("appLoading", false),
+      [actions.setFeedsUrl]: setFromPayload("feedsUrl", null),
+      [actions.setReadAfter]: setFromPayload("readAfter", null),
     },
     defaultState.ui
   ),
 
   api: typeToReducer(
     {
-      [actions.setApiRoot]: (state, { payload: root }) =>
-        assign({}, state, { root }),
+      [actions.setApiRoot]: setFromPayload("root"),
     },
     defaultState.api
   ),
