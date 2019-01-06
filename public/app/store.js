@@ -106,7 +106,7 @@ export const reducers = {
           feedsUrl,
         })),
       },
-      [actions.appendFeeds]: {
+      [actions.appendFeedItems]: {
         PENDING: setStatic({ feedsAppending: true }),
         REJECTED: setStatic({ feedsAppending: "error" }),
         FULFILLED: setFromPayloadFn(({ url: feedsUrl }) => ({
