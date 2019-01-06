@@ -17,6 +17,7 @@ export const Item = ({
   h(
     "li",
     { className: "feeditem" },
+    /*
     h(
       "div",
       {
@@ -41,6 +42,7 @@ export const Item = ({
         }
       ),
     ),
+    */
     h(
       "div",
       { className: "details" },
