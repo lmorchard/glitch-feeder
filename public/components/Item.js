@@ -24,9 +24,7 @@ export const Item = ({
         {
           className: "thumb",
         },
-        h("a", { className: "title", href: link },
-          h("img", { src: thumbUrl })
-        )
+        h("a", { className: "title", href: link }, h("img", { src: thumbUrl }))
       ),
     h(
       "div",

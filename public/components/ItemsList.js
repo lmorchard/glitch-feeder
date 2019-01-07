@@ -65,14 +65,22 @@ export const ItemsList = composeComponents(
   }
 );
 
-const FeedItems = ({ feed, getFeedItemsAppending, handleMoreItemsClick }) =>
-  h(
+const FeedItems = ({ feed, getFeedItemsAppending, handleMoreItemsClick }) => {
+  const feedUrl = new URL(feed.link);
+  
+  return h(
     "li",
     { className: "feed" },
     h(
-      "a",
-      { href: feed.link, className: "feedtitle" },
-      `${feed.title} (${feed.lastNewItem})`
+      "div",
+      { className: "feedtitle" },
+      h("img", {
+        width: 16,
+        height: 16,
+        src: `https://www.google.com/s2/favicons?domain=${feedUrl.hostname}`,
+      }),
+      h("a", { href: feed.link }, `${feed.title}`),
+      h("span", { className: "feeddate" }, `(${feed.lastNewItem})`)
     ),
     h("ul", { className: "items" }, feed.items.map(item => h(Item, item))),
     h(MoreItemsButton, {
@@ -81,6 +89,7 @@ const FeedItems = ({ feed, getFeedItemsAppending, handleMoreItemsClick }) =>
       onClick: handleMoreItemsClick(feed),
     })
   );
+};
 
 const MoreItemsButton = ({ feed, onClick, getFeedItemsAppending }) => {
   const appending = getFeedItemsAppending(feed.id);

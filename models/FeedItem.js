@@ -140,7 +140,7 @@ class FeedItem extends guid(BaseModel) {
       author = "",
       ...json
     } = stripNullValues(item);
-    
+
     if (isNew) {
       try {
         const thumbUrl = await ThumbExtractor.fetch(link);
