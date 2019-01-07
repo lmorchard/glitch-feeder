@@ -85,16 +85,16 @@ const bindHandlers = ({
     handleAfterChange: ({ feedsUrl }) => ev => {
       const after = ev.target.value;
       dispatch(actions.setReadAfter(after));
-      // dispatch(actions.loadFolders(apiRoot.hrefs.folders, { after }));
+      dispatch(actions.loadFolders(apiRoot.hrefs.folders, { after }));
       dispatch(
         actions.loadFeeds(feedsUrl, {
           after,
-          before: "",
+          before: null,
           limit: feedsLimit,
           itemsLimit: itemsLimit,
         })
-      );    
-    }
+      );
+    },
   };
 };
 
@@ -135,7 +135,7 @@ const HeaderNav = ({
     name,
     new Date(Date.now() - offset).toISOString(),
   ]);
-  afterLinks.sort(rcmp(1));
+  //afterLinks.sort(rcmp(1));
   let selectedTime = null;
   for (let [name, time] of afterLinks) {
     if (selectedTime === null || time >= readAfter) {

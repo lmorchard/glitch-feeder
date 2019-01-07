@@ -126,10 +126,10 @@ module.exports = (options, context) => {
   const startPoll = () => {
     Feed.pollAll(fetchQueue, context);
   };
-  
+
   // HACK: auto poll every hour
   setInterval(startPoll, 1000 * 60 * 60);
-  
+
   apiRouter
     .route("/poll")
     .get(async (req, res) => {

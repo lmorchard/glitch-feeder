@@ -51,11 +51,11 @@ export const withClickOnScrollVisibility = conditionFn => WrappedComponent =>
       this.scrollTimer = null;
       this.checkVisibility = this.checkVisibility.bind(this);
     }
-    
+
     get scrollRef() {
       return this._scrollRef;
     }
-    
+
     set scrollRef(ref) {
       if (this._scrollRef) {
         this._scrollRef.removeEventListener("scroll", this.checkVisibility);
@@ -78,18 +78,20 @@ export const withClickOnScrollVisibility = conditionFn => WrappedComponent =>
     componentDidUpdate() {
       this.checkVisibility();
     }
-    
+
     checkVisibility() {
-      if (this.pending || !this.clickableRef || !this.scrollRef || !conditionFn(this.props)) {
-        return;
-      }
       this.pending = true;
       requestAnimationFrame(() => {
-        if (this.isVisible && !isElementInViewport(this.clickableRef)) {
+        if (!conditionFn(this.props)) return;
+        if (!this.isisVisible && isElementInViewport(this.clickableRef)) {
+        }
+        if (this.isVisible && !) {
           this.isVisible = false;
         } else if (!this.isVisible) {
           this.isVisible = true;
-          this.clickableRef.click();
+          if (this.clickableRef) {
+            this.clickableRef.click();
+          }
         }
         this.pending = false;
       });

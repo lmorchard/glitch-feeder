@@ -94,10 +94,8 @@ class Feed extends guid(BaseModel) {
 
     if (id) {
       return {
-        feeds: [
-          await decorateWithItemCounts(this.query().findById(id), true)
-        ],
-        feedsRemaining: 0
+        feeds: [await decorateWithItemCounts(this.query().findById(id), true)],
+        feedsRemaining: 0,
       };
     }
 

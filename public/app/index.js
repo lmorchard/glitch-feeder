@@ -30,9 +30,7 @@ export async function init(appEl) {
       setTimeout(() => pollStatus(true), 1000);
     } else if (inProgress) {
       // Reload current feed view when in progress refresh ends
-      dispatch(
-        actions.loadFeeds(selectors.feedsUrl(getState()), {})
-      );
+      dispatch(actions.loadFeeds(selectors.feedsUrl(getState()), {}));
     }
   };
   pollStatus();
