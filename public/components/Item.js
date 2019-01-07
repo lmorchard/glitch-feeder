@@ -24,24 +24,9 @@ export const Item = ({
         {
           className: "thumb",
         },
-        h("img", {
-          // src: `https://thumb-o-matic.glitch.me/thumb?url=${link}`,
-          src: thumbUrl,
-          /*
-          onLoadStart: ev => {
-            ev.target.parentNode.style.display = "none";
-          },
-          onLoad: ev => {
-            ev.target.parentNode.style.display = "block";
-          },
-          onError: ev => {
-            ev.target.parentNode.style.display = "none";
-          },
-          onAbort: ev => {
-            ev.target.parentNode.style.display = "none";
-          },
-          */
-        })
+        h("a", { className: "title", href: link },
+          h("img", { src: thumbUrl })
+        )
       ),
     h(
       "div",
