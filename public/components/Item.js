@@ -11,15 +11,14 @@ export const Item = ({
   date,
   pubdate,
   created_at,
-  json,
+  json: { thumbUrl },
   html,
   hrefs: { html: htmlSrc },
 }) =>
   h(
     "li",
     { className: "feeditem" },
-    json.image &&
-      json.image.url &&
+    thumbUrl &&
       h(
         "div",
         {
@@ -27,7 +26,8 @@ export const Item = ({
         },
         h("img", {
           // src: `https://thumb-o-matic.glitch.me/thumb?url=${link}`,
-          src: json.image.url,
+          src: thumbUrl,
+          /*
           onLoadStart: ev => {
             ev.target.parentNode.style.display = "none";
           },
@@ -40,6 +40,7 @@ export const Item = ({
           onAbort: ev => {
             ev.target.parentNode.style.display = "none";
           },
+          */
         })
       ),
     h(
