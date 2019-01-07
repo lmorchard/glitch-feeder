@@ -18,7 +18,7 @@ export const Item = ({
   h(
     "li",
     { className: "feeditem" },
-    /*
+    json.image && json.image.url &&
     h(
       "div",
       {
@@ -27,7 +27,8 @@ export const Item = ({
       h(
         "img",
         {
-          src: `https://thumb-o-matic.glitch.me/thumb?url=${link}`,
+          // src: `https://thumb-o-matic.glitch.me/thumb?url=${link}`,
+          src: json.image.url,
           onLoadStart: ev => {
             ev.target.parentNode.style.display = "none";
           },
@@ -43,7 +44,6 @@ export const Item = ({
         }
       ),
     ),
-    */
     h(
       "div",
       { className: "details" },

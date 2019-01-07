@@ -28,10 +28,10 @@ It's early days for this project, so far. There's no feed management or easy way
 - Themes - light / dark
 - Implement actual feed management 
 - Periodically purge defunct items and vacuum() to clean DB
-- Feed queue monitoring via websocket (or at least smarter stats polling)
 - Remote feed subscription bookmarklet?
 - Implement a proper FeedFolder model with sub-folders
 - OPML live playlist subscription
 - Variable maxage per feed with AIMD adjustment based on when new items are found
 - Read / unread flags? (I don't use them)
 - Better feed encoding handling
+- Feed queue monitoring via websocket (or at least smarter stats polling)
