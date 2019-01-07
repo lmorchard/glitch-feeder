@@ -3,7 +3,7 @@ const guid = require("objection-guid")();
 const crypto = require("crypto");
 const cheerio = require("cheerio");
 const { stripNullValues } = require("../lib/common");
-
+const ThumbExtractor = require("../lib/thumb-extractor");
 const BaseModel = require("./BaseModel");
 
 class FeedItem extends guid(BaseModel) {
@@ -114,11 +114,12 @@ class FeedItem extends guid(BaseModel) {
     const existingItem = await FeedItem.query()
       .where({ guid })
       .first();
-    if (!force && existingItem) {
+    const isNew = !existingItem;
+    if (!force && !isNew) {
       // Skip insert/update if there's an existing item and no force option
       // TODO: mind a max-age here?
       return {
-        isNew: false,
+        isNew,
         item: existingItem,
       };
     }
@@ -139,9 +140,11 @@ class FeedItem extends guid(BaseModel) {
       author = "",
       ...json
     } = stripNullValues(item);
+    
+        
 
     return {
-      isNew: !existingItem,
+      isNew,
       item: await this.insertOrUpdate(
         {
           defunct: false,
