@@ -75,11 +75,12 @@ const FeedItems = ({ feed, getFeedItemsAppending, handleMoreItemsClick }) => {
       "div",
       { className: "feedtitle" },
       h("img", {
+        className: "feedicon",
         width: 16,
         height: 16,
         src: `https://www.google.com/s2/favicons?domain=${feedUrl.hostname}`,
       }),
-      h("a", { href: feed.link }, `${feed.title}`),
+      h("a", { className: "feedlink", href: feed.link }, `${feed.title}`),
       h("span", { className: "feeddate" }, `(${feed.lastNewItem})`)
     ),
     h("ul", { className: "items" }, feed.items.map(item => h(Item, item))),

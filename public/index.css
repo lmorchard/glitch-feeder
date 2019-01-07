@@ -154,14 +154,26 @@ main.app section.itemslist .feeds {
 }
 
 main.app section.itemslist .feeds .feed .feedtitle {
-  display: block;
+  display: flex;
   font-weight: bold;
   padding: 0.5em 0.5em;
   margin: 0 0 0.25em 0;
   background-color: rgba(0, 0, 0, 0.1);
   border-radius: 0.25em;
+  justify-content: flex-start;
 }
-
+main.app section.itemslist .feeds .feed .feedtitle img,
+main.app section.itemslist .feeds .feed .feedtitle a,
+main.app section.itemslist .feeds .feed .feedtitle .feeddate {
+  margin-right: 0.5em;
+}
+main.app section.itemslist .feeds .feed .feedtitle .feeddate {
+  display: block;
+  flex-grow: 2;
+  opacity: 0.6;
+  text-align: right;
+}
+  
 main.app section.itemslist .feeds .feed {
   margin: 0 0 1.5em 0;
 }
