@@ -48,7 +48,7 @@ const bindHandlers = ({
       dispatch(
         actions.loadFeeds(feedsUrl, {
           after,
-          before: "",
+          before: null,
           limit: feedsLimit,
           itemsLimit: itemsLimit,
         })
@@ -58,7 +58,7 @@ const bindHandlers = ({
       dispatch(
         actions.loadFeeds(apiRoot.hrefs.feeds, {
           after: selectors.readAfter(state),
-          before: "",
+          before: null,
           limit: feedsLimit,
           itemsLimit: itemsLimit,
         })
@@ -67,7 +67,7 @@ const bindHandlers = ({
       dispatch(
         actions.loadFeeds(folder.href, {
           after: selectors.readAfter(state),
-          before: "",
+          before: null,
           limit: feedsLimit,
           itemsLimit: itemsLimit,
         })
@@ -76,7 +76,7 @@ const bindHandlers = ({
       dispatch(
         actions.loadFeeds(feed.hrefs.self, {
           after: selectors.readAfter(state),
-          before: "",
+          before: null,
           itemsLimit: itemsLimit,
         })
       ),
