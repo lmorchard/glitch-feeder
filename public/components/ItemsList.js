@@ -70,8 +70,8 @@ const FeedItems = ({ feed, getFeedItemsAppending, handleMoreItemsClick }) =>
     "li",
     { className: "feed" },
     h(
-      "span",
-      { className: "feedtitle" },
+      "a",
+      { href: feed.link, className: "feedtitle" },
       `${feed.title} (${feed.lastNewItem})`
     ),
     h("ul", { className: "items" }, feed.items.map(item => h(Item, item))),
