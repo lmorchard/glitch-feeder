@@ -1,7 +1,5 @@
 import { h } from "https://unpkg.com/preact@8.4.2/dist/preact.mjs?module";
 
-import FeedItem from "./FeedItem.js";
-
 export const FoldersList = ({
   folders = {},
   foldersLoading = false,
@@ -38,45 +36,63 @@ export const FoldersList = ({
         )
       ),
       Object.values(folders).map(folder =>
-        h(
-          "li",
-          { className: "folder" },
-          h("input", {
-            id: `reveal-${folder.id}`,
-            type: "checkbox",
-            className: "revealFeeds",
-          }),
-          h(
-            "label",
-            {
-              for: `reveal-${folder.id}`,
-              className: "revealFeedsLabel",
-            },
-            " "
-          ),
-          h(
-            "span",
-            {
-              id: folder.id,
-              className: "foldertitle",
-              onClick: handleFolderClick(folder),
-            },
-            folder.id
-          ),
-          h(
-            "ul",
-            { className: "feeds" },
-            folder.feeds.map(feed =>
-              h(FeedItem, {
-                feed,
-                handleClick: handleFolderFeedClick(feed),
-              })
-            )
-          )
-        )
+        h(FolderItem, { folder, handleFolderClick, handleFolderFeedClick })
       )
     )
   );
 };
+
+const FolderItem = ({ folder, handleFolderClick, handleFolderFeedClick }) =>
+  h(
+    "li",
+    { className: "folder" },
+    h("input", {
+      id: `reveal-${folder.id}`,
+      type: "checkbox",
+      className: "revealFeeds",
+    }),
+    h(
+      "label",
+      {
+        for: `reveal-${folder.id}`,
+        className: "revealFeedsLabel",
+      },
+      " "
+    ),
+    h(
+      "span",
+      {
+        id: folder.id,
+        className: "foldertitle",
+        onClick: handleFolderClick(folder),
+      },
+      folder.id
+    ),
+    h(
+      "ul",
+      { className: "feeds" },
+      folder.feeds.map(feed =>
+        h(FeedItem, {
+          feed,
+          handleClick: handleFolderFeedClick(feed),
+        })
+      )
+    )
+  );
+
+const FeedItem = ({ feed, handleClick }) =>
+  h(
+    "li",
+    { className: "feed" },
+    h(
+      "span",
+      {
+        id: feed.id,
+        className: "feedtitle",
+        onClick: handleClick,
+      },
+      feed.title
+    )
+  );
 
 export default FoldersList;
