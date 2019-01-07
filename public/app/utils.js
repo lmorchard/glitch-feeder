@@ -37,6 +37,15 @@ export const cmp = key => (a, b) => _cmp(key, a, b);
 
 export const rcmp = key => (a, b) => _cmp(key, b, a);
 
+export const stripNullValues = obj => {
+  const out = Object.assign({}, obj);
+  const nullKeys = Object.keys(obj).filter(key => obj[key] === null);
+  for (let key of nullKeys) {
+    delete out[key];
+  }
+  return out;
+};
+
 export const paramsFromUrl = src => {
   const url = new URL(src);
   const params = new URLSearchParams(url.search);

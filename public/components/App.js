@@ -36,17 +36,29 @@ const bindHandlers = ({
   itemsLimit,
 }) => {
   const apiRoot = selectors.apiRoot(state);
-  const after = selectors.readAfter(state);
-
   return {
     handleRefreshFeedsClick: async () => {
       await fetch(apiRoot.hrefs.poll, { method: "POST" });
       pollStatus();
     },
+    handleAfterChange: ({ feedsUrl }) => ev => {
+      const after = ev.target.value;
+      dispatch(actions.setReadAfter(after));
+      dispatch(actions.loadFolders(apiRoot.hrefs.folders, { after }));
+      dispatch(
+        actions.loadFeeds(feedsUrl, {
+          after,
+          before: "",
+          limit: feedsLimit,
+          itemsLimit: itemsLimit,
+        })
+      );
+    },
     handleAllFeedsClick: () =>
       dispatch(
         actions.loadFeeds(apiRoot.hrefs.feeds, {
-          after,
+          after: selectors.readAfter(state),
+          before: "",
           limit: feedsLimit,
           itemsLimit: itemsLimit,
         })
@@ -54,7 +66,8 @@ const bindHandlers = ({
     handleFolderClick: folder => () =>
       dispatch(
         actions.loadFeeds(folder.href, {
-          after,
+          after: selectors.readAfter(state),
+          before: "",
           limit: feedsLimit,
           itemsLimit: itemsLimit,
         })
@@ -62,14 +75,15 @@ const bindHandlers = ({
     handleFolderFeedClick: feed => () =>
       dispatch(
         actions.loadFeeds(feed.hrefs.self, {
-          after,
+          after: selectors.readAfter(state),
+          before: "",
           itemsLimit: itemsLimit,
         })
       ),
     handleMoreItemsClick: feed => () => {
       dispatch(
         actions.appendFeedItems(feed.id, feed.hrefs.items, {
-          after,
+          after: selectors.readAfter(state),
           before: feed.items[feed.items.length - 1].date,
           limit: itemsLimit,
         })
@@ -78,23 +92,10 @@ const bindHandlers = ({
     handleMoreFeedsClick: ({ feedsUrl, feeds }) => () =>
       dispatch(
         actions.appendFeeds(feedsUrl, {
-          after,
+          after: selectors.readAfter(state),
           before: feeds[feeds.length - 1].lastNewItem,
         })
       ),
-    handleAfterChange: ({ feedsUrl }) => ev => {
-      const after = ev.target.value;
-      dispatch(actions.setReadAfter(after));
-      dispatch(actions.loadFolders(apiRoot.hrefs.folders, { after }));
-      dispatch(
-        actions.loadFeeds(feedsUrl, {
-          after,
-          before: null,
-          limit: feedsLimit,
-          itemsLimit: itemsLimit,
-        })
-      );
-    },
   };
 };
 
@@ -135,7 +136,7 @@ const HeaderNav = ({
     name,
     new Date(Date.now() - offset).toISOString(),
   ]);
-  //afterLinks.sort(rcmp(1));
+  afterLinks.sort(rcmp(1));
   let selectedTime = null;
   for (let [name, time] of afterLinks) {
     if (selectedTime === null || time >= readAfter) {

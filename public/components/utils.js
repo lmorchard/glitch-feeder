@@ -83,15 +83,14 @@ export const withClickOnScrollVisibility = conditionFn => WrappedComponent =>
       this.pending = true;
       requestAnimationFrame(() => {
         if (!conditionFn(this.props)) return;
-        if (!this.isisVisible && isElementInViewport(this.clickableRef)) {
-        }
-        if (this.isVisible && !) {
-          this.isVisible = false;
-        } else if (!this.isVisible) {
+        if (!this.clickableRef) return;
+        if (!this.isVisible && isElementInViewport(this.clickableRef)) {
           this.isVisible = true;
           if (this.clickableRef) {
             this.clickableRef.click();
           }
+        } else if (this.isVisible && !isElementInViewport(this.clickableRef)) {
+          this.isVisible = false;
         }
         this.pending = false;
       });
