@@ -377,18 +377,13 @@ class Feed extends guid(BaseModel) {
         );
 
         // Update defunct and new flags for this feed's items
-        await FeedItem.query()
-          .update({ defunct: true })
-          .whereIn("guid", defunctGuids);
-
-        await FeedItem.query()
-          .update({ new: true })
-          .whereIn("guid", Array.from(newGuids));
-
-        await FeedItem.query()
-          .update({ new: false })
-          .where({ feed_id: this.id })
-          .whereNotIn("guid", Array.from(newGuids));
+        // Do this in chunks, because some feeds yield hundreds of defunct
+        const chunkSize = 10;
+        for (let idx = 0; idx < defunctGuids.length; idx += chunkSize) {
+          await FeedItem.query()
+            .update({ defunct: true })
+            .whereIn("guid", defunctGuids.slice(idx, idx + chunkSize));
+        }
 
         log.verbose(
           "Parsed %s items (%s new / %s seen / %s defunct / %s existing) for feed %s",
