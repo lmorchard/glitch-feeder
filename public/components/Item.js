@@ -20,7 +20,7 @@ export const Item = ({
     {
       className: "feeditem",
       style: {
-        "--thumb-url": "url(${thumbUrl})",
+        backgroundImage: "url(${thumbUrl})",
       },
     },
     thumbUrl &&
