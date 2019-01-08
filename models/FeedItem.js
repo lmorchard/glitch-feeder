@@ -170,7 +170,8 @@ class FeedItem extends guid(BaseModel) {
 }
 
 // Relevant date for an item has a bit of variance, so let's
-// work with some fallbacks. Also, treat future dates as *now*.
+// work with some fallbacks. Also, treat future dates as *now*,
+// since I've seen a few feeds behave badly that way.
 const itemDate = ({ date, pubdate }, { created_at } = {}) => {
   const now = new Date();
   const candidate = new Date(date || pubdate || created_at || now);
