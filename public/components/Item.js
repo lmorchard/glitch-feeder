@@ -17,7 +17,12 @@ export const Item = ({
 }) =>
   h(
     "li",
-    { className: "feeditem" },
+    {
+      className: "feeditem",
+      style: {
+        "--thumb-url": "url(${thumbUrl})",
+      },
+    },
     thumbUrl &&
       h(
         "div",
