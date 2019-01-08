@@ -1,3 +1,4 @@
+/* global classNames */
 import { h } from "https://unpkg.com/preact@8.4.2/dist/preact.mjs?module";
 
 const DEFAULT_THUMB_SRC =
@@ -18,11 +19,17 @@ export const Item = ({
   h(
     "li",
     {
-      className: "feeditem",
+      className: classNames(
+        "feeditem",
+        {
+          "hasimage": !!thumbUrl,
+        }
+      ),
       style: {
-        backgroundImage: "url(${thumbUrl})",
+        backgroundImage: thumbUrl ? `url(${thumbUrl})` : null,
       },
     },
+    /*
     thumbUrl &&
       h(
         "div",
@@ -31,6 +38,7 @@ export const Item = ({
         },
         h("a", { className: "title", href: link }, h("img", { src: thumbUrl }))
       ),
+    */
     h(
       "div",
       { className: "details" },
