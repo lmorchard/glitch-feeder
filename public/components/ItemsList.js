@@ -67,7 +67,7 @@ export const ItemsList = composeComponents(
 
 const FeedItems = ({ feed, getFeedItemsAppending, handleMoreItemsClick }) => {
   const feedUrl = new URL(feed.link);
-  
+
   return h(
     "li",
     { className: "feed" },

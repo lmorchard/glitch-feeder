@@ -19,12 +19,9 @@ export const Item = ({
   h(
     "li",
     {
-      className: classNames(
-        "feeditem",
-        {
-          "hasimage": !!thumbUrl,
-        }
-      ),
+      className: classNames("feeditem", {
+        hasimage: !!thumbUrl,
+      }),
       style: {
         backgroundImage: thumbUrl ? `url(${thumbUrl})` : null,
       },

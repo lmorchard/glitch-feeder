@@ -170,9 +170,12 @@ class FeedItem extends guid(BaseModel) {
 }
 
 // Relevant date for an item has a bit of variance, so let's
-// work with some fallbacks
-const itemDate = ({ date, pubdate }, { created_at } = {}) =>
-  new Date(date || pubdate || created_at || Date.now());
+// work with some fallbacks. Also, treat future dates as *now*.
+const itemDate = ({ date, pubdate }, { created_at } = {}) => {
+  const now = new Date();
+  const candidate = new Date(date || pubdate || created_at || now);
+  return candidate < now ? candidate : now;
+};
 
 // Some items don't have a guid, so let's use a hash of the
 // title & link as a rough fallback
