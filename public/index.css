@@ -173,11 +173,10 @@ main.app section.itemslist .feeds .feed .feedtitle .feeddate {
 main.app section.itemslist .feeds .feed {
   margin: 0 0 1.5em 0;
 }
+
 main.app section.itemslist .feeds .feed .items {
   padding: 0;
   list-style-type: none;
-  display: grid;
-  grid-template-columns: 50% 50%;
 }
 
 .feeditem {
@@ -229,6 +228,22 @@ main.app section.itemslist .feeds .feed .items {
   width: 8.5em;
 }
 
+main.app section.itemslist .feeds .feed .items {
+  display: grid;
+  grid-template-columns: repeat(3, 33%);
+}
+
+@media only screen and (max-width: 1600px) {
+  main.app section.itemslist .feeds .feed .items {
+    grid-template-columns: repeat(2, 50%);
+  }
+}
+@media only screen and (max-width: 800px) {
+  main.app section.itemslist .feeds .feed .items {
+    display: block;
+  }
+}
+
 @media only screen and (max-width: 1200px) {
   body {
     font-size: 13px;
@@ -259,11 +274,5 @@ main.app section.itemslist .feeds .feed .items {
   }
   main.app section.itemslist .feeds {
     overflow-y: inherit;
-  }
-}
-
-@media only screen and (max-width: 800px) {
-  main.app section.itemslist .feeds .feed .items {
-    display: block;
   }
 }
