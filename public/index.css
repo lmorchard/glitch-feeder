@@ -228,6 +228,15 @@ main.app section.itemslist .feeds .feed .items {
   width: 8.5em;
 }
 
+.feeditem.hasimage {
+  --thumb-size: 128px;
+  min-height: var(--thumb-size);
+  padding-left: calc(0.5em + var(--thumb-size));
+  background-size: var(--thumb-size);
+  background-repeat: no-repeat;
+  background-position: 0 0.5em;
+}
+
 main.app section.itemslist .feeds .feed .items {
   display: grid;
   grid-template-columns: repeat(3, 33%);
