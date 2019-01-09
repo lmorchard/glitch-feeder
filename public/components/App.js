@@ -42,7 +42,9 @@ const bindHandlers = ({
       pollStatus();
     },
     handleAfterChange: ({ feedsUrl }) => ev => {
-      const after = ev.target.value;
+      const offset = parseInt(ev.target.value);
+      const after = new Date(Date.now() - offset).toISOString();
+
       dispatch(actions.setReadAfter(after));
       dispatch(actions.loadFolders(apiRoot.hrefs.folders, { after }));
       dispatch(
@@ -132,17 +134,7 @@ const HeaderNav = ({
     ["3 days ago", 3 * 24 * 60 * 60 * 1000],
     ["7 days ago", 7 * 24 * 60 * 60 * 1000],
     ["14 days ago", 7 * 24 * 60 * 60 * 1000],
-  ].map(([name, offset]) => [
-    name,
-    new Date(Date.now() - offset).toISOString(),
-  ]);
-  afterLinks.sort(rcmp(1));
-  let selectedTime = null;
-  for (let [name, time] of afterLinks) {
-    if (selectedTime === null || time >= readAfter) {
-      selectedTime = time;
-    }
-  }
+  ];
 
   const pollInProgress = queueStats.pending > 0;
 
@@ -150,19 +142,6 @@ const HeaderNav = ({
     "header",
     { className: "topnav" },
     h("div", { className: "title" }, h("h1", null, "Glitch Feeder")),
-    h(
-      "div",
-      { className: "appNav" },
-      h(
-        "select",
-        {
-          className: "afterNav",
-          onChange: handleAfterChange({ feedsUrl }),
-        },
-        afterLinks.map(([name, time]) =>
-          h("option", { value: time, selected: time === selectedTime }, name)
-        )
-      ),
       h(
         "button",
         {
@@ -173,6 +152,24 @@ const HeaderNav = ({
         pollInProgress
           ? `Refreshing... (${queueStats.pending}/${queueStats.size})`
           : `Refresh feeds (${queueStats.pending}/${queueStats.size})`
+      ),
+    h(
+      "div",
+      { className: "appNav" },
+      h(
+        "select",
+        {
+          className: "afterNav",
+          onChange: handleAfterChange({ feedsUrl }),
+        },
+        afterLinks.map(([name, offset]) =>
+          h("option", { value: offset, key: name }, name)
+        )
+      ),
+      h(
+        "span",
+        { className: "afterCurrent" },
+        readAfter
       )
     )
   );
