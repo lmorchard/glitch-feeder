@@ -1,4 +1,4 @@
-/* global classNames */
+/* global classNames, timeago */
 import { h } from "https://unpkg.com/preact@8.4.2/dist/preact.mjs?module";
 
 const DEFAULT_THUMB_SRC =
@@ -53,7 +53,8 @@ export const Item = ({
       h(
         "a",
         { className: "datelink", href: link },
-        (date || pubdate || created_at).replace("T", " ")
+        timeago.format(date),
+        //(date || pubdate || created_at).replace("T", " ")
       )
     )
   );

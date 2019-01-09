@@ -1,3 +1,4 @@
+/* global timeago */
 import { h } from "https://unpkg.com/preact@8.4.2/dist/preact.mjs?module";
 
 import {
@@ -81,7 +82,7 @@ const FeedItems = ({ feed, getFeedItemsAppending, handleMoreItemsClick }) => {
         src: `https://www.google.com/s2/favicons?domain=${feedUrl.hostname}`,
       }),
       h("a", { className: "feedlink", href: feed.link }, `${feed.title}`),
-      h("span", { className: "feeddate" }, `(${feed.lastNewItem})`)
+      h("span", { className: "feeddate" }, timeago.format(feed.lastNewItem))
     ),
     h("ul", { className: "items" }, feed.items.map(item => h(Item, item))),
     h(MoreItemsButton, {
