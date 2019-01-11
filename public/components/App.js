@@ -142,17 +142,17 @@ const HeaderNav = ({
     "header",
     { className: "topnav" },
     h("div", { className: "title" }, h("h1", null, "Glitch Feeder")),
-      h(
-        "button",
-        {
-          className: "refresh",
-          onClick: handleRefreshFeedsClick,
-          disabled: pollInProgress,
-        },
-        pollInProgress
-          ? `Refreshing... (${queueStats.pending}/${queueStats.size})`
-          : `Refresh feeds (${queueStats.pending}/${queueStats.size})`
-      ),
+    h(
+      "button",
+      {
+        className: "refresh",
+        onClick: handleRefreshFeedsClick,
+        disabled: pollInProgress,
+      },
+      pollInProgress
+        ? `Refreshing... (${queueStats.pending}/${queueStats.size})`
+        : `Refresh feeds (${queueStats.pending}/${queueStats.size})`
+    ),
     h(
       "div",
       { className: "appNav" },
@@ -166,11 +166,7 @@ const HeaderNav = ({
           h("option", { value: offset, key: name }, name)
         )
       ),
-      h(
-        "span",
-        { className: "afterCurrent" },
-        readAfter
-      )
+      h("span", { className: "afterCurrent" }, readAfter)
     )
   );
 };

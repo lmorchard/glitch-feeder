@@ -7,13 +7,17 @@ const cheerio = require("cheerio");
 module.exports = (init, program) => {
   program
     .command("add-feed [url]")
-    .description("Add a new feed subscription by feed URL or discovered via HTML URL")
+    .description(
+      "Add a new feed subscription by feed URL or discovered via HTML URL"
+    )
     .action(init(command));
 };
 
 async function command(url, options, context) {
   const { models, log, exit } = context;
   const { knex, Feed } = models;
+
+  let feedUrl = url;
 
   let response, body;
   try {
@@ -23,24 +27,27 @@ async function command(url, options, context) {
     log.error("Failed to fetch URL: %s", e);
     exit();
   }
-  
+
   try {
     const $ = cheerio.load(body);
     const links = $('link[type*="rss"], link[type*="atom"], link[type*="rdf"]');
     if (links.length > 0) {
       log.verbose(
         "Found feed links: %s",
-        links.map((i, el) => $(el).attr("href")).get().join(", ")
+        links
+          .map((i, el) => $(el).attr("href"))
+          .get()
+          .join(", ")
       );
-      const resourceUrl = links.first().attr("href");
-      response = await fetchResource({ resourceUrl });
+      feedUrl = links.first().attr("href");
+      response = await fetchResource({ resourceUrl: feedUrl });
       body = await response.text();
     }
   } catch (e) {
     log.error("Failed to discover feed: %s", e);
     exit();
   }
-  
+
   let meta;
   try {
     const bodyStream = new stream.Readable();
@@ -58,18 +65,17 @@ async function command(url, options, context) {
   }
 
   try {
-    const { title, description, link, xmlurl } = meta;
-    const feed = await Feed.importFeed({ { title, description, link, xmlurl 
-      title = "",
-      text = "",
-      description: subtitle = "",
-      xmlurl: resourceUrl = "",
-      htmlurl: link = "",
-      folder = "",
-      ...json
-    } = item;
+    const { title, description, link } = meta;
+    const feed = await Feed.importFeed(
+      { title, description, link, xmlurl: feedUrl },
+      context
+    );
+    log.info("Added feed %s (%s) %s", feed.title, feed.resourceUrl, feed.id);
+  } catch (e) {
+    log.error("Failed to import feed: %s", e);
+    exit();
+  }
 
-  
   exit();
 }
 

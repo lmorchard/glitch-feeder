@@ -53,7 +53,7 @@ export const Item = ({
       h(
         "a",
         { className: "datelink", href: link },
-        timeago.format(date),
+        timeago.format(date)
         //(date || pubdate || created_at).replace("T", " ")
       )
     )

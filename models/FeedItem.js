@@ -167,21 +167,21 @@ class FeedItem extends guid(BaseModel) {
       ),
     };
   }
-    
+
   static async purgeDefunct({ log }) {
     // TODO: Make maxDefunctAge configurable?
     const THREE_DAYS = 3 * 24 * 60 * 60 * 1000;
-    const maxDefunctAge = (new Date(Date.now() - THREE_DAYS)).toISOString(); 
-    
+    const maxDefunctAge = new Date(Date.now() - THREE_DAYS).toISOString();
+
     const numDeleted = await this.query()
       .where("defunct", true)
       .where("date", "<", maxDefunctAge)
       .del();
     log.verbose("Purged %s defunct items", numDeleted);
-    
+
     await this.knex().raw("vacuum");
     log.verbose("Vacuumed database.");
-    
+
     return numDeleted;
   }
 }

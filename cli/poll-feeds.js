@@ -32,7 +32,7 @@ async function command(options, context) {
 
   await Feed.pollAll(fetchQueue, context, options);
   await FeedItem.purgeDefunct(context);
-  
+
   log.info("Feed polling complete. (%sms)", Date.now() - timeStart);
 
   clearInterval(queueStatusTimer);
