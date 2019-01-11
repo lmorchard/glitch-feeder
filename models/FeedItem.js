@@ -179,8 +179,8 @@ class FeedItem extends guid(BaseModel) {
       .del();
     log.verbose("Purged %s defunct items", numDeleted);
     
-    await this.query().raw("vacuum");
-    log.debug("Vacuumed database.");
+    await this.knex().raw("vacuum");
+    log.verbose("Vacuumed database.");
     
     return numDeleted;
   }

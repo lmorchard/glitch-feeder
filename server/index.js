@@ -125,7 +125,7 @@ module.exports = (options, context) => {
 
   const startPoll = async () => {
     await Feed.pollAll(fetchQueue, context);
-    await Feed.purgeAll();
+    await FeedItem.purgeDefunct(context);
   };
 
   // HACK: auto poll every hour

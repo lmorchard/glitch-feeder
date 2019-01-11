@@ -21,6 +21,7 @@ It's early days for this project, so far. There's no feed management or easy way
 - Change ?after to a relative time rather than absolute?
   - (That way, 4 hours ago isn't 6 hours ago two hours later)
 - Counts for items in folders, feeds, remaining for more feeds
+- Filters (keyword, etc) for omitting / searching feed items 
 - Find a decent way to include HTML content (iframes?)
 - Selectable per-feed views
   - Text only, with images, tiled cards
