@@ -128,8 +128,8 @@ module.exports = (options, context) => {
     await FeedItem.purgeDefunct(context);
   };
 
-  // HACK: auto poll every hour
-  // setInterval(startPoll, 1000 * 60 * 60);
+  // HACK: auto poll periodically
+  setInterval(startPoll, 2 * 60 * 60 * 1000);
 
   apiRouter
     .route("/poll")
