@@ -15,6 +15,25 @@ async function command(url, options, context) {
   const { knex, Feed } = models;
 
   log.debug("URL", url);
+
+  let response;
+  try {
+    response = await fetchResource({
+      resourceUrl: url,
+    });
+  } catch (e) {
+    log.error("Failed to fetch URL: %s", e);
+    exit();
+  }
+  
+  let bodyStream = response.body;
+  
+  const { meta, items } = await parseFeedStream(
+    { stream: bodyStream, resourceUrl: url },
+    context
+  );
+
+  console.log("FEED META", meta);
   
   exit();
 }
