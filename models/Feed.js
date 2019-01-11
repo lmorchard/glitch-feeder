@@ -226,7 +226,7 @@ class Feed extends guid(BaseModel) {
     return feed.pollFeed(context, options);
   }
 
-  async pollFeed(context, options) {
+  async pollFeed(context, options = {}) {
     const { log } = context;
 
     const { force = false, timeout = 20000, maxage = 30 * 60 * 1000 } = options;

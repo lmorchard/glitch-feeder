@@ -19,12 +19,12 @@ async function command(idOrUrl, options, context) {
     .where("id", idOrUrl)
     .orWhere("resourceUrl", idOrUrl)
     .orWhere("link", idOrUrl);
-  
+
   if (feeds.length === 0) {
     log.info("No feeds found.");
     return exit();
   }
-  
+
   if (feeds.length > 1) {
     log.info("Found multiple feeds:");
     for (let feed of feeds) {
@@ -33,11 +33,13 @@ async function command(idOrUrl, options, context) {
     log.info("Try picking one by ID, none deleted.");
     return exit();
   }
-  
+
   const feed = feeds[0];
-  const itemCount = await FeedItem.query().where("feed_id", feed.id).del();
+  const itemCount = await FeedItem.query()
+    .where("feed_id", feed.id)
+    .del();
   const feedCount = await feed.$query().del();
-  
+
   log.info("Deleted %s feed and %s items.", feedCount, itemCount);
   exit();
 }

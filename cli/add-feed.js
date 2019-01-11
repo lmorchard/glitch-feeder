@@ -10,6 +10,7 @@ module.exports = (init, program) => {
     .description(
       "Add a new feed subscription by feed URL or discovered via HTML URL"
     )
+    .option("-f, --folder [name]", "Folder name for the new feed")
     .action(init(command));
 };
 
@@ -25,7 +26,7 @@ async function command(url, options, context) {
     body = await response.text();
   } catch (e) {
     log.error("Failed to fetch URL: %s", e);
-    exit();
+    return exit();
   }
 
   try {
@@ -45,7 +46,7 @@ async function command(url, options, context) {
     }
   } catch (e) {
     log.error("Failed to discover feed: %s", e);
-    exit();
+    return exit();
   }
 
   let meta;
@@ -61,21 +62,33 @@ async function command(url, options, context) {
     ));
   } catch (e) {
     log.error("Failed to fetch feed: %s", e);
-    exit();
+    return exit();
   }
 
+  let feed;
   try {
-    console.log("META", meta);
-    return exit();
     const { title, description, link } = meta;
-    const feed = await Feed.importFeed(
-      { title, description, link, xmlurl: feedUrl },
+    feed = await Feed.importFeed(
+      {
+        title,
+        description,
+        htmlurl: link,
+        xmlurl: feedUrl,
+        folder: options.folder,
+      },
       context
     );
     log.info("Added feed %s (%s) %s", feed.title, feed.resourceUrl, feed.id);
   } catch (e) {
     log.error("Failed to import feed: %s", e);
-    exit();
+    return exit();
+  }
+  
+  try {
+    await feed.pollFeed(context);
+  } catch (e) {
+    log.error("Failed to poll feed: %s", e);
+    return exit();
   }
 
   exit();
