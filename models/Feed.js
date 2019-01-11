@@ -213,16 +213,6 @@ class Feed extends guid(BaseModel) {
       feedIds.map(({ id }) => () => this.pollFeedById(id, context, options))
     );
   }
-  
-  static async purgeAll() {
-    const THREE_DAYS = 3 * 24 * 60 * 60 * 1000;
-    const maxDefunctAge = (new Date(Date.now() - THREE_DAYS)).toISOString(); 
-    await this.query()
-      .where("defunct", true)
-      .where("date", "<", maxDefunctAge)
-      .del();
-    
-  }
 
   static async pollFeedById(id, context, options) {
     const feed = await this.query()
@@ -234,7 +224,7 @@ class Feed extends guid(BaseModel) {
   async pollFeed(context, options) {
     const { log } = context;
 
-    const { force = false, timeout = 10000, maxage = 10 * 60 * 1000 } = options;
+    const { force = false, timeout = 20000, maxage = 30 * 60 * 1000 } = options;
 
     const attrs = Object.assign(
       {},

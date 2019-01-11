@@ -123,8 +123,9 @@ module.exports = (options, context) => {
     `);
   });
 
-  const startPoll = () => {
-    Feed.pollAll(fetchQueue, context);
+  const startPoll = async () => {
+    await Feed.pollAll(fetchQueue, context);
+    await Feed.purgeAll();
   };
 
   // HACK: auto poll every hour
