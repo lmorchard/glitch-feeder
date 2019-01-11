@@ -15,8 +15,6 @@ async function command(url, options, context) {
   const { models, log, exit } = context;
   const { knex, Feed } = models;
 
-  log.debug("URL", url);
-
   let response, body;
   try {
     response = await fetchResource({ resourceUrl: url });
@@ -29,20 +27,48 @@ async function command(url, options, context) {
   try {
     const $ = cheerio.load(body);
     const links = $('link[type*="rss"], link[type*="atom"], link[type*="rdf"]');
-    
-  console.log("links", links.first().attr("href"));
-
-  const bodyStream = new stream.Readable();
-  bodyStream._read = () => {};
-  bodyStream.push(body);
-  bodyStream.push(null);
+    if (links.length > 0) {
+      log.verbose(
+        "Found feed links: %s",
+        links.map((i, el) => $(el).attr("href")).get().join(", ")
+      );
+      const resourceUrl = links.first().attr("href");
+      response = await fetchResource({ resourceUrl });
+      body = await response.text();
+    }
+  } catch (e) {
+    log.error("Failed to discover feed: %s", e);
+    exit();
+  }
   
-  const { meta, items } = await parseFeedStream(
-    { stream: bodyStream, resourceUrl: url },
-    context
-  );
+  let meta;
+  try {
+    const bodyStream = new stream.Readable();
+    bodyStream._read = () => {};
+    bodyStream.push(body);
+    bodyStream.push(null);
 
-  console.log("FEED META", meta);
+    ({ meta } = await parseFeedStream(
+      { stream: bodyStream, resourceUrl: url },
+      context
+    ));
+  } catch (e) {
+    log.error("Failed to fetch feed: %s", e);
+    exit();
+  }
+
+  try {
+    const { title, description, link, xmlurl } = meta;
+    const feed = await Feed.importFeed({ { title, description, link, xmlurl 
+      title = "",
+      text = "",
+      description: subtitle = "",
+      xmlurl: resourceUrl = "",
+      htmlurl: link = "",
+      folder = "",
+      ...json
+    } = item;
+
   
   exit();
 }
