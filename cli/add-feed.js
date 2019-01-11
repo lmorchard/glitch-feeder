@@ -17,20 +17,19 @@ async function command(url, options, context) {
 
   log.debug("URL", url);
 
-  let response;
+  let response, body;
   try {
-    response = await fetchResource({
-      resourceUrl: url,
-    });
+    response = await fetchResource({ resourceUrl: url });
+    body = await response.text();
   } catch (e) {
     log.error("Failed to fetch URL: %s", e);
     exit();
   }
   
-  const body = await response.text();
-  
-  const $ = cheerio.load(body);
-  const links = $('link[type*="rss"], link[type*="atom"], link[type*="rdf"]');
+  try {
+    const $ = cheerio.load(body);
+    const links = $('link[type*="rss"], link[type*="atom"], link[type*="rdf"]');
+    
   console.log("links", links.first().attr("href"));
 
   const bodyStream = new stream.Readable();
