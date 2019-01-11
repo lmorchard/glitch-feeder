@@ -65,6 +65,8 @@ async function command(url, options, context) {
   }
 
   try {
+    console.log("META", meta);
+    return exit();
     const { title, description, link } = meta;
     const feed = await Feed.importFeed(
       { title, description, link, xmlurl: feedUrl },

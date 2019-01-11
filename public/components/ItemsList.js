@@ -67,7 +67,13 @@ export const ItemsList = composeComponents(
 );
 
 const FeedItems = ({ feed, getFeedItemsAppending, handleMoreItemsClick }) => {
-  const feedUrl = new URL(feed.link);
+  let feedHostname;
+  try {
+    const feedUrl = new URL(feed.link);
+    feedHostname = feedUrl.hostname;
+  } catch (e) {
+    console.log("Bad feed link for", feed.title);
+  }
 
   return h(
     "li",
@@ -79,7 +85,7 @@ const FeedItems = ({ feed, getFeedItemsAppending, handleMoreItemsClick }) => {
         className: "feedicon",
         width: 16,
         height: 16,
-        src: `https://www.google.com/s2/favicons?domain=${feedUrl.hostname}`,
+        src: `https://www.google.com/s2/favicons?domain=${feedHostname}`,
       }),
       h("a", { className: "feedlink", href: feed.link }, `${feed.title}`),
       h("span", { className: "feeddate" }, timeago.format(feed.lastNewItem))
