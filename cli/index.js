@@ -11,7 +11,7 @@ function main(argv) {
     .option("-v, --verbose", "Verbose output", false);
 
   // TODO: list directory for modules?
-  const commandModules = ["opml-import", "poll-feeds", "server"];
+  const commandModules = ["add-feed", "opml-import", "poll-feeds", "server"];
   commandModules.forEach(name => require(`./${name}`)(init, program));
 
   program.parse(argv);

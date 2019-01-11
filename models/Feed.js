@@ -417,7 +417,7 @@ class Feed extends guid(BaseModel) {
 
 async function fetchResource({
   resourceUrl,
-  prevHeaders,
+  prevHeaders = {},
   timeout = 10000,
   force = false,
 }) {
