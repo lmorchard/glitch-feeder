@@ -2,6 +2,7 @@ const FeedParser = require("feedparser");
 const stream = require("stream");
 const AbortController = require("abort-controller");
 const fetch = require("node-fetch");
+const cheerio = require("cheerio");
 
 module.exports = (init, program) => {
   program
@@ -26,7 +27,16 @@ async function command(url, options, context) {
     exit();
   }
   
-  let bodyStream = response.body;
+  const body = await response.text();
+  
+  const $ = cheerio.load(body);
+  const links = $('link[type*="rss"], link[type*="atom"], link[type*="rdf"]');
+  console.log("links", links.first().attr("href"));
+
+  const bodyStream = new stream.Readable();
+  bodyStream._read = () => {};
+  bodyStream.push(body);
+  bodyStream.push(null);
   
   const { meta, items } = await parseFeedStream(
     { stream: bodyStream, resourceUrl: url },
