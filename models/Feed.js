@@ -13,6 +13,11 @@ const { assign } = Object;
 
 const BaseModel = require("./BaseModel");
 
+// Some feeds have an outrageous number of items (e.g. > 500)
+// and I'd like to put a clamp on that
+// TODO: make MAX_ITEMS_TO_IMPORT configurable?
+const MAX_ITEMS_TO_IMPORT = 100;
+
 class Feed extends guid(BaseModel) {
   static get tableName() {
     return "Feeds";
@@ -352,7 +357,7 @@ class Feed extends guid(BaseModel) {
         const seenGuids = new Set();
 
         let newestDate = null;
-        for (let rawItem of items) {
+        for (let rawItem of items.slice(0, MAX_ITEMS_TO_IMPORT)) {
           const { isNew, item } = await FeedItem.importItem(
             this,
             rawItem,
