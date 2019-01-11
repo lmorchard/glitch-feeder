@@ -17,7 +17,7 @@ module.exports = (options, context) => {
   app.use(express.static("public"));
 
   app.get("/", function(request, response) {
-    response.sendFile(__dirname + "/views/index.html");
+    response.sendFile(__dirname + "/../public/index.html");
   });
 
   app.get("/api", async (req, res) => {
@@ -128,7 +128,7 @@ module.exports = (options, context) => {
   };
 
   // HACK: auto poll every hour
-  setInterval(startPoll, 1000 * 60 * 60);
+  // setInterval(startPoll, 1000 * 60 * 60);
 
   apiRouter
     .route("/poll")
