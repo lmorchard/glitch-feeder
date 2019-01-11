@@ -143,10 +143,12 @@ class FeedItem extends guid(BaseModel) {
 
     if (isNew) {
       try {
+        log.debug("Start thumb extract for %s", link);
         const thumbUrl = await ThumbExtractor.fetch(link);
         json.thumbUrl = thumbUrl;
+        log.debug("Finish thumb extract for %s - %s", link, thumbUrl);
       } catch (e) {
-        /* no-op */
+        log.error("Failed thumb extract for %s", link);
       }
     }
 
