@@ -14,6 +14,7 @@ export const ItemsList = composeComponents(
     ({ enableInfiniteFeedScroll = true }) => enableInfiniteFeedScroll
   ),
   withScrollReset(({ prevProps, props }) => {
+    return false;
     try {
       return prevProps.feeds[0].id !== props.feeds[0].id;
     } catch (e) {
