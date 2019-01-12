@@ -12,7 +12,14 @@ module.exports = (options, context) => {
 
   const fetchQueue = new PQueue({
     concurrency: 8,
-    queueCLass: MetaPriorityQueue,
+    queueClass: MetaPriorityQueue({
+      onAdd: meta => {
+      },
+      onRun: meta => {
+      },
+      onResolved: meta => {
+      },
+    }),
   });
 
   var app = express();
