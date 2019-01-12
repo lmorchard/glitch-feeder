@@ -259,7 +259,7 @@ class Feed extends guid(BaseModel) {
 
     log.debug("Starting poll of %s", title);
 
-    if (disabled === true) {
+    if (disabled) {
       log.verbose("Skipping disabled feed %s", title);
       return;
     }
