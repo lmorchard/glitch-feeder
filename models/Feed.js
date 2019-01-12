@@ -219,12 +219,14 @@ class Feed extends guid(BaseModel) {
     const { log } = context;
     const feeds = await this.query().select("id", "title");
     log.debug("Enqueueing %s feeds to poll", feeds.length);
-    for (let { id, title } of feeds) {
-      fetchQueue.add(
-        () => this.pollFeedById(id, context, options),
-        { id, title },
-      );
-    }
+    return Promise.all(
+      feeds.map(({ id, title }) =>
+        fetchQueue.add(
+          () => this.pollFeedById(id, context, options),
+          { meta: { id, title } },
+        )
+      )
+    );
   }
 
   static async pollFeedById(id, context, options) {
