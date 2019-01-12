@@ -19,7 +19,7 @@ module.exports = (options, context) => {
   app.get("/", function(request, response) {
     response.sendFile(__dirname + "/../public/index.html");
   });
-
+ 
   app.get("/api", async (req, res) => {
     res.json({
       hrefs: {
