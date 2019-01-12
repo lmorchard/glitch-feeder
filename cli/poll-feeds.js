@@ -1,4 +1,5 @@
 const PQueue = require("p-queue");
+const { MetaPriorityQueue } = require("../lib/queue");
 
 module.exports = (init, program) => {
   program
@@ -12,8 +13,6 @@ async function command(options, context) {
   const { models, log, exit } = context;
   const { knex, Feed, FeedItem } = models;
 
-  const fetchQueue = new PQueue({ concurrency: 8 });
-
   const timeStart = Date.now();
 
   const { count } = await knex
@@ -21,6 +20,21 @@ async function command(options, context) {
     .count({ count: "*" })
     .first();
   log.info("Polling %s feeds...", count);
+
+  const fetchQueue = new PQueue({
+    concurrency: 8,
+    queueClass: MetaPriorityQueue({
+      onAdd: meta => {
+        log.debug("Fetch queue add %s", JSON.stringify(meta));
+      },
+      onRun: meta => {
+        log.debug("Fetch queue run %s", JSON.stringify(meta));
+      },
+      onResolved: meta => {
+        log.debug("Fetch queue resolved %s", JSON.stringify(meta));
+      },
+    }),
+  });
 
   const queueStatusTimer = setInterval(() => {
     log.verbose(

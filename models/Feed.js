@@ -217,11 +217,14 @@ class Feed extends guid(BaseModel) {
 
   static async pollAll(fetchQueue, context, options = {}) {
     const { log } = context;
-    const feedIds = await this.query().select("id");
-    log.debug("Enqueueing %s feeds to poll", feedIds.length);
-    return fetchQueue.addAll(
-      feedIds.map(({ id }) => () => this.pollFeedById(id, context, options))
-    );
+    const feeds = await this.query().select("id", "title");
+    log.debug("Enqueueing %s feeds to poll", feeds.length);
+    for (let { id, title } of feeds) {
+      fetchQueue.add(
+        () => this.pollFeedById(id, context, options),
+        { id, title },
+      );
+    }
   }
 
   static async pollFeedById(id, context, options) {
