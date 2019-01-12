@@ -2,7 +2,7 @@ var express = require("express");
 require("express-async-errors");
 var bodyParser = require("body-parser");
 const PQueue = require("p-queue");
-const { MetaPriorityQueue } = require("../queue");
+const { MetaPriorityQueue } = require("../lib/queue");
 const { indexBy } = require("../lib/common");
 
 module.exports = (options, context) => {
