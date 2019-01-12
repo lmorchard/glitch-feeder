@@ -2,14 +2,18 @@ var express = require("express");
 require("express-async-errors");
 var bodyParser = require("body-parser");
 const PQueue = require("p-queue");
-const { indexBy } = require("../lib/common.js");
+const { MetaPriorityQueue } = require("../queue");
+const { indexBy } = require("../lib/common");
 
 module.exports = (options, context) => {
   const { config, models, log } = context;
   const { knex, Feed, FeedItem } = models;
   const { API_BASE_PATH, API_BASE_URL } = config;
 
-  const fetchQueue = new PQueue({ concurrency: 8 });
+  const fetchQueue = new PQueue({
+    concurrency: 8,
+    queueCLass: MetaPriorityQueue,
+  });
 
   var app = express();
   app.use(bodyParser.urlencoded({ extended: true }));
