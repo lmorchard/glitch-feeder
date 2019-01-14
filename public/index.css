@@ -253,7 +253,7 @@ main.app section.itemslist .feeds .feed .items {
 }
 
 .feeditem.hasimage {
-  --thumb-size: 128px;
+  --thumb-size: 96px;
   min-height: var(--thumb-size);
   padding-left: calc(1.25em + var(--thumb-size));
   background-size: var(--thumb-size);
