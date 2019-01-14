@@ -148,7 +148,6 @@ main.app section.itemslist .feeds {
   height: 100%;
   overflow-y: auto;
   overflow-x: hidden;
-  max-width: 100%;
 }
 
 main.app section.itemslist .feeds .feed .feedtitle {
@@ -313,6 +312,7 @@ main.app section.itemslist .feeds .feed .items {
     overflow-y: inherit;
   }
   main.app section.itemslist .feeds {
+    max-width: calc(100% - 0.5em);
     overflow-y: inherit;
   }
 }

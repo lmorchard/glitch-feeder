@@ -16,6 +16,12 @@ It's early days for this project, so far. There's no feed management or easy way
 
 ## TODO
 
+- Per-item buttons to click for:
+  - Expanded text summary
+  - Pop-up HTML view
+- Selectable per-feed views
+  - Text only, with images, tiled cards
+  - Text / HTML expansion
 - Reader state in URL to bookmark / refresh at last folder & item view
   - Update ?after in URL when changed in UI
 - Change ?after to a relative time rather than absolute?
@@ -23,9 +29,6 @@ It's early days for this project, so far. There's no feed management or easy way
 - Counts for items in folders, feeds, remaining for more feeds
 - Filters (keyword, etc) for omitting / searching feed items 
 - Find a decent way to include HTML content (iframes?)
-- Selectable per-feed views
-  - Text only, with images, tiled cards
-  - Text / HTML expansion
 - Themes - light / dark
 - Implement actual feed management 
 - Periodically purge defunct items and vacuum() to clean DB
