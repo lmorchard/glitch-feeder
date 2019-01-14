@@ -157,6 +157,7 @@ main.app section.itemslist .feeds .feed .feedtitle {
   background-color: rgba(0128, 128, 128, 0.3);
   border-radius: 0.25em;
   justify-content: flex-start;
+  box-shadow: 4px 4px 4px rgba(0, 0, 0, 0.1);
 }
 main.app section.itemslist .feeds .feed .feedtitle img,
 main.app section.itemslist .feeds .feed .feedtitle a,
@@ -195,17 +196,22 @@ main.app section.itemslist .feeds .feed .items {
 }
 
 .feeditem {
+  position: relative;
   display: flex;
   flex-direction: row;
   align-content: stretch;
   align-items: stretch;
-  margin: 0;
-  padding: 0.5em;
-  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+  margin: 0.25em;
+  padding: 0.5em 0.5em;
+  border: 1px solid rgba(0, 0, 0, 0.2);
+  border-radius: 1em;
+  box-shadow: 4px 4px 4px rgba(0, 0, 0, 0.1);
 }
 
 .feeditem:last-child {
+  /*
   border: none;
+  */
 }
 
 .feeditem .thumb {
@@ -224,8 +230,10 @@ main.app section.itemslist .feeds .feed .items {
 }
 
 .feeditem .date {
+  position: absolute;
+  bottom: 1em;
+  left: 1em;
   flex-grow: 0;
-  text-align: right;
   opacity: 0.3;
   font-size: 0.75em;
   white-space: nowrap;
@@ -247,10 +255,10 @@ main.app section.itemslist .feeds .feed .items {
 .feeditem.hasimage {
   --thumb-size: 128px;
   min-height: var(--thumb-size);
-  padding-left: calc(0.5em + var(--thumb-size));
+  padding-left: calc(1.25em + var(--thumb-size));
   background-size: var(--thumb-size);
   background-repeat: no-repeat;
-  background-position: 0 0.5em;
+  background-position: 0.75em 0.5em;
 }
 
 main.app section.itemslist .feeds .feed .items {
