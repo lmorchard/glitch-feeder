@@ -44,7 +44,7 @@ export const Item = ({
         h(
           "span",
           { className: "text" },
-          text.length < 320 ? text : text.substr(0, 320) + "[...]"
+          text.length < 160 ? text : text.substr(0, 160) + "[...]"
         )
     ),
     h(
