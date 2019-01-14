@@ -140,7 +140,7 @@ module.exports = (options, context) => {
   };
 
   // HACK: auto poll periodically
-  setInterval(startPoll, 2 * 60 * 60 * 1000);
+  setInterval(startPoll, 1 * 60 * 60 * 1000);
 
   apiRouter
     .route("/poll")
