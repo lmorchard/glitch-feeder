@@ -60,7 +60,7 @@ export const Item = ({
         //(date || pubdate || created_at).replace("T", " ")
       )
     ),
-    h("button", { className: "itemselect", onClick: handleItemSelect }, "+")
+    html && h("button", { className: "itemselect", onClick: handleItemSelect }, "+")
   );
 
 export default Item;
