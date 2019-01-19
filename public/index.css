@@ -262,6 +262,19 @@ main.app section.itemslist .feeds .feed .items {
   background-position: 0.75em 0.5em;
 }
 
+.feeditem .itemselect {
+  position: absolute;
+  top: 0.5em;
+  right: 0.5em;
+  border-radius: 1em;
+  border: 1px solid #000;
+  opacity: 0.4;
+  padding: 0.5em;
+  margin: 0;
+  line-height: 0.5em;
+  cursor: pointer;
+}
+
 .selecteditem {
   position: absolute;
   z-index: 9999;
@@ -275,8 +288,8 @@ main.app section.itemslist .feeds .feed .items {
   position: absolute;
   left: 30%;
   right: 30%;
-  top: 30%;
-  bottom: 30%;
+  top: 15%;
+  bottom: 15%;
   background: rgba(255, 255, 255, 1.0);
   padding: 2em;
   border-radius: 1em;
@@ -289,7 +302,7 @@ main.app section.itemslist .feeds .feed .items {
 .selecteditem .card .content iframe {
   display: block;
   width: 100%;
-  height: calc(100% - 10em);
+  height: calc(100% - 5em);
 }
 
 main.app section.itemslist .feeds .feed .items {

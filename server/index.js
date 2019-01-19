@@ -118,6 +118,7 @@ module.exports = (options, context) => {
       <!doctype html>
       <html>
         <head>
+          <base target="_blank">
           <link rel="stylesheet" href="/item.css">
         </head>
         <body>

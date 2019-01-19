@@ -153,6 +153,7 @@ const SelectedItem = ({
         h(
           "iframe",
           {
+            target: "_blank",
             className: "htmlContent",
             src: htmlSrc,
             scrolling: "auto",
