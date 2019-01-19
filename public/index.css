@@ -273,13 +273,14 @@ main.app section.itemslist .feeds .feed .items {
 }
 .selecteditem .content {
   position: absolute;
-  left: 20%;
-  right: 20%;
-  top: 8%;
-  bottom: 8%;
+  left: 30%;
+  right: 30%;
+  top: 10%;
+  bottom: 10%;
   background: rgba(255, 255, 255, 1.0);
-  padding: 1em;
+  padding: 2em;
   border-radius: 1em;
+  overflow-y: auto;
 }
   
 main.app section.itemslist .feeds .feed .items {

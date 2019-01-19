@@ -99,6 +99,7 @@ const bindHandlers = ({
         })
       ),
     handleItemSelect: item => () => dispatch(actions.selectItem(item)),
+    handleClearSelectedItem: () => dispatch(actions.clearSelectedItem()),
   };
 };
 
@@ -106,8 +107,9 @@ const AppLayout = props =>
   h(
     "main",
     { className: "app" },
-    props.selectedItemLoading === true || props.selectedItem !== null &&
-      h(SelectedItem, props.selectedItem),
+    props.selectedItemLoading === true
+      || props.selectedItem !== null
+      && h(SelectedItem, props),
     h(HeaderNav, props),
     props.appLoading
       ? h(LoadingMessage)
@@ -120,20 +122,23 @@ const AppLayout = props =>
   );
 
 const SelectedItem = ({
-  title,
-  link,
-  summary,
-  text,
-  date,
-  pubdate,
-  created_at,
-  json: { thumbUrl },
-  html,
-  hrefs: { html: htmlSrc },
+  handleClearSelectedItem,
+  selectedItem: {
+    title,
+    link,
+    summary,
+    text,
+    date,
+    pubdate,
+    created_at,
+    json: { thumbUrl },
+    html,
+    hrefs: { html: htmlSrc },
+  }
 }) => {
   return h(
     "div",
-    { className: "selecteditem" },
+    { className: "selecteditem", onClick: handleClearSelectedItem },
     h(
       "div",
       { className: "content" },
@@ -141,6 +146,10 @@ const SelectedItem = ({
         "h1",
         { },
         title
+      ),
+      h(
+        "side-chain",
+        { className: "htmlContent", src: htmlSrc }
       )
     )
   );
