@@ -229,7 +229,6 @@ main.app section.itemslist .feeds .feed .items {
 
 .feeditem .details {
   flex-grow: 2;
-  padding-right: 1em;
 }
 
 .feeditem .date {
@@ -264,12 +263,12 @@ main.app section.itemslist .feeds .feed .items {
 
 .feeditem .itemselect {
   position: absolute;
-  top: 0.5em;
-  right: 0.5em;
+  bottom: 0.5em;
+  left: 0.5em;
   border-radius: 1em;
   border: 1px solid #000;
   opacity: 0.4;
-  padding: 0.5em;
+  padding: 1em;
   margin: 0;
   line-height: 0.5em;
   cursor: pointer;
@@ -327,8 +326,8 @@ main.app section.itemslist .feeds .feed .items {
   .selecteditem .card {
     left: 10%;
     right: 10%;
-    top: 10%;
-    bottom: 10%;
+    top: 5%;
+    bottom: 5%;
   }
 }
 
@@ -361,7 +360,7 @@ main.app section.itemslist .feeds .feed .items {
     overflow-y: inherit;
   }
   main.app section.itemslist .feeds {
-    max-width: calc(100% - 0.5em);
+    max-width: calc(100% - 0.125em);
     overflow-y: inherit;
   }
 }
