@@ -106,6 +106,8 @@ const AppLayout = props =>
   h(
     "main",
     { className: "app" },
+    props.selectedItemLoading === true || props.selectedItem !== null &&
+      h(SelectedItem, props.selectedItem),
     h(HeaderNav, props),
     props.appLoading
       ? h(LoadingMessage)
@@ -116,6 +118,33 @@ const AppLayout = props =>
           h(ItemsList, props)
         )
   );
+
+const SelectedItem = ({
+  title,
+  link,
+  summary,
+  text,
+  date,
+  pubdate,
+  created_at,
+  json: { thumbUrl },
+  html,
+  hrefs: { html: htmlSrc },
+}) => {
+  return h(
+    "div",
+    { className: "selecteditem" },
+    h(
+      "div",
+      { className: "content" },
+      h(
+        "h1",
+        { },
+        title
+      )
+    )
+  );
+};
 
 const HeaderNav = ({
   feedsUrl,

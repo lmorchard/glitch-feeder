@@ -145,7 +145,7 @@ export const reducers = {
           selectedItem: null,
           selectedItemLoading: reason,
         })),
-        FULFILLED: setFromPayloadFn(result => ({
+        FULFILLED: setFromPayloadFn(({ result }) => ({
           selectedItem: result,
           selectedItemLoading: false,
         }))

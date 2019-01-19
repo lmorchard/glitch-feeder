@@ -262,6 +262,26 @@ main.app section.itemslist .feeds .feed .items {
   background-position: 0.75em 0.5em;
 }
 
+.selecteditem {
+  position: absolute;
+  z-index: 9999;
+  left: 0;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.4);
+}
+.selecteditem .content {
+  position: absolute;
+  left: 20%;
+  right: 20%;
+  top: 8%;
+  bottom: 8%;
+  background: rgba(255, 255, 255, 1.0);
+  padding: 1em;
+  border-radius: 1em;
+}
+  
 main.app section.itemslist .feeds .feed .items {
   display: grid;
   grid-template-columns: repeat(4, 25%);
