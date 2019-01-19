@@ -59,7 +59,7 @@ export const selectors = {
   selectedItem: state => state.ui.selectedItem,
 };
 
-const fetchJsonWithParams = (baseUrl, params, extra = {}) => {
+const fetchJsonWithParams = (baseUrl, params = {}, extra = {}) => {
   const url = urlWithParams(baseUrl, params);
   return fetchJson(url).then(result =>
     assign(extra, { url, result, params, baseUrl })
@@ -73,9 +73,13 @@ export const actions = createActions(
         (feedId, baseUrl, params) => fetchJsonWithParams(baseUrl, params),
         feedId => ({ feedId }),
       ],
+      selectItem : [
+        item => fetchJsonWithParams(item.hrefs.self),
+        item => ({ item }),
+      ],
     },
     mapToObject(
-      ["loadFolders", "loadFeeds", "appendFeeds", "selectItem"],
+      ["loadFolders", "loadFeeds", "appendFeeds"],
       () => fetchJsonWithParams
     )
   ),
@@ -137,14 +141,25 @@ export const reducers = {
       },
       [actions.selectItem]:
       {
-        PENDING: (state, { meta: { feedId } }) =>
-          setFeedItemsAppending(state, feedId, true),
-        REJECTED: (state, { payload: reason, meta: { feedId } }) =>
-          setFeedItemsAppending(state, feedId, "error"),
-        FULFILLED: (state, { meta: { feedId } }) =>
-          setFeedItemsAppending(state, feedId, false),
+        PENDING: (state, { meta: { item } }) => setStatic({
+          selectedItem: null,
+          selectedItemLoading: true,
+        }),
+        REJECTED: (state, { payload: reason, meta: { item } }) => ({
+          ...state,
+          selectedItem: null,
+          selectedItemLoading: reason,
+        }),
+        FULFILLED: (state, { payload: { result }, meta: { item } }) => ({
+          ...state,
+          selectedItem: result,
+          selectedItemLoading: false,
+        }),
       },
-      [actions.clearSelectedItem]: setStatic({ appLoading: false }),
+      [actions.clearSelectedItem]: setStatic({
+        selectedItem: null,
+        selectedItemLoading: false,
+      }),
       [actions.setApiRoot]: setStatic({ appLoading: false }),
       [actions.setQueueStats]: setFromPayload("queueStats", {}),
       [actions.setFeedsUrl]: setFromPayload("feedsUrl", null),
