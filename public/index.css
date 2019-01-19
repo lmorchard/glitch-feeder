@@ -271,18 +271,27 @@ main.app section.itemslist .feeds .feed .items {
   bottom: 0;
   background: rgba(0, 0, 0, 0.4);
 }
-.selecteditem .content {
+.selecteditem .card {
   position: absolute;
   left: 30%;
   right: 30%;
-  top: 10%;
-  bottom: 10%;
+  top: 30%;
+  bottom: 30%;
   background: rgba(255, 255, 255, 1.0);
   padding: 2em;
   border-radius: 1em;
   overflow-y: auto;
 }
-  
+.selecteditem .card .content {
+  position: relative;
+  height: 100%;
+}
+.selecteditem .card .content iframe {
+  display: block;
+  width: 100%;
+  height: calc(100% - 10em);
+}
+
 main.app section.itemslist .feeds .feed .items {
   display: grid;
   grid-template-columns: repeat(4, 25%);

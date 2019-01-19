@@ -141,15 +141,25 @@ const SelectedItem = ({
     { className: "selecteditem", onClick: handleClearSelectedItem },
     h(
       "div",
-      { className: "content" },
+      { className: "card" },
       h(
-        "h1",
-        { },
-        title
-      ),
-      h(
-        "side-chain",
-        { className: "htmlContent", src: htmlSrc }
+        "div",
+        { className: "content" },
+        h(
+          "h3",
+          { className: "title" },
+          title
+        ),
+        h(
+          "iframe",
+          {
+            className: "htmlContent",
+            src: htmlSrc,
+            scrolling: "auto",
+            frameBorder: 0,
+            seamless: "true",
+          }
+        )
       )
     )
   );
