@@ -29,6 +29,8 @@ export const defaultState = {
     feedsAppending: false,
     feedsUrl: null,
     feedItemsAppending: {},
+    selectedItemLoading: false,
+    selectedItem: null,
   },
   folders: {},
   feeds: {
@@ -53,6 +55,8 @@ export const selectors = {
   getFeed: state => id => state.feeds[id],
   getFeedItemsAppending: state => id =>
     state.ui.feedItemsAppending[id] || false,
+  selectedItemLoading: state => state.ui.selectedItemLoading,
+  selectedItem: state => state.ui.selectedItem,
 };
 
 const fetchJsonWithParams = (baseUrl, params, extra = {}) => {
@@ -71,14 +75,15 @@ export const actions = createActions(
       ],
     },
     mapToObject(
-      ["loadFolders", "loadFeeds", "appendFeeds"],
+      ["loadFolders", "loadFeeds", "appendFeeds", "selectItem"],
       () => fetchJsonWithParams
     )
   ),
+  "clearSelectedItem",
   "setQueueStats",
   "setFeedsUrl",
   "setReadAfter",
-  "setApiRoot"
+  "setApiRoot",
 );
 
 const setStatic = newState => state => assign({}, state, newState);
@@ -130,6 +135,16 @@ export const reducers = {
         FULFILLED: (state, { meta: { feedId } }) =>
           setFeedItemsAppending(state, feedId, false),
       },
+      [actions.selectItem]:
+      {
+        PENDING: (state, { meta: { feedId } }) =>
+          setFeedItemsAppending(state, feedId, true),
+        REJECTED: (state, { payload: reason, meta: { feedId } }) =>
+          setFeedItemsAppending(state, feedId, "error"),
+        FULFILLED: (state, { meta: { feedId } }) =>
+          setFeedItemsAppending(state, feedId, false),
+      },
+      [actions.clearSelectedItem]: setStatic({ appLoading: false }),
       [actions.setApiRoot]: setStatic({ appLoading: false }),
       [actions.setQueueStats]: setFromPayload("queueStats", {}),
       [actions.setFeedsUrl]: setFromPayload("feedsUrl", null),
