@@ -276,7 +276,7 @@ main.app section.itemslist .feeds .feed .items {
 }
 
 .selecteditem {
-  position: absolute;
+  position: fixed;
   z-index: 9999;
   left: 0;
   top: 0;
@@ -323,6 +323,12 @@ main.app section.itemslist .feeds .feed .items {
 @media only screen and (max-width: 800px) {
   main.app section.itemslist .feeds .feed .items {
     display: block;
+  }
+  .selecteditem .card {
+    left: 10%;
+    right: 10%;
+    top: 10%;
+    bottom: 10%;
   }
 }
 
