@@ -73,7 +73,7 @@ export const actions = createActions(
         (feedId, baseUrl, params) => fetchJsonWithParams(baseUrl, params),
         feedId => ({ feedId }),
       ],
-      selectItem : [
+      selectItem: [
         item => fetchJsonWithParams(item.hrefs.self),
         item => ({ item }),
       ],
@@ -87,7 +87,7 @@ export const actions = createActions(
   "setQueueStats",
   "setFeedsUrl",
   "setReadAfter",
-  "setApiRoot",
+  "setApiRoot"
 );
 
 const setStatic = newState => state => assign({}, state, newState);
@@ -139,22 +139,16 @@ export const reducers = {
         FULFILLED: (state, { meta: { feedId } }) =>
           setFeedItemsAppending(state, feedId, false),
       },
-      [actions.selectItem]:
-      {
-        PENDING: (state, { meta: { item } }) => setStatic({
-          selectedItem: null,
-          selectedItemLoading: true,
-        }),
-        REJECTED: (state, { payload: reason, meta: { item } }) => ({
-          ...state,
+      [actions.selectItem]: {
+        PENDING: setStatic({ selectedItem: null, selectedItemLoading: true }),
+        REJECTED: setFromPayloadFn(reason => ({
           selectedItem: null,
           selectedItemLoading: reason,
-        }),
-        FULFILLED: (state, { payload: { result }, meta: { item } }) => ({
-          ...state,
+        })),
+        FULFILLED: setFromPayloadFn(result => ({
           selectedItem: result,
           selectedItemLoading: false,
-        }),
+        }))
       },
       [actions.clearSelectedItem]: setStatic({
         selectedItem: null,

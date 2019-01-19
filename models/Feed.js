@@ -221,10 +221,9 @@ class Feed extends guid(BaseModel) {
     log.debug("Enqueueing %s feeds to poll", feeds.length);
     return Promise.all(
       feeds.map(({ id, title }) =>
-        fetchQueue.add(
-          () => this.pollFeedById(id, context, options),
-          { meta: { id, title } },
-        )
+        fetchQueue.add(() => this.pollFeedById(id, context, options), {
+          meta: { id, title },
+        })
       )
     );
   }

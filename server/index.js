@@ -13,12 +13,9 @@ module.exports = (options, context) => {
   const fetchQueue = new PQueue({
     concurrency: 8,
     queueClass: MetaPriorityQueue({
-      onAdd: meta => {
-      },
-      onRun: meta => {
-      },
-      onResolved: meta => {
-      },
+      onAdd: meta => {},
+      onRun: meta => {},
+      onResolved: meta => {},
     }),
   });
 
@@ -30,7 +27,7 @@ module.exports = (options, context) => {
   app.get("/", function(request, response) {
     response.sendFile(__dirname + "/../public/index.html");
   });
- 
+
   app.get("/api", async (req, res) => {
     res.json({
       hrefs: {

@@ -98,6 +98,7 @@ const bindHandlers = ({
           before: feeds[feeds.length - 1].lastNewItem,
         })
       ),
+    handleItemSelect: item => () => dispatch(actions.selectItem(item)),
   };
 };
 
@@ -118,7 +119,7 @@ const AppLayout = props =>
 
 const HeaderNav = ({
   feedsUrl,
-  queueStats,
+  queueStats = { pending: 0, size: 0 },
   readAfter,
   handleRefreshFeedsClick,
   handleAfterChange,

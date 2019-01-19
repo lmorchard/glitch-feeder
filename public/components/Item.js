@@ -5,16 +5,19 @@ const DEFAULT_THUMB_SRC =
   "https://upload.wikimedia.org/wikipedia/commons/8/8a/PICOL_icon_News.svg";
 
 export const Item = ({
-  title,
-  link,
-  summary,
-  text,
-  date,
-  pubdate,
-  created_at,
-  json: { thumbUrl },
-  html,
-  hrefs: { html: htmlSrc },
+  handleItemSelect,
+  item: {
+    title,
+    link,
+    summary,
+    text,
+    date,
+    pubdate,
+    created_at,
+    json: { thumbUrl },
+    html,
+    hrefs: { html: htmlSrc },
+  },
 }) =>
   h(
     "li",
@@ -57,11 +60,7 @@ export const Item = ({
         //(date || pubdate || created_at).replace("T", " ")
       )
     ),
-    h(
-      "button",
-      { },
-      "( + )",
-    ),
+    h("button", { onClick: handleItemSelect }, "+")
   );
 
 export default Item;

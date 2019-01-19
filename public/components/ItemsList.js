@@ -29,6 +29,7 @@ export const ItemsList = composeComponents(
     getFeedItemsAppending,
     handleMoreItemsClick,
     handleMoreFeedsClick,
+    handleItemSelect,
     onScrollRef,
     onClickableScrollRef,
     onClickableRef,
@@ -51,7 +52,12 @@ export const ItemsList = composeComponents(
         feeds
           .filter(feed => feed.items.length > 0)
           .map(feed =>
-            h(FeedItems, { feed, getFeedItemsAppending, handleMoreItemsClick })
+            h(FeedItems, {
+              feed,
+              getFeedItemsAppending,
+              handleMoreItemsClick,
+              handleItemSelect,
+            })
           ),
         h(MoreFeedsButton, {
           feedsUrl,
@@ -66,7 +72,12 @@ export const ItemsList = composeComponents(
   }
 );
 
-const FeedItems = ({ feed, getFeedItemsAppending, handleMoreItemsClick }) => {
+const FeedItems = ({
+  feed,
+  getFeedItemsAppending,
+  handleMoreItemsClick,
+  handleItemSelect,
+}) => {
   let feedHostname;
   try {
     const feedUrl = new URL(feed.link);
@@ -90,7 +101,13 @@ const FeedItems = ({ feed, getFeedItemsAppending, handleMoreItemsClick }) => {
       h("a", { className: "feedlink", href: feed.link }, `${feed.title}`),
       h("span", { className: "feeddate" }, timeago.format(feed.lastNewItem))
     ),
-    h("ul", { className: "items" }, feed.items.map(item => h(Item, item))),
+    h(
+      "ul",
+      { className: "items" },
+      feed.items.map(item =>
+        h(Item, { item, handleItemSelect: handleItemSelect(item) })
+      )
+    ),
     h(MoreItemsButton, {
       feed,
       getFeedItemsAppending,
