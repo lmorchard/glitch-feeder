@@ -138,7 +138,10 @@ module.exports = (options, context) => {
   };
 
   // HACK: auto poll periodically
-  setInterval(startPoll, 2 * 60 * 60 * 1000);
+  setInterval(() => {
+    if (fetchQueue.size > 0) { return; }
+    startPoll();
+  }, 30 * 60 * 1000);
 
   apiRouter
     .route("/poll")
