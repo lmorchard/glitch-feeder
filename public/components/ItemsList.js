@@ -85,7 +85,26 @@ const FeedItems = ({
   } catch (e) {
     console.log("Bad feed link for", feed.title);
   }
-
+  return html`
+    <li class="feed">
+      <div class="feedtitle">
+        <img class="feedicon" width=16 height=16 src=${`https://www.google.com/s2/favicons?domain=${feedHostname}`} />
+        <a class="feedlink" href=${feed.link}>${feed.title}</a>
+        <span class="feeddate">${timeago.format(feed.lastNewItem)}</span>
+      </div>
+      <ul class="items">
+        ${feed.items.map(item => html`
+          <${Item} ...${{ item, handleItemSelect: handleItemSelect(item) }} />
+        `)}
+      </ul>
+      <${MoreItemsButton} ...${{
+        feed,
+        getFeedItemsAppending,
+        onClick: handleMoreItemsClick(feed),
+      }} />
+    </li>
+  `;
+  /*
   return h(
     "li",
     { className: "feed" },
@@ -114,6 +133,7 @@ const FeedItems = ({
       onClick: handleMoreItemsClick(feed),
     })
   );
+  */
 };
 
 const MoreItemsButton = ({ feed, onClick, getFeedItemsAppending }) => {
