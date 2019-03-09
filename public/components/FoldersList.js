@@ -1,6 +1,7 @@
-import { h } from "https://unpkg.com/preact@8.4.2/dist/preact.mjs?module";
-import htm from 'https://unpkg.com/htm?module'
-const html = htm.bind(h);
+//import { h } from "https://unpkg.com/preact@8.4.2/dist/preact.mjs?module";
+//import htm from 'https://unpkg.com/htm?module'
+//const html = htm.bind(h);
+import { h, html, render } from 'https://unpkg.com/htm/preact/standalone.mjs'
 
 export const FoldersList = ({
   folders = {},
@@ -12,39 +13,11 @@ export const FoldersList = ({
   handleFolderFeedClick,
 }) => {
   if (foldersLoading === true) {
-    return h("nav", { className: "feedslist loading" }, "Loading...");
+    return html`<nav class="feedslist loading">Loading...</nav>`;
   }
-
   if (foldersLoading === "error") {
-    return h("nav", { className: "feedslist error" }, "ERROR!");
+    return html`<nav class="feedslist error">ERROR!</nav>`;
   }
-
-  /*
-  return h(
-    "nav",
-    { className: "feedslist" },
-    h(
-      "ul",
-      { className: "folders" },
-      h(
-        "li",
-        { className: "folder" },
-        h(
-          "span",
-          {
-            className: "foldertitle all",
-            onClick: handleAllFeedsClick,
-          },
-          "All feeds"
-        )
-      ),
-      Object.values(folders).map(folder =>
-        h(FolderItem, { folder, handleFolderClick, handleFolderFeedClick })
-      )
-    )
-  );
-  */
-  
   return html`
     <nav class="feedslist">
       <ul class="folders">
@@ -59,43 +32,18 @@ export const FoldersList = ({
   `;
 };
 
-const FolderItem = ({ folder, handleFolderClick, handleFolderFeedClick }) =>
-  h(
-    "li",
-    { className: "folder" },
-    h("input", {
-      id: `reveal-${folder.id}`,
-      type: "checkbox",
-      className: "revealFeeds",
-    }),
-    h(
-      "label",
-      {
-        for: `reveal-${folder.id}`,
-        className: "revealFeedsLabel",
-      },
-      " "
-    ),
-    h(
-      "span",
-      {
-        id: folder.id,
-        className: "foldertitle",
-        onClick: handleFolderClick(folder),
-      },
-      folder.id
-    ),
-    h(
-      "ul",
-      { className: "feeds" },
-      folder.feeds.map(feed =>
-        h(FeedItem, {
-          feed,
-          handleClick: handleFolderFeedClick(feed),
-        })
-      )
-    )
-  );
+const FolderItem = ({ folder, handleFolderClick, handleFolderFeedClick }) => html`
+    <li class="folder">
+      <input id="reveal-${folder.id}" type="checkbox" class="revealFeeds" />
+      <label for="reveal-${folder.id}" class="revealFeedsLabel"> </label>
+      <span id="${folder.id}" class="foldertitle" onClick=${handleFolderClick(folder)}>${folder.id}</span>
+      <ul class="feeds">
+        ${folder.feeds.map(feed => html`
+          <${FeedItem} ...${{ feed, handleClick: handleFolderFeedClick(feed) }} />
+        `)}
+      </ul>
+    </li>
+  `;
 
 const FeedItem = ({ feed, handleClick }) =>
   h(
