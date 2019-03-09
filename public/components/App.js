@@ -187,6 +187,37 @@ const HeaderNav = ({
 
   const pollInProgress = queueStats.pending > 0;
 
+  return html`
+    <header class="topnav">
+      <div class="title"><h1>Glitch Feeder")),
+      h(
+        "button",
+        {
+          className: "refresh",
+          onClick: handleRefreshFeedsClick,
+          disabled: pollInProgress,
+        },
+        pollInProgress
+          ? `Refreshing... (${queueStats.pending}/${queueStats.size})`
+          : `Refresh feeds (${queueStats.pending}/${queueStats.size})`
+      ),
+      h(
+        "div",
+        { className: "appNav" },
+        h(
+          "select",
+          {
+            className: "afterNav",
+            onChange: handleAfterChange({ feedsUrl }),
+          },
+          afterLinks.map(([name, offset]) =>
+            h("option", { value: offset, key: name }, name)
+          )
+        ),
+        h("span", { className: "afterCurrent" }, readAfter)
+      )
+    </header>
+  `;
   return h(
     "header",
     { className: "topnav" },
@@ -220,7 +251,8 @@ const HeaderNav = ({
   );
 };
 
-const LoadingMessage = () =>
-  h("div", { className: "loading" }, h("p", null, "Loading..."));
+const LoadingMessage = () => html`
+  <div class="loading"><p>Loading...</p></div>
+`;
 
 export default App;
