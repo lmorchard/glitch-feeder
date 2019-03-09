@@ -135,6 +135,21 @@ const SelectedItem = ({
     hrefs: { html: htmlSrc },
   }
 }) => {
+  return html`
+    <div class="selecteditem" onClick=${handleClearSelectedItem}>
+      <div class="card">
+        <div class="content">
+          <h3 class="title">${title}</h3>
+          <iframe target="_blank"
+            class="htmlContent"
+            src=${htmlSrc}
+            scrolling="auto"
+            frameBorder=0
+            seamless="true"></iframe>
+        </div>
+      </div>
+    </div>
+  `;
   return h(
     "div",
     { className: "selecteditem", onClick: handleClearSelectedItem },
@@ -189,66 +204,22 @@ const HeaderNav = ({
 
   return html`
     <header class="topnav">
-      <div class="title"><h1>Glitch Feeder")),
-      h(
-        "button",
-        {
-          className: "refresh",
-          onClick: handleRefreshFeedsClick,
-          disabled: pollInProgress,
-        },
-        pollInProgress
+      <div class="title"><h1>Glitch Feeder</h1></div>
+      <button class="refresh" onClick=${handleRefreshFeedsClick} disabled=${pollInProgress}>
+        ${pollInProgress
           ? `Refreshing... (${queueStats.pending}/${queueStats.size})`
-          : `Refresh feeds (${queueStats.pending}/${queueStats.size})`
-      ),
-      h(
-        "div",
-        { className: "appNav" },
-        h(
-          "select",
-          {
-            className: "afterNav",
-            onChange: handleAfterChange({ feedsUrl }),
-          },
-          afterLinks.map(([name, offset]) =>
-            h("option", { value: offset, key: name }, name)
-          )
-        ),
-        h("span", { className: "afterCurrent" }, readAfter)
-      )
+          : `Refresh feeds (${queueStats.pending}/${queueStats.size})`}
+      </button>
+      <div class="appNav">
+        <select class="afterNav" onChange=${handleAfterChange({ feedsUrl })}>
+          ${afterLinks.map(([name, offset]) => html`
+            <option value=${offset} key=${name}>${name}</option>
+          `)}
+        </select>
+        <span class="afterCurrent">${readAfter}</span>
+      </div>
     </header>
   `;
-  return h(
-    "header",
-    { className: "topnav" },
-    h("div", { className: "title" }, h("h1", null, "Glitch Feeder")),
-    h(
-      "button",
-      {
-        className: "refresh",
-        onClick: handleRefreshFeedsClick,
-        disabled: pollInProgress,
-      },
-      pollInProgress
-        ? `Refreshing... (${queueStats.pending}/${queueStats.size})`
-        : `Refresh feeds (${queueStats.pending}/${queueStats.size})`
-    ),
-    h(
-      "div",
-      { className: "appNav" },
-      h(
-        "select",
-        {
-          className: "afterNav",
-          onChange: handleAfterChange({ feedsUrl }),
-        },
-        afterLinks.map(([name, offset]) =>
-          h("option", { value: offset, key: name }, name)
-        )
-      ),
-      h("span", { className: "afterCurrent" }, readAfter)
-    )
-  );
 };
 
 const LoadingMessage = () => html`
