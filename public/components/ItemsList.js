@@ -150,6 +150,8 @@ const MoreFeedsButton = ({
     return "";
   }
   if (feedsAppending === true) {
+    return html`<button class="moreFeeds" disabled>More feeds loading...</button>`;
+    /*
     return h(
       "button",
       {
@@ -158,7 +160,19 @@ const MoreFeedsButton = ({
       },
       `More feeds loading...`
     );
+    */
   }
+  return html`
+    <button
+      class="moreFeeds"
+      onClick=${handleMoreFeedsClick({ feedsUrl, feeds })}
+      ref=${onClickableRef}>
+      ${feedsAppending === "error"
+        ? `Failed! Click to again?`
+        : `More feeds (${feedsRemaining})`}
+    </button>
+  `;
+  /*
   return h(
     "button",
     {
@@ -170,6 +184,7 @@ const MoreFeedsButton = ({
       ? `Failed! Click to again?`
       : `More feeds (${feedsRemaining})`
   );
+  */
 };
 
 export default ItemsList;

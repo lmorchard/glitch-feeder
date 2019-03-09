@@ -1,8 +1,5 @@
 /* global classNames, timeago */
-import { h, html, render } from "https://unpkg.com/htm@2.1.1/preact/standalone.mjs";
-
-const DEFAULT_THUMB_SRC =
-  "https://upload.wikimedia.org/wikipedia/commons/8/8a/PICOL_icon_News.svg";
+import { html } from "https://unpkg.com/htm@2.1.1/preact/standalone.mjs";
 
 export const Item = ({
   handleItemSelect,
@@ -33,51 +30,8 @@ export const Item = ({
     <div class="date">
       <a class="datelink" href=${link}>${timeago.format(date)}</a>
     </div>
-    ${html && html`<button class="itemselect" onClick=${handleItemSelect}>+</button>`}
+    ${htmlTxt && html`<button class="itemselect" onClick=${handleItemSelect}>+</button>`}
   </li>
 `;
-/*
-  h(
-    "li",
-    {
-      className: classNames("feeditem", {
-        hasimage: !!thumbUrl,
-      }),
-      style: {
-        backgroundImage: thumbUrl ? `url(${thumbUrl})` : null,
-      },
-    },
-    //thumbUrl &&
-    //  h(
-    //    "div",
-    //    {
-    //      className: "thumb",
-    //    },
-    //    h("a", { className: "title", href: link }, h("img", { src: thumbUrl }))
-    //  ),
-    h(
-      "div",
-      { className: "details" },
-      title && h("a", { className: "title", href: link }, title),
-      text &&
-        h(
-          "span",
-          { className: "text" },
-          text.length < 160 ? text : text.substr(0, 160) + "[...]"
-        )
-    ),
-    h(
-      "div",
-      { className: "date" },
-      h(
-        "a",
-        { className: "datelink", href: link },
-        timeago.format(date)
-        //(date || pubdate || created_at).replace("T", " ")
-      )
-    ),
-    html && h("button", { className: "itemselect", onClick: handleItemSelect }, "+")
-  );
-*/
 
 export default Item;

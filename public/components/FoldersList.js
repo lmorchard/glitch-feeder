@@ -1,4 +1,4 @@
-import { html, render } from "https://unpkg.com/htm@2.1.1/preact/standalone.mjs";
+import { html } from "https://unpkg.com/htm@2.1.1/preact/standalone.mjs";
 
 export const FoldersList = ({
   folders = {},
