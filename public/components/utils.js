@@ -1,8 +1,4 @@
-import {
-  h,
-  render,
-  Component,
-} from "https://unpkg.com/preact@8.4.2/dist/preact.mjs?module";
+import { h, html, render, Component } from "https://unpkg.com/htm@2.1.1/preact/standalone.mjs";
 
 const { assign } = Object;
 

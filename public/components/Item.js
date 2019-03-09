@@ -15,10 +15,28 @@ export const Item = ({
     pubdate,
     created_at,
     json: { thumbUrl },
-    html,
+    html: htmlTxt,
     hrefs: { html: htmlSrc },
   },
-}) =>
+}) => html`
+  <li
+    class=${classNames("feeditem", { hasimage: !!thumbUrl })}
+    style=${{ backgroundImage: thumbUrl ? `url(${thumbUrl})` : null }}>
+    <div class="details">
+      ${title && html`<a class="title" href=${link}>${title}</a>`}
+      ${text && html`
+        <span class="text">
+          ${text.length < 160 ? text : text.substr(0, 160) + "[...]"}
+        </span>
+      `}
+    </div>
+    <div class="date">
+      <a class="datelink" href=${link}>${timeago.format(date)}</a>
+    </div>
+    ${html && html`<button class="itemselect" onClick=${handleItemSelect}>+</button>`}
+  </li>
+`;
+/*
   h(
     "li",
     {
@@ -29,16 +47,14 @@ export const Item = ({
         backgroundImage: thumbUrl ? `url(${thumbUrl})` : null,
       },
     },
-    /*
-    thumbUrl &&
-      h(
-        "div",
-        {
-          className: "thumb",
-        },
-        h("a", { className: "title", href: link }, h("img", { src: thumbUrl }))
-      ),
-    */
+    //thumbUrl &&
+    //  h(
+    //    "div",
+    //    {
+    //      className: "thumb",
+    //    },
+    //    h("a", { className: "title", href: link }, h("img", { src: thumbUrl }))
+    //  ),
     h(
       "div",
       { className: "details" },
@@ -62,5 +78,6 @@ export const Item = ({
     ),
     html && h("button", { className: "itemselect", onClick: handleItemSelect }, "+")
   );
+*/
 
 export default Item;
