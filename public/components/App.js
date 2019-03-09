@@ -102,7 +102,23 @@ const bindHandlers = ({
   };
 };
 
-const AppLayout = props =>
+const AppLayout = props => html`
+  <main class="app>
+    ${props.selectedItemLoading === true
+      || props.selectedItem !== null
+      && html`<${SelectedItem} ...${props} />`}
+    <${HeaderNav, props),
+    props.appLoading
+      ? h(LoadingMessage)
+      : h(
+          "section",
+          { className: "foldersAndItems" },
+          h(FoldersList, props),
+          h(ItemsList, props)
+        )
+  </main>
+`;
+/*
   h(
     "main",
     { className: "app" },
@@ -119,6 +135,7 @@ const AppLayout = props =>
           h(ItemsList, props)
         )
   );
+*/
 
 const SelectedItem = ({
   handleClearSelectedItem,
@@ -131,54 +148,24 @@ const SelectedItem = ({
     pubdate,
     created_at,
     json: { thumbUrl },
-    html,
+    html: htmlTxt,
     hrefs: { html: htmlSrc },
   }
-}) => {
-  return html`
-    <div class="selecteditem" onClick=${handleClearSelectedItem}>
-      <div class="card">
-        <div class="content">
-          <h3 class="title">${title}</h3>
-          <iframe target="_blank"
-            class="htmlContent"
-            src=${htmlSrc}
-            scrolling="auto"
-            frameBorder=0
-            seamless="true"></iframe>
-        </div>
+}) => html`
+  <div class="selecteditem" onClick=${handleClearSelectedItem}>
+    <div class="card">
+      <div class="content">
+        <h3 class="title">${title}</h3>
+        <iframe target="_blank"
+          class="htmlContent"
+          src=${htmlSrc}
+          scrolling="auto"
+          frameBorder=0
+          seamless="true"></iframe>
       </div>
     </div>
-  `;
-  return h(
-    "div",
-    { className: "selecteditem", onClick: handleClearSelectedItem },
-    h(
-      "div",
-      { className: "card" },
-      h(
-        "div",
-        { className: "content" },
-        h(
-          "h3",
-          { className: "title" },
-          title
-        ),
-        h(
-          "iframe",
-          {
-            target: "_blank",
-            className: "htmlContent",
-            src: htmlSrc,
-            scrolling: "auto",
-            frameBorder: 0,
-            seamless: "true",
-          }
-        )
-      )
-    )
-  );
-};
+  </div>
+`;
 
 const HeaderNav = ({
   feedsUrl,

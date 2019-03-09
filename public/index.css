@@ -176,7 +176,7 @@ main.app section.itemslist .feeds .feed {
   margin: 0 0 1.5em 0;
 }
 
-main.app section.itemslist .feeds .moreFeeds,
+main.app section.itemslist .moreFeeds,
 main.app section.itemslist .feeds .feed .moreItems {
   width: 100%;
   padding: 0.5em 0;
@@ -186,7 +186,7 @@ main.app section.itemslist .feeds .feed .moreItems {
   cursor: pointer;
 }
 
-main.app section.itemslist .feeds .moreFeeds:hover,
+main.app section.itemslist .moreFeeds:hover,
 main.app section.itemslist .feeds .feed .moreItems:hover {
   background-color: rgba(128, 128, 128, 0.3);
 }
