@@ -43,12 +43,16 @@ export const ItemsList = composeComponents(
     };
     return html`
       <section class="itemslist">
-        <b>PARP</b>
         <ul class="feeds" ref=${onRef}>
           ${feeds
             .filter(feed => feed.items.length > 0)
             .map(feed => html`
-              <${FeedItems} ...${{ feed, getFeedItemsAppending, handleMoreItemsClick, handleItemSelect }} />
+              <${FeedItems} ...${{
+                feed,
+                getFeedItemsAppending,
+                handleMoreItemsClick,
+                handleItemSelect,
+              }} />
             `)}
         </ul>
         <${MoreFeedsButton} ...${{
@@ -61,38 +65,6 @@ export const ItemsList = composeComponents(
         }} />
       </section>
     `;
-    return h(
-      "section",
-      { className: "itemslist" },
-      h(
-        "ul",
-        {
-          className: "feeds",
-          ref: ref => {
-            onScrollRef(ref);
-            onClickableScrollRef(ref);
-          },
-        },
-        feeds
-          .filter(feed => feed.items.length > 0)
-          .map(feed =>
-            h(FeedItems, {
-              feed,
-              getFeedItemsAppending,
-              handleMoreItemsClick,
-              handleItemSelect,
-            })
-          ),
-        h(MoreFeedsButton, {
-          feedsUrl,
-          feeds,
-          feedsAppending,
-          handleMoreFeedsClick,
-          onClickableRef,
-          feedsRemaining,
-        })
-      )
-    );
   }
 );
 
