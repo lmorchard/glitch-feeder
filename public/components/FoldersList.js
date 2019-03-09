@@ -19,6 +19,7 @@ export const FoldersList = ({
     return h("nav", { className: "feedslist error" }, "ERROR!");
   }
 
+  /*
   return h(
     "nav",
     { className: "feedslist" },
@@ -42,6 +43,20 @@ export const FoldersList = ({
       )
     )
   );
+  */
+  
+  return html`
+    <nav class="feedslist">
+      <ul class="folders">
+        <li class="folder">
+          <span class="foldertitle all" onClick=${handleAllFeedsClick}>All feeds</span>
+          ${Object.values(folders).map(folder => html`
+              <${FolderItem} ...${{ folder, handleFolderClick, handleFolderFeedClick }} />
+          `)}
+        </li>
+      </ul>
+    </nav>
+  `;
 };
 
 const FolderItem = ({ folder, handleFolderClick, handleFolderFeedClick }) =>
