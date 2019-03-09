@@ -1,4 +1,6 @@
 import { h } from "https://unpkg.com/preact@8.4.2/dist/preact.mjs?module";
+import htm from 'https://unpkg.com/htm?module'
+const html = htm.bind(h);
 
 export const FoldersList = ({
   folders = {},

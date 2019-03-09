@@ -16,6 +16,7 @@ It's early days for this project, so far. There's no feed management or easy way
 
 ## TODO
 
+- Switch over to HTM for markup? https://github.com/developit/htm
 - Per-item buttons to click for:
   - Expanded text summary
   - Pop-up HTML view
