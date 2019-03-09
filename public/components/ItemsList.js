@@ -35,8 +35,32 @@ export const ItemsList = composeComponents(
     onClickableRef,
   }) => {
     if (feedsLoading === true) {
-      return h("section", { className: "itemslist loading" }, "Loading...");
+      return html`<section class="itemslist loading">Loading...</section>`;
     }
+    const onRef = ref => {
+      onScrollRef(ref);
+      onClickableScrollRef(ref);
+    };
+    return html`
+      <section class="itemslist">
+        <b>PARP</b>
+        <ul class="feeds" ref=${onRef}>
+          ${feeds
+            .filter(feed => feed.items.length > 0)
+            .map(feed => html`
+              <${FeedItems} ...${{ feed, getFeedItemsAppending, handleMoreItemsClick, handleItemSelect }} />
+            `)}
+        </ul>
+        <${MoreFeedsButton} ...${{
+          feedsUrl,
+          feeds,
+          feedsAppending,
+          handleMoreFeedsClick,
+          onClickableRef,
+          feedsRemaining,
+        }} />
+      </section>
+    `;
     return h(
       "section",
       { className: "itemslist" },
@@ -88,7 +112,8 @@ const FeedItems = ({
   return html`
     <li class="feed">
       <div class="feedtitle">
-        <img class="feedicon" width=16 height=16 src=${`https://www.google.com/s2/favicons?domain=${feedHostname}`} />
+        <img class="feedicon" width=16 height=16
+          src=${`https://www.google.com/s2/favicons?domain=${feedHostname}`} />
         <a class="feedlink" href=${feed.link}>${feed.title}</a>
         <span class="feeddate">${timeago.format(feed.lastNewItem)}</span>
       </div>
@@ -97,43 +122,10 @@ const FeedItems = ({
           <${Item} ...${{ item, handleItemSelect: handleItemSelect(item) }} />
         `)}
       </ul>
-      <${MoreItemsButton} ...${{
-        feed,
-        getFeedItemsAppending,
-        onClick: handleMoreItemsClick(feed),
-      }} />
+      <${MoreItemsButton}
+        ...${{ feed, getFeedItemsAppending, onClick: handleMoreItemsClick(feed) }} />
     </li>
   `;
-  /*
-  return h(
-    "li",
-    { className: "feed" },
-    h(
-      "div",
-      { className: "feedtitle" },
-      h("img", {
-        className: "feedicon",
-        width: 16,
-        height: 16,
-        src: `https://www.google.com/s2/favicons?domain=${feedHostname}`,
-      }),
-      h("a", { className: "feedlink", href: feed.link }, `${feed.title}`),
-      h("span", { className: "feeddate" }, timeago.format(feed.lastNewItem))
-    ),
-    h(
-      "ul",
-      { className: "items" },
-      feed.items.map(item =>
-        h(Item, { item, handleItemSelect: handleItemSelect(item) })
-      )
-    ),
-    h(MoreItemsButton, {
-      feed,
-      getFeedItemsAppending,
-      onClick: handleMoreItemsClick(feed),
-    })
-  );
-  */
 };
 
 const MoreItemsButton = ({ feed, onClick, getFeedItemsAppending }) => {
