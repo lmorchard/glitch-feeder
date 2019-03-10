@@ -54,15 +54,17 @@ export const ItemsList = composeComponents(
                 handleItemSelect,
               }} />
             `)}
+          <li>
+            <${MoreFeedsButton} ...${{
+              feedsUrl,
+              feeds,
+              feedsAppending,
+              handleMoreFeedsClick,
+              onClickableRef,
+              feedsRemaining,
+            }} />
+          </li>
         </ul>
-        <${MoreFeedsButton} ...${{
-          feedsUrl,
-          feeds,
-          feedsAppending,
-          handleMoreFeedsClick,
-          onClickableRef,
-          feedsRemaining,
-        }} />
       </section>
     `;
   }
