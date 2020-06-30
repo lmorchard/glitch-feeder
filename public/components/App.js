@@ -103,39 +103,23 @@ const bindHandlers = ({
 };
 
 const AppLayout = props => html`
-  <main class="app>
-    ${props.selectedItemLoading === true
+  <main class="app">
+    ${
+      props.selectedItemLoading === true
       || props.selectedItem !== null
-      && html`<${SelectedItem} ...${props} />`}
-    <${HeaderNav, props),
-    props.appLoading
-      ? h(LoadingMessage)
-      : h(
-          "section",
-          { className: "foldersAndItems" },
-          h(FoldersList, props),
-          h(ItemsList, props)
-        )
+      && html`<${SelectedItem} ...${props} />`
+    }
+    <${HeaderNav} ...${props} />
+    ${props.appLoading
+      ? html`<LoadingMessage />`
+      : html`
+        <section class="foldersAndItems">
+          <${FoldersList} ...${props} />
+          <${ItemsList} ...${props} />
+        </section>
+      `}
   </main>
 `;
-/*
-  h(
-    "main",
-    { className: "app" },
-    props.selectedItemLoading === true
-      || props.selectedItem !== null
-      && h(SelectedItem, props),
-    h(HeaderNav, props),
-    props.appLoading
-      ? h(LoadingMessage)
-      : h(
-          "section",
-          { className: "foldersAndItems" },
-          h(FoldersList, props),
-          h(ItemsList, props)
-        )
-  );
-*/
 
 const SelectedItem = ({
   handleClearSelectedItem,

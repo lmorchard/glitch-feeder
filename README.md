@@ -16,27 +16,24 @@ It's early days for this project, so far. There's no feed management or easy way
 
 ## TODO
 
-- Switch over to HTM for markup? https://github.com/developit/htm
+- Implement actual feed management 
+- Remote feed subscription bookmarklet?
+- Implement a proper FeedFolder model with sub-folders
+- OPML live playlist subscription
 - Per-item buttons to click for:
   - Expanded text summary
-  - Pop-up HTML view
-- Selectable per-feed views
+- Selectable per-feed view styles
   - Text only, with images, tiled cards
   - Text / HTML expansion
 - Reader state in URL to bookmark / refresh at last folder & item view
   - Update ?after in URL when changed in UI
 - Change ?after to a relative time rather than absolute?
   - (That way, 4 hours ago isn't 6 hours ago two hours later)
-- Counts for items in folders, feeds, remaining for more feeds
+- Counts for items in folders remaining for more feeds
 - Filters (keyword, etc) for omitting / searching feed items 
 - Find a decent way to include HTML content (iframes?)
 - Themes - light / dark
-- Implement actual feed management 
-- Periodically purge defunct items and vacuum() to clean DB
-- Remote feed subscription bookmarklet?
-- Implement a proper FeedFolder model with sub-folders
-- OPML live playlist subscription
 - Variable maxage per feed with AIMD adjustment based on when new items are found
-- Read / unread flags? (I don't use them)
 - Better feed encoding handling
 - Feed queue monitoring via websocket (or at least smarter stats polling)
+- Read / unread flags? (I don't use them)
